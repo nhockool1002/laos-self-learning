@@ -8,7 +8,6 @@ import {
   Card,
   CardContent,
   IconButton,
-  Paper,
   List,
   ListItem,
   ListItemText,

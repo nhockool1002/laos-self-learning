@@ -17,7 +17,6 @@ import {
 } from '@mui/material';
 import {
   Mic as MicIcon,
-  Check as CheckIcon,
   VolumeUp as VolumeUpIcon,
 } from '@mui/icons-material';
 
@@ -71,8 +70,11 @@ const Practice: React.FC = () => {
   };
 
   const playSound = (text: string) => {
-    // TODO: Implement text-to-speech functionality
-    console.log('Playing sound for:', text);
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'th-TH';
+    utterance.rate = 0.7;
+    utterance.pitch = 1.1;
+    window.speechSynthesis.speak(utterance);
   };
 
   const renderExercise = () => {

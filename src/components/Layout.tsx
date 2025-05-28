@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   AppBar,
@@ -11,7 +11,6 @@ import {
   ListItemText,
   Toolbar,
   Typography,
-  useTheme,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -20,6 +19,7 @@ import {
   Book as BookIcon,
   Mic as MicIcon,
   Assignment as AssignmentIcon,
+  Brightness4 as DarkModeIcon,
 } from '@mui/icons-material';
 
 interface LayoutProps {
@@ -29,10 +29,15 @@ interface LayoutProps {
 const drawerWidth = 240;
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  const theme = useTheme();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  const handleDarkModeToggle = () => {
+    setDarkMode(!darkMode);
+    // TODO: Implement dark mode theme switching
+  };
 
   const menuItems = [
     { text: 'Trang chủ', icon: <HomeIcon />, path: '/' },
@@ -87,9 +92,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Học Tiếng Lào
           </Typography>
+          <IconButton color="inherit" onClick={handleDarkModeToggle}>
+            <DarkModeIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
       <Box

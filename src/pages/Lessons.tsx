@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Container,
@@ -26,21 +26,6 @@ import { lessons, Lesson } from '../data/lessons';
 const Lessons: React.FC = () => {
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
-  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-
-  useEffect(() => {
-    const loadVoices = () => {
-      const availableVoices = window.speechSynthesis.getVoices();
-      setVoices(availableVoices);
-    };
-
-    loadVoices();
-    window.speechSynthesis.onvoiceschanged = loadVoices;
-
-    return () => {
-      window.speechSynthesis.onvoiceschanged = null;
-    };
-  }, []);
 
   const handleOpenDialog = (lesson: Lesson) => {
     setSelectedLesson(lesson);
@@ -52,22 +37,11 @@ const Lessons: React.FC = () => {
   };
 
   const playSound = (text: string) => {
-    // @ts-ignore
-    if (window.responsiveVoice) {
-      // @ts-ignore
-      window.responsiveVoice.speak(text, "Thai Female", {
-        rate: 0.8,
-        pitch: 1,
-        volume: 1
-      });
-    } else {
-      // Fallback to Web Speech API if ResponsiveVoice is not available
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'th-TH';
-      utterance.rate = 0.7;
-      utterance.pitch = 1.1;
-      window.speechSynthesis.speak(utterance);
-    }
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'th-TH';
+    utterance.rate = 0.7;
+    utterance.pitch = 1.1;
+    window.speechSynthesis.speak(utterance);
   };
 
   const getLevelColor = (level: string) => {
@@ -261,7 +235,7 @@ const Lessons: React.FC = () => {
                             }
                           />
                         </ListItem>
-                        {selectedLesson.content.grammar && index < (selectedLesson.content.grammar?.length ?? 0) - 1 && (
+                        {selectedLesson.content.grammar && index < selectedLesson.content.grammar.length - 1 && (
                           <Divider variant="inset" component="li" />
                         )}
                       </React.Fragment>
@@ -306,7 +280,7 @@ const Lessons: React.FC = () => {
                             }
                           />
                         </ListItem>
-                        {selectedLesson.content.practice && index < (selectedLesson.content.practice?.length ?? 0) - 1 && (
+                        {selectedLesson.content.practice && index < selectedLesson.content.practice.length - 1 && (
                           <Divider variant="inset" component="li" />
                         )}
                       </React.Fragment>

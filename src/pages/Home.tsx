@@ -1,14 +1,6 @@
 import React from 'react';
+import { Typography, Grid, Card, CardContent, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardMedia,
-  Grid,
-  Typography,
-} from '@mui/material';
 import {
   School as SchoolIcon,
   Book as BookIcon,
