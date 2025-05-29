@@ -21,6 +21,98 @@ interface TabPanelProps {
   value: number;
 }
 
+interface ConsonantCardProps {
+  letter: string;
+  pronunciationVi: string;
+  type: 'consonant' | 'vowel' | 'tone';
+}
+
+interface ConsonantGroupProps {
+  title: string;
+  consonants: ConsonantCardProps[];
+  type: 'consonant' | 'vowel' | 'tone';
+}
+
+const ConsonantCard: React.FC<ConsonantCardProps> = ({ letter, pronunciationVi, type }) => (
+  <Card sx={{ 
+    transition: 'transform 0.2s',
+    '&:hover': {
+      transform: 'scale(1.05)',
+      boxShadow: 3
+    },
+    backgroundColor: '#1a1a1a',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    maxWidth: '160px',
+    margin: '0 auto'
+  }}>
+    <CardContent sx={{ 
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+      p: 1.5
+    }}>
+      <Box>
+        <Typography 
+          variant="h3" 
+          align="center" 
+          sx={{ 
+            fontFamily: 'Noto Serif Lao',
+            color: getLetterColor(type),
+            fontWeight: 'bold',
+            textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+            minHeight: '60px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '2.5rem'
+          }}
+        >
+          {letter}
+        </Typography>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center'
+        }}>
+          <Typography 
+            variant="subtitle1" 
+            align="center"
+            sx={{ 
+              fontFamily: 'Pacifico, cursive',
+              color: '#e53935',
+              fontWeight: 'medium',
+              minHeight: '24px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.2rem',
+              mt: 1
+            }}
+          >
+            {pronunciationVi}
+          </Typography>
+        </Box>
+      </Box>
+    </CardContent>
+  </Card>
+);
+
+const ConsonantGroup: React.FC<ConsonantGroupProps> = ({ title, consonants, type }) => (
+  <Box sx={{ mb: 3 }}>
+    <Typography variant="h6" sx={{ color: '#fff', mb: 1.5 }}>{title}</Typography>
+    <Grid container spacing={1.5}>
+      {consonants.map((consonant) => (
+        <Grid item xs={6} sm={4} md={3} lg={2} key={consonant.letter}>
+          <ConsonantCard {...consonant} type={type} />
+        </Grid>
+      ))}
+    </Grid>
+  </Box>
+);
+
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
 
@@ -37,6 +129,19 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
+const getLetterColor = (type: 'consonant' | 'vowel' | 'tone') => {
+  switch (type) {
+    case 'consonant':
+      return '#2196f3';
+    case 'vowel':
+      return '#f50057';
+    case 'tone':
+      return '#4caf50';
+    default:
+      return '#000000';
+  }
+};
+
 const Alphabet: React.FC = () => {
   const [value, setValue] = useState(0);
 
@@ -44,152 +149,88 @@ const Alphabet: React.FC = () => {
     setValue(newValue);
   };
 
-  const consonants = [
-    { letter: 'ກ', pronunciation: 'k', example: 'ກາ (kaa)' },
-    { letter: 'ຂ', pronunciation: 'kh', example: 'ຂາ (khaa)' },
-    { letter: 'ຄ', pronunciation: 'kh', example: 'ຄາ (khaa)' },
-    { letter: 'ງ', pronunciation: 'ng', example: 'ງາ (ngaa)' },
-    { letter: 'ຈ', pronunciation: 'ch', example: 'ຈາ (chaa)' },
-    { letter: 'ສ', pronunciation: 's', example: 'ສາ (saa)' },
-    { letter: 'ຊ', pronunciation: 's', example: 'ຊາ (saa)' },
-    { letter: 'ຍ', pronunciation: 'ny', example: 'ຍາ (nyaa)' },
-    { letter: 'ດ', pronunciation: 'd', example: 'ດາ (daa)' },
-    { letter: 'ຕ', pronunciation: 't', example: 'ຕາ (taa)' },
-    { letter: 'ຖ', pronunciation: 'th', example: 'ຖາ (thaa)' },
-    { letter: 'ທ', pronunciation: 'th', example: 'ທາ (thaa)' },
-    { letter: 'ນ', pronunciation: 'n', example: 'ນາ (naa)' },
-    { letter: 'ບ', pronunciation: 'b', example: 'ບາ (baa)' },
-    { letter: 'ປ', pronunciation: 'p', example: 'ປາ (paa)' },
-    { letter: 'ຜ', pronunciation: 'ph', example: 'ຜາ (phaa)' },
-    { letter: 'ຝ', pronunciation: 'f', example: 'ຝາ (faa)' },
-    { letter: 'ພ', pronunciation: 'ph', example: 'ພາ (phaa)' },
-    { letter: 'ຟ', pronunciation: 'f', example: 'ຟາ (faa)' },
-    { letter: 'ມ', pronunciation: 'm', example: 'ມາ (maa)' },
-    { letter: 'ຢ', pronunciation: 'y', example: 'ຢາ (yaa)' },
-    { letter: 'ຣ', pronunciation: 'r', example: 'ຣາ (raa)' },
-    { letter: 'ລ', pronunciation: 'l', example: 'ລາ (laa)' },
-    { letter: 'ວ', pronunciation: 'w', example: 'ວາ (waa)' },
-    { letter: 'ຫ', pronunciation: 'h', example: 'ຫາ (haa)' },
-    { letter: 'ອ', pronunciation: '', example: 'ອາ (aa)' },
-    { letter: 'ຮ', pronunciation: 'h', example: 'ຮາ (haa)' },
-  ];
+  const consonants = {
+    high: [
+      { letter: 'ຂ', pronunciationVi: 'khó' },
+      { letter: 'ສ', pronunciationVi: 'xó' },
+      { letter: 'ຖ', pronunciationVi: 'thó' },
+      { letter: 'ຜ', pronunciationVi: "phó" },
+      { letter: 'ຝ', pronunciationVi: 'fó' },
+      { letter: 'ຫ', pronunciationVi: 'hó' },
+    ],
+    mid: [
+      { letter: 'ກ', pronunciationVi: 'co' },
+      { letter: 'ຈ', pronunciationVi: 'cho' },
+      { letter: 'ດ', pronunciationVi: 'do' },
+      { letter: 'ຕ', pronunciationVi: 'to' },
+      { letter: 'ບ', pronunciationVi: 'bo' },
+      { letter: 'ປ', pronunciationVi: 'po' },
+      { letter: 'ຢ', pronunciationVi: 'yo' },
+      { letter: 'ອ', pronunciationVi: 'o' },
+    ],
+    low: [
+      { letter: 'ຄ', pronunciationVi: 'kho' },
+      { letter: 'ງ', pronunciationVi: 'ngo' },
+      { letter: 'ຊ', pronunciationVi: 'xo' },
+      { letter: 'ຍ', pronunciationVi: 'nho' },
+      { letter: 'ທ', pronunciationVi: 'tho' },
+      { letter: 'ນ', pronunciationVi: 'no' },
+      { letter: 'ພ', pronunciationVi: "pho" },
+      { letter: 'ຟ', pronunciationVi: 'fo' },
+      { letter: 'ມ', pronunciationVi: 'mo' },
+      { letter: 'ຣ', pronunciationVi: 'ro' },
+      { letter: 'ລ', pronunciationVi: 'lo' },
+      { letter: 'ວ', pronunciationVi: 'vo' },
+      { letter: 'ຮ', pronunciationVi: 'hó' },
+    ]
+  };
 
   const vowels = [
-    { letter: 'ະ', pronunciation: 'a', example: 'ກະ (ka)' },
-    { letter: 'າ', pronunciation: 'aa', example: 'ກາ (kaa)' },
-    { letter: 'ິ', pronunciation: 'i', example: 'ກິ (ki)' },
-    { letter: 'ີ', pronunciation: 'ii', example: 'ກີ (kii)' },
-    { letter: 'ຶ', pronunciation: 'ue', example: 'ກຶ (kue)' },
-    { letter: 'ື', pronunciation: 'uee', example: 'ກື (kuee)' },
-    { letter: 'ຸ', pronunciation: 'u', example: 'ກຸ (ku)' },
-    { letter: 'ູ', pronunciation: 'uu', example: 'ກູ (kuu)' },
-    { letter: 'ເ', pronunciation: 'e', example: 'ເກ (ke)' },
-    { letter: 'ແ', pronunciation: 'ae', example: 'ແກ (kae)' },
-    { letter: 'ໂ', pronunciation: 'o', example: 'ໂກ (ko)' },
-    { letter: 'ໃ', pronunciation: 'ai', example: 'ໃກ (kai)' },
-    { letter: 'ໄ', pronunciation: 'ai', example: 'ໄກ (kai)' },
-    { letter: 'ໍ', pronunciation: 'o', example: 'ກໍ (ko)' },
+    { letter: 'ະ', pronunciationVi: 'a' },
+    { letter: 'າ', pronunciationVi: 'aa' },
+    { letter: 'ິ', pronunciationVi: 'i' },
+    { letter: 'ີ', pronunciationVi: 'ii' },
+    { letter: 'ຶ', pronunciationVi: 'ư' },
+    { letter: 'ື', pronunciationVi: 'ưư' },
+    { letter: 'ຸ', pronunciationVi: 'u' },
+    { letter: 'ູ', pronunciationVi: 'uu' },
+    { letter: 'ເ', pronunciationVi: 'e' },
+    { letter: 'ແ', pronunciationVi: 'e' },
+    { letter: 'ໂ', pronunciationVi: 'o' },
+    { letter: 'ໃ', pronunciationVi: 'ai' },
+    { letter: 'ໄ', pronunciationVi: 'ai' },
+    { letter: 'ໍ', pronunciationVi: 'o' },
   ];
 
   const tones = [
-    { name: 'Thanh ngang', symbol: '˧', example: 'ກາ (kaa)' },
-    { name: 'Thanh sắc', symbol: '˨˦', example: 'ກ່າ (kaa)' },
-    { name: 'Thanh huyền', symbol: '˧˩', example: 'ກ້າ (kaa)' },
-    { name: 'Thanh hỏi', symbol: '˨˩˦', example: 'ກ່າະ (kaa)' },
-    { name: 'Thanh ngã', symbol: '˧˥', example: 'ກ່າະ (kaa)' },
+    { letter: '˧', pronunciationVi: 'ngang' },
+    { letter: '˨˦', pronunciationVi: 'sắc' },
+    { letter: '˧˩', pronunciationVi: 'huyền' },
+    { letter: '˨˩˦', pronunciationVi: 'hỏi' },
+    { letter: '˧˥', pronunciationVi: 'ngã' },
   ];
 
   const consonantClusters = [
-    {
-      cluster: 'ກຣ',
-      pronunciation: 'kr',
-      example: 'ກຣະ (kra)',
-      explanation: 'Phụ âm kép với r'
-    },
-    {
-      cluster: 'ຂຣ',
-      pronunciation: 'khr',
-      example: 'ຂຣະ (khra)',
-      explanation: 'Phụ âm kép với r'
-    },
-    {
-      cluster: 'ຄຣ',
-      pronunciation: 'khr',
-      example: 'ຄຣະ (khra)',
-      explanation: 'Phụ âm kép với r'
-    },
-    {
-      cluster: 'ພຣ',
-      pronunciation: 'phr',
-      example: 'ພຣະ (phra)',
-      explanation: 'Phụ âm kép với r'
-    },
+    { letter: 'ກຣ', pronunciationVi: 'kro' },
+    { letter: 'ຂຣ', pronunciationVi: 'khro' },
+    { letter: 'ຄຣ', pronunciationVi: 'khro' },
+    { letter: 'ພຣ', pronunciationVi: 'phro' },
   ];
 
   const diphthongs = [
-    {
-      vowel: 'ເອະ',
-      pronunciation: 'eo',
-      example: 'ເອະ (eo)',
-      explanation: 'Nguyên âm đôi eo'
-    },
-    {
-      vowel: 'ແອະ',
-      pronunciation: 'aeo',
-      example: 'ແອະ (aeo)',
-      explanation: 'Nguyên âm đôi aeo'
-    },
-    {
-      vowel: 'ໂອະ',
-      pronunciation: 'oo',
-      example: 'ໂອະ (oo)',
-      explanation: 'Nguyên âm đôi oo'
-    },
+    { letter: 'ເອະ', pronunciationVi: 'eo' },
+    { letter: 'ແອະ', pronunciationVi: 'aeo' },
+    { letter: 'ໂອະ', pronunciationVi: 'oo' },
   ];
 
   const finalConsonants = [
-    {
-      consonant: 'ກ',
-      pronunciation: 'k',
-      example: 'ສັກ (sak)',
-      explanation: 'Phụ âm cuối k'
-    },
-    {
-      consonant: 'ງ',
-      pronunciation: 'ng',
-      example: 'ສັງ (sang)',
-      explanation: 'Phụ âm cuối ng'
-    },
-    {
-      consonant: 'ຍ',
-      pronunciation: 'ny',
-      example: 'ສັຍ (sany)',
-      explanation: 'Phụ âm cuối ny'
-    },
-    {
-      consonant: 'ດ',
-      pronunciation: 't',
-      example: 'ສັດ (sat)',
-      explanation: 'Phụ âm cuối t'
-    },
-    {
-      consonant: 'ນ',
-      pronunciation: 'n',
-      example: 'ສັນ (san)',
-      explanation: 'Phụ âm cuối n'
-    },
-    {
-      consonant: 'ບ',
-      pronunciation: 'p',
-      example: 'ສັບ (sap)',
-      explanation: 'Phụ âm cuối p'
-    },
-    {
-      consonant: 'ມ',
-      pronunciation: 'm',
-      example: 'ສັມ (sam)',
-      explanation: 'Phụ âm cuối m'
-    },
+    { letter: 'ກ', pronunciationVi: 'k' },
+    { letter: 'ງ', pronunciationVi: 'ng' },
+    { letter: 'ຍ', pronunciationVi: 'nh' },
+    { letter: 'ດ', pronunciationVi: 't' },
+    { letter: 'ນ', pronunciationVi: 'n' },
+    { letter: 'ບ', pronunciationVi: 'p' },
+    { letter: 'ມ', pronunciationVi: 'm' },
   ];
 
   const irregularPronunciations = [
@@ -228,26 +269,6 @@ const Alphabet: React.FC = () => {
     },
   ];
 
-  const playSound = (text: string) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'lo-LA';
-    utterance.rate = 0.8;
-    window.speechSynthesis.speak(utterance);
-  };
-
-  const getLetterColor = (type: 'consonant' | 'vowel' | 'tone') => {
-    switch (type) {
-      case 'consonant':
-        return '#2196f3'; // Màu xanh dương
-      case 'vowel':
-        return '#f50057'; // Màu hồng
-      case 'tone':
-        return '#4caf50'; // Màu xanh lá
-      default:
-        return '#000000';
-    }
-  };
-
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -270,590 +291,85 @@ const Alphabet: React.FC = () => {
       </Box>
 
       <TabPanel value={value} index={0}>
-        <Grid container spacing={2}>
-          {consonants.map((consonant) => (
-            <Grid item xs={12} sm={6} md={4} key={consonant.letter}>
-              <Card sx={{ 
-                transition: 'transform 0.2s',
-                '&:hover': {
-                  transform: 'scale(1.05)',
-                  boxShadow: 3
-                },
-                backgroundColor: '#1a1a1a',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column'
-              }}>
-                <CardContent sx={{ 
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  p: 2
-                }}>
-                  <Box>
-                    <Typography 
-                      variant="h2" 
-                      align="center" 
-                      sx={{ 
-                        fontFamily: 'Noto Sans Lao',
-                        color: getLetterColor('consonant'),
-                        fontWeight: 'bold',
-                        textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-                        minHeight: '80px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {consonant.letter}
-                    </Typography>
-                    <Typography 
-                      variant="h6" 
-                      align="center"
-                      sx={{ 
-                        color: '#fff',
-                        fontWeight: 'medium',
-                        minHeight: '32px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {consonant.pronunciation}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    mt: 2
-                  }}>
-                    <Typography 
-                      variant="body1" 
-                      sx={{ 
-                        mr: 1, 
-                        fontFamily: 'Noto Sans Lao',
-                        color: '#fff',
-                        '& span': {
-                          color: getLetterColor('consonant'),
-                          fontWeight: 'bold'
-                        }
-                      }}
-                    >
-                      <span>{consonant.example.split(' ')[0]}</span> {consonant.example.split(' ')[1]}
-                    </Typography>
-                    <IconButton 
-                      onClick={() => playSound(consonant.example)}
-                      sx={{
-                        color: getLetterColor('consonant'),
-                        '&:hover': {
-                          backgroundColor: 'rgba(33, 150, 243, 0.1)'
-                        }
-                      }}
-                    >
-                      <VolumeUpIcon />
-                    </IconButton>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        <ConsonantGroup 
+          title="Phụ âm cao" 
+          consonants={consonants.high.map(consonant => ({
+            ...consonant,
+            type: 'consonant' as const
+          }))} 
+          type="consonant" 
+        />
+        <ConsonantGroup 
+          title="Phụ âm trung" 
+          consonants={consonants.mid.map(consonant => ({
+            ...consonant,
+            type: 'consonant' as const
+          }))} 
+          type="consonant" 
+        />
+        <ConsonantGroup 
+          title="Phụ âm thấp" 
+          consonants={consonants.low.map(consonant => ({
+            ...consonant,
+            type: 'consonant' as const
+          }))} 
+          type="consonant" 
+        />
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <Grid container spacing={2}>
-          {vowels.map((vowel) => (
-            <Grid item xs={12} sm={6} md={4} key={vowel.letter}>
-              <Card sx={{ 
-                transition: 'transform 0.2s',
-                '&:hover': {
-                  transform: 'scale(1.05)',
-                  boxShadow: 3
-                },
-                backgroundColor: '#1a1a1a',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column'
-              }}>
-                <CardContent sx={{ 
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  p: 2
-                }}>
-                  <Box>
-                    <Typography 
-                      variant="h2" 
-                      align="center" 
-                      sx={{ 
-                        fontFamily: 'Noto Sans Lao',
-                        color: getLetterColor('vowel'),
-                        fontWeight: 'bold',
-                        textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-                        minHeight: '80px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {vowel.letter}
-                    </Typography>
-                    <Typography 
-                      variant="h6" 
-                      align="center"
-                      sx={{ 
-                        color: '#fff',
-                        fontWeight: 'medium',
-                        minHeight: '32px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {vowel.pronunciation}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    mt: 2
-                  }}>
-                    <Typography 
-                      variant="body1" 
-                      sx={{ 
-                        mr: 1, 
-                        fontFamily: 'Noto Sans Lao',
-                        color: '#fff',
-                        '& span': {
-                          color: getLetterColor('vowel'),
-                          fontWeight: 'bold'
-                        }
-                      }}
-                    >
-                      <span>{vowel.example.split(' ')[0]}</span> {vowel.example.split(' ')[1]}
-                    </Typography>
-                    <IconButton 
-                      onClick={() => playSound(vowel.example)}
-                      sx={{
-                        color: getLetterColor('vowel'),
-                        '&:hover': {
-                          backgroundColor: 'rgba(245, 0, 87, 0.1)'
-                        }
-                      }}
-                    >
-                      <VolumeUpIcon />
-                    </IconButton>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        <ConsonantGroup 
+          title="Nguyên âm" 
+          consonants={vowels.map(vowel => ({
+            ...vowel,
+            type: 'vowel' as const
+          }))} 
+          type="vowel" 
+        />
       </TabPanel>
 
       <TabPanel value={value} index={2}>
-        <Grid container spacing={2}>
-          {tones.map((tone) => (
-            <Grid item xs={12} sm={6} md={4} key={tone.name}>
-              <Card sx={{ 
-                transition: 'transform 0.2s',
-                '&:hover': {
-                  transform: 'scale(1.05)',
-                  boxShadow: 3
-                },
-                backgroundColor: '#1a1a1a',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column'
-              }}>
-                <CardContent sx={{ 
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  p: 2
-                }}>
-                  <Box>
-                    <Typography 
-                      variant="h6" 
-                      align="center"
-                      sx={{ 
-                        color: getLetterColor('tone'),
-                        fontWeight: 'bold',
-                        minHeight: '32px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {tone.name}
-                    </Typography>
-                    <Typography 
-                      variant="h4" 
-                      align="center"
-                      sx={{ 
-                        color: getLetterColor('tone'),
-                        fontWeight: 'bold',
-                        textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-                        minHeight: '80px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {tone.symbol}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    mt: 2
-                  }}>
-                    <Typography 
-                      variant="body1" 
-                      sx={{ 
-                        mr: 1, 
-                        fontFamily: 'Noto Sans Lao',
-                        color: '#fff',
-                        '& span': {
-                          color: getLetterColor('tone'),
-                          fontWeight: 'bold'
-                        }
-                      }}
-                    >
-                      <span>{tone.example.split(' ')[0]}</span> {tone.example.split(' ')[1]}
-                    </Typography>
-                    <IconButton 
-                      onClick={() => playSound(tone.example)}
-                      sx={{
-                        color: getLetterColor('tone'),
-                        '&:hover': {
-                          backgroundColor: 'rgba(76, 175, 80, 0.1)'
-                        }
-                      }}
-                    >
-                      <VolumeUpIcon />
-                    </IconButton>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        <ConsonantGroup 
+          title="Thanh" 
+          consonants={tones.map(tone => ({
+            ...tone,
+            type: 'tone' as const
+          }))} 
+          type="tone" 
+        />
       </TabPanel>
 
       <TabPanel value={value} index={3}>
-        <Grid container spacing={2}>
-          {consonantClusters.map((cluster) => (
-            <Grid item xs={12} sm={6} md={4} key={cluster.cluster}>
-              <Card sx={{ 
-                transition: 'transform 0.2s',
-                '&:hover': {
-                  transform: 'scale(1.05)',
-                  boxShadow: 3
-                },
-                backgroundColor: '#1a1a1a',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column'
-              }}>
-                <CardContent sx={{ 
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  p: 2
-                }}>
-                  <Box>
-                    <Typography 
-                      variant="h2" 
-                      align="center" 
-                      sx={{ 
-                        fontFamily: 'Noto Sans Lao',
-                        color: '#2196f3',
-                        fontWeight: 'bold',
-                        textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-                        minHeight: '80px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {cluster.cluster}
-                    </Typography>
-                    <Typography 
-                      variant="h6" 
-                      align="center"
-                      sx={{ 
-                        color: '#fff',
-                        fontWeight: 'medium',
-                        minHeight: '32px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {cluster.pronunciation}
-                    </Typography>
-                    <Typography 
-                      variant="body2" 
-                      align="center"
-                      sx={{ 
-                        color: '#aaa',
-                        mt: 1
-                      }}
-                    >
-                      {cluster.explanation}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    mt: 2
-                  }}>
-                    <Typography 
-                      variant="body1" 
-                      sx={{ 
-                        mr: 1, 
-                        fontFamily: 'Noto Sans Lao',
-                        color: '#fff',
-                        '& span': {
-                          color: '#2196f3',
-                          fontWeight: 'bold'
-                        }
-                      }}
-                    >
-                      <span>{cluster.example.split(' ')[0]}</span> {cluster.example.split(' ')[1]}
-                    </Typography>
-                    <IconButton 
-                      onClick={() => playSound(cluster.example)}
-                      sx={{
-                        color: '#2196f3',
-                        '&:hover': {
-                          backgroundColor: 'rgba(33, 150, 243, 0.1)'
-                        }
-                      }}
-                    >
-                      <VolumeUpIcon />
-                    </IconButton>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        <ConsonantGroup 
+          title="Phụ âm kép" 
+          consonants={consonantClusters.map(cluster => ({
+            ...cluster,
+            type: 'consonant' as const
+          }))} 
+          type="consonant" 
+        />
       </TabPanel>
 
       <TabPanel value={value} index={4}>
-        <Grid container spacing={2}>
-          {diphthongs.map((diphthong) => (
-            <Grid item xs={12} sm={6} md={4} key={diphthong.vowel}>
-              <Card sx={{ 
-                transition: 'transform 0.2s',
-                '&:hover': {
-                  transform: 'scale(1.05)',
-                  boxShadow: 3
-                },
-                backgroundColor: '#1a1a1a',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column'
-              }}>
-                <CardContent sx={{ 
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  p: 2
-                }}>
-                  <Box>
-                    <Typography 
-                      variant="h2" 
-                      align="center" 
-                      sx={{ 
-                        fontFamily: 'Noto Sans Lao',
-                        color: '#f50057',
-                        fontWeight: 'bold',
-                        textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-                        minHeight: '80px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {diphthong.vowel}
-                    </Typography>
-                    <Typography 
-                      variant="h6" 
-                      align="center"
-                      sx={{ 
-                        color: '#fff',
-                        fontWeight: 'medium',
-                        minHeight: '32px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {diphthong.pronunciation}
-                    </Typography>
-                    <Typography 
-                      variant="body2" 
-                      align="center"
-                      sx={{ 
-                        color: '#aaa',
-                        mt: 1
-                      }}
-                    >
-                      {diphthong.explanation}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    mt: 2
-                  }}>
-                    <Typography 
-                      variant="body1" 
-                      sx={{ 
-                        mr: 1, 
-                        fontFamily: 'Noto Sans Lao',
-                        color: '#fff',
-                        '& span': {
-                          color: '#f50057',
-                          fontWeight: 'bold'
-                        }
-                      }}
-                    >
-                      <span>{diphthong.example.split(' ')[0]}</span> {diphthong.example.split(' ')[1]}
-                    </Typography>
-                    <IconButton 
-                      onClick={() => playSound(diphthong.example)}
-                      sx={{
-                        color: '#f50057',
-                        '&:hover': {
-                          backgroundColor: 'rgba(245, 0, 87, 0.1)'
-                        }
-                      }}
-                    >
-                      <VolumeUpIcon />
-                    </IconButton>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        <ConsonantGroup 
+          title="Nguyên âm đôi" 
+          consonants={diphthongs.map(diphthong => ({
+            ...diphthong,
+            type: 'vowel' as const
+          }))} 
+          type="vowel" 
+        />
       </TabPanel>
 
       <TabPanel value={value} index={5}>
-        <Grid container spacing={2}>
-          {finalConsonants.map((final) => (
-            <Grid item xs={12} sm={6} md={4} key={final.consonant}>
-              <Card sx={{ 
-                transition: 'transform 0.2s',
-                '&:hover': {
-                  transform: 'scale(1.05)',
-                  boxShadow: 3
-                },
-                backgroundColor: '#1a1a1a',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column'
-              }}>
-                <CardContent sx={{ 
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-between',
-                  p: 2
-                }}>
-                  <Box>
-                    <Typography 
-                      variant="h2" 
-                      align="center" 
-                      sx={{ 
-                        fontFamily: 'Noto Sans Lao',
-                        color: '#4caf50',
-                        fontWeight: 'bold',
-                        textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-                        minHeight: '80px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {final.consonant}
-                    </Typography>
-                    <Typography 
-                      variant="h6" 
-                      align="center"
-                      sx={{ 
-                        color: '#fff',
-                        fontWeight: 'medium',
-                        minHeight: '32px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      {final.pronunciation}
-                    </Typography>
-                    <Typography 
-                      variant="body2" 
-                      align="center"
-                      sx={{ 
-                        color: '#aaa',
-                        mt: 1
-                      }}
-                    >
-                      {final.explanation}
-                    </Typography>
-                  </Box>
-                  <Box sx={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center',
-                    mt: 2
-                  }}>
-                    <Typography 
-                      variant="body1" 
-                      sx={{ 
-                        mr: 1, 
-                        fontFamily: 'Noto Sans Lao',
-                        color: '#fff',
-                        '& span': {
-                          color: '#4caf50',
-                          fontWeight: 'bold'
-                        }
-                      }}
-                    >
-                      <span>{final.example.split(' ')[0]}</span> {final.example.split(' ')[1]}
-                    </Typography>
-                    <IconButton 
-                      onClick={() => playSound(final.example)}
-                      sx={{
-                        color: '#4caf50',
-                        '&:hover': {
-                          backgroundColor: 'rgba(76, 175, 80, 0.1)'
-                        }
-                      }}
-                    >
-                      <VolumeUpIcon />
-                    </IconButton>
-                  </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        <ConsonantGroup 
+          title="Phụ âm cuối" 
+          consonants={finalConsonants.map(final => ({
+            ...final,
+            type: 'consonant' as const
+          }))} 
+          type="consonant" 
+        />
       </TabPanel>
 
       <TabPanel value={value} index={6}>
@@ -893,17 +409,6 @@ const Alphabet: React.FC = () => {
                     </React.Fragment>
                   }
                 />
-                <IconButton 
-                  onClick={() => playSound(item.word)}
-                  sx={{
-                    color: '#4caf50',
-                    '&:hover': {
-                      backgroundColor: 'rgba(76, 175, 80, 0.1)'
-                    }
-                  }}
-                >
-                  <VolumeUpIcon />
-                </IconButton>
               </ListItem>
               {index < irregularPronunciations.length - 1 && <Divider variant="inset" component="li" />}
             </React.Fragment>
@@ -948,17 +453,6 @@ const Alphabet: React.FC = () => {
                     </React.Fragment>
                   }
                 />
-                <IconButton 
-                  onClick={() => playSound(exercise.sentence)}
-                  sx={{
-                    color: '#4caf50',
-                    '&:hover': {
-                      backgroundColor: 'rgba(76, 175, 80, 0.1)'
-                    }
-                  }}
-                >
-                  <VolumeUpIcon />
-                </IconButton>
               </ListItem>
               {index < intonationExercises.length - 1 && <Divider variant="inset" component="li" />}
             </React.Fragment>
