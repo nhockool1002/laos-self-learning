@@ -12,6 +12,9 @@ import {
   ListItem,
   ListItemText,
   Divider,
+  Button,
+  ToggleButton,
+  ToggleButtonGroup,
 } from '@mui/material';
 import { VolumeUp as VolumeUpIcon } from '@mui/icons-material';
 
@@ -142,11 +145,127 @@ const getLetterColor = (type: 'consonant' | 'vowel' | 'tone') => {
   }
 };
 
+const laoAlphabetOrder = [
+  // Thứ tự bảng chữ cái Lào (theo hình bạn gửi, có thể điều chỉnh lại nếu cần)
+  { letter: 'ກ', pronunciationVi: 'co' },
+  { letter: 'ຂ', pronunciationVi: 'khó' },
+  { letter: 'ຄ', pronunciationVi: 'kho' },
+  { letter: 'ງ', pronunciationVi: 'ngo' },
+  { letter: 'ຈ', pronunciationVi: 'cho' },
+  { letter: 'ສ', pronunciationVi: 'xó' },
+  { letter: 'ຊ', pronunciationVi: 'xo' },
+  { letter: 'ຍ', pronunciationVi: 'nho' },
+  { letter: 'ດ', pronunciationVi: 'do' },
+  { letter: 'ຕ', pronunciationVi: 'to' },
+  { letter: 'ຖ', pronunciationVi: 'thó' },
+  { letter: 'ທ', pronunciationVi: 'tho' },
+  { letter: 'ນ', pronunciationVi: 'no' },
+  { letter: 'ບ', pronunciationVi: 'bo' },
+  { letter: 'ປ', pronunciationVi: 'po' },
+  { letter: 'ຜ', pronunciationVi: 'phó' },
+  { letter: 'ຝ', pronunciationVi: 'fó' },
+  { letter: 'ພ', pronunciationVi: 'pho' },
+  { letter: 'ຟ', pronunciationVi: 'fo' },
+  { letter: 'ມ', pronunciationVi: 'mo' },
+  { letter: 'ຢ', pronunciationVi: 'yo' },
+  { letter: 'ຣ', pronunciationVi: 'ro' },
+  { letter: 'ລ', pronunciationVi: 'lo' },
+  { letter: 'ວ', pronunciationVi: 'vo' },
+  { letter: 'ອ', pronunciationVi: 'o' },
+  { letter: 'ຮ', pronunciationVi: 'hó' },
+];
+
+const vowelsFull = [
+  { letter: 'ະ', pronunciationVi: 'a' },
+  { letter: 'າ', pronunciationVi: 'aa' },
+  { letter: 'ິ', pronunciationVi: 'i' },
+  { letter: 'ີ', pronunciationVi: 'ii' },
+  { letter: 'ຶ', pronunciationVi: 'ư' },
+  { letter: 'ື', pronunciationVi: 'ưư' },
+  { letter: 'ຸ', pronunciationVi: 'u' },
+  { letter: 'ູ', pronunciationVi: 'uu' },
+  { letter: 'ເ', pronunciationVi: 'e' },
+  { letter: 'ແ', pronunciationVi: 'e' },
+  { letter: 'ໂ', pronunciationVi: 'o' },
+  { letter: 'ໃ', pronunciationVi: 'ai' },
+  { letter: 'ໄ', pronunciationVi: 'ai' },
+  { letter: 'ໍ', pronunciationVi: 'o' },
+  { letter: 'ົ', pronunciationVi: 'o' },
+  { letter: 'ັ', pronunciationVi: 'ă' },
+  { letter: 'ົວ', pronunciationVi: 'ua' },
+  { letter: 'ວ', pronunciationVi: 'ua' },
+  { letter: 'ຽ', pronunciationVi: 'ia' },
+  { letter: 'ືອ', pronunciationVi: 'ưa' },
+  { letter: 'ເອ', pronunciationVi: 'ê' },
+  { letter: 'ເວ', pronunciationVi: 'êu' },
+  { letter: 'ເຍ', pronunciationVi: 'ia' },
+  { letter: 'ເືອ', pronunciationVi: 'ưa' },
+  { letter: 'ເັຍ', pronunciationVi: 'ia' },
+  { letter: 'ເົາ', pronunciationVi: 'ao' },
+  { letter: 'ເັຍະ', pronunciationVi: 'ia' },
+  { letter: 'ເືອະ', pronunciationVi: 'ưa' },
+];
+
+const vowelsGroup = {
+  truoc: [
+    { letter: 'ເ', pronunciationVi: 'e' },
+    { letter: 'ແ', pronunciationVi: 'e' },
+    { letter: 'ໂ', pronunciationVi: 'o' },
+    { letter: 'ໃ', pronunciationVi: 'ai' },
+    { letter: 'ໄ', pronunciationVi: 'ai' },
+    { letter: 'ເອ', pronunciationVi: 'ê' },
+    { letter: 'ເວ', pronunciationVi: 'êu' },
+    { letter: 'ເຍ', pronunciationVi: 'ia' },
+    { letter: 'ເືອ', pronunciationVi: 'ưa' },
+    { letter: 'ເັຍ', pronunciationVi: 'ia' },
+    { letter: 'ເົາ', pronunciationVi: 'ao' },
+    { letter: 'ເັຍະ', pronunciationVi: 'ia' },
+    { letter: 'ເືອະ', pronunciationVi: 'ưa' },
+  ],
+  sau: [
+    { letter: 'ະ', pronunciationVi: 'a' },
+    { letter: 'າ', pronunciationVi: 'aa' },
+    { letter: 'ົ', pronunciationVi: 'o' },
+    { letter: 'ັ', pronunciationVi: 'ă' },
+    { letter: 'ົວ', pronunciationVi: 'ua' },
+    { letter: 'ວ', pronunciationVi: 'ua' },
+    { letter: 'ຽ', pronunciationVi: 'ia' },
+    { letter: 'ືອ', pronunciationVi: 'ưa' },
+  ],
+  tren: [
+    { letter: 'ິ', pronunciationVi: 'i' },
+    { letter: 'ີ', pronunciationVi: 'ii' },
+    { letter: 'ຶ', pronunciationVi: 'ư' },
+    { letter: 'ື', pronunciationVi: 'ưư' },
+  ],
+  duoi: [
+    { letter: 'ຸ', pronunciationVi: 'u' },
+    { letter: 'ູ', pronunciationVi: 'uu' },
+    { letter: 'ໍ', pronunciationVi: 'o' },
+  ]
+};
+
 const Alphabet: React.FC = () => {
   const [value, setValue] = useState(0);
+  const [groupMode, setGroupMode] = useState<'group' | 'all'>('group');
+  const [vowelMode, setVowelMode] = useState<'group' | 'all'>('group');
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
+  };
+
+  const handleToggleMode = (
+    event: React.MouseEvent<HTMLElement>,
+    newMode: 'group' | 'all' | null
+  ) => {
+    if (newMode) setGroupMode(newMode);
+  };
+
+  const handleToggleVowelMode = (
+    event: React.MouseEvent<HTMLElement>,
+    newMode: 'group' | 'all' | null
+  ) => {
+    if (newMode) setVowelMode(newMode);
   };
 
   const consonants = {
@@ -184,23 +303,6 @@ const Alphabet: React.FC = () => {
       { letter: 'ຮ', pronunciationVi: 'hó' },
     ]
   };
-
-  const vowels = [
-    { letter: 'ະ', pronunciationVi: 'a' },
-    { letter: 'າ', pronunciationVi: 'aa' },
-    { letter: 'ິ', pronunciationVi: 'i' },
-    { letter: 'ີ', pronunciationVi: 'ii' },
-    { letter: 'ຶ', pronunciationVi: 'ư' },
-    { letter: 'ື', pronunciationVi: 'ưư' },
-    { letter: 'ຸ', pronunciationVi: 'u' },
-    { letter: 'ູ', pronunciationVi: 'uu' },
-    { letter: 'ເ', pronunciationVi: 'e' },
-    { letter: 'ແ', pronunciationVi: 'e' },
-    { letter: 'ໂ', pronunciationVi: 'o' },
-    { letter: 'ໃ', pronunciationVi: 'ai' },
-    { letter: 'ໄ', pronunciationVi: 'ai' },
-    { letter: 'ໍ', pronunciationVi: 'o' },
-  ];
 
   const tones = [
     { letter: '˧', pronunciationVi: 'ngang' },
@@ -291,41 +393,100 @@ const Alphabet: React.FC = () => {
       </Box>
 
       <TabPanel value={value} index={0}>
-        <ConsonantGroup 
-          title="Phụ âm cao" 
-          consonants={consonants.high.map(consonant => ({
-            ...consonant,
-            type: 'consonant' as const
-          }))} 
-          type="consonant" 
-        />
-        <ConsonantGroup 
-          title="Phụ âm trung" 
-          consonants={consonants.mid.map(consonant => ({
-            ...consonant,
-            type: 'consonant' as const
-          }))} 
-          type="consonant" 
-        />
-        <ConsonantGroup 
-          title="Phụ âm thấp" 
-          consonants={consonants.low.map(consonant => ({
-            ...consonant,
-            type: 'consonant' as const
-          }))} 
-          type="consonant" 
-        />
+        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+          <ToggleButtonGroup
+            value={groupMode}
+            exclusive
+            onChange={handleToggleMode}
+            size="small"
+            color="primary"
+          >
+            <ToggleButton value="group">Phân nhóm</ToggleButton>
+            <ToggleButton value="all">Toàn bộ</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+        {groupMode === 'group' ? (
+          <>
+            <ConsonantGroup 
+              title="Phụ âm cao" 
+              consonants={consonants.high.map(consonant => ({
+                ...consonant,
+                type: 'consonant' as const
+              }))} 
+              type="consonant" 
+            />
+            <ConsonantGroup 
+              title="Phụ âm trung" 
+              consonants={consonants.mid.map(consonant => ({
+                ...consonant,
+                type: 'consonant' as const
+              }))} 
+              type="consonant" 
+            />
+            <ConsonantGroup 
+              title="Phụ âm thấp" 
+              consonants={consonants.low.map(consonant => ({
+                ...consonant,
+                type: 'consonant' as const
+              }))} 
+              type="consonant" 
+            />
+          </>
+        ) : (
+          <ConsonantGroup
+            title="Bảng chữ cái Lào"
+            consonants={laoAlphabetOrder.map(consonant => ({
+              ...consonant,
+              type: 'consonant' as const
+            }))}
+            type="consonant"
+          />
+        )}
       </TabPanel>
 
       <TabPanel value={value} index={1}>
-        <ConsonantGroup 
-          title="Nguyên âm" 
-          consonants={vowels.map(vowel => ({
-            ...vowel,
-            type: 'vowel' as const
-          }))} 
-          type="vowel" 
-        />
+        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-end' }}>
+          <ToggleButtonGroup
+            value={vowelMode}
+            exclusive
+            onChange={handleToggleVowelMode}
+            size="small"
+            color="primary"
+          >
+            <ToggleButton value="group">Phân loại</ToggleButton>
+            <ToggleButton value="all">Toàn bộ</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+        {vowelMode === 'group' ? (
+          <>
+            <ConsonantGroup
+              title="Nguyên âm đứng trước"
+              consonants={vowelsGroup.truoc.map(vowel => ({ ...vowel, type: 'vowel' as const }))}
+              type="vowel"
+            />
+            <ConsonantGroup
+              title="Nguyên âm đứng sau"
+              consonants={vowelsGroup.sau.map(vowel => ({ ...vowel, type: 'vowel' as const }))}
+              type="vowel"
+            />
+            <ConsonantGroup
+              title="Nguyên âm đứng trên"
+              consonants={vowelsGroup.tren.map(vowel => ({ ...vowel, type: 'vowel' as const }))}
+              type="vowel"
+            />
+            <ConsonantGroup
+              title="Nguyên âm đứng dưới"
+              consonants={vowelsGroup.duoi.map(vowel => ({ ...vowel, type: 'vowel' as const }))}
+              type="vowel"
+            />
+          </>
+        ) : (
+          <ConsonantGroup
+            title="Bảng nguyên âm Lào"
+            consonants={vowelsFull.map(vowel => ({ ...vowel, type: 'vowel' as const }))}
+            type="vowel"
+          />
+        )}
       </TabPanel>
 
       <TabPanel value={value} index={2}>
