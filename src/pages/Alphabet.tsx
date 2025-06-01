@@ -17,6 +17,7 @@ import {
   ToggleButtonGroup,
 } from '@mui/material';
 import { VolumeUp as VolumeUpIcon } from '@mui/icons-material';
+import FlashCard from '../components/FlashCard';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -247,8 +248,20 @@ const vowelsGroup = {
 
 const Alphabet: React.FC = () => {
   const [value, setValue] = useState(0);
-  const [groupMode, setGroupMode] = useState<'group' | 'all'>('group');
+  const [groupMode, setGroupMode] = useState<'group' | 'all' | 'flashcard'>('group');
   const [vowelMode, setVowelMode] = useState<'group' | 'all'>('group');
+  const [currentFlashCardIndex, setCurrentFlashCardIndex] = useState(0);
+  const [shuffledList, setShuffledList] = useState<typeof laoAlphabetOrder>([]);
+
+  // Hàm xáo trộn mảng
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const newArray = [...array];
+    for (let i = newArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+    }
+    return newArray;
+  };
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -256,9 +269,18 @@ const Alphabet: React.FC = () => {
 
   const handleToggleMode = (
     event: React.MouseEvent<HTMLElement>,
-    newMode: 'group' | 'all' | null
+    newMode: 'group' | 'all' | 'flashcard' | null
   ) => {
-    if (newMode) setGroupMode(newMode);
+    if (newMode) {
+      setGroupMode(newMode);
+      if (newMode === 'flashcard') {
+        const currentList = groupMode === 'group' 
+          ? [...consonants.high, ...consonants.mid, ...consonants.low]
+          : laoAlphabetOrder;
+        setShuffledList(shuffleArray(currentList));
+        setCurrentFlashCardIndex(0);
+      }
+    }
   };
 
   const handleToggleVowelMode = (
@@ -371,6 +393,16 @@ const Alphabet: React.FC = () => {
     },
   ];
 
+  const handleNextFlashCard = () => {
+    setShuffledList(shuffleArray(shuffledList));
+    setCurrentFlashCardIndex(0);
+  };
+
+  const handlePrevFlashCard = () => {
+    setShuffledList(shuffleArray(shuffledList));
+    setCurrentFlashCardIndex(0);
+  };
+
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -403,9 +435,43 @@ const Alphabet: React.FC = () => {
           >
             <ToggleButton value="group">Phân nhóm</ToggleButton>
             <ToggleButton value="all">Toàn bộ</ToggleButton>
+            <ToggleButton value="flashcard">Flash Card</ToggleButton>
           </ToggleButtonGroup>
         </Box>
-        {groupMode === 'group' ? (
+        {groupMode === 'flashcard' ? (
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center',
+            gap: 2
+          }}>
+            {shuffledList.length > 0 && (
+              <>
+                <FlashCard
+                  letter={shuffledList[currentFlashCardIndex].letter}
+                  pronunciationVi={shuffledList[currentFlashCardIndex].pronunciationVi}
+                  type="consonant"
+                />
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Button 
+                    variant="contained" 
+                    onClick={handlePrevFlashCard}
+                    sx={{ backgroundColor: '#2196f3' }}
+                  >
+                    Trước
+                  </Button>
+                  <Button 
+                    variant="contained" 
+                    onClick={handleNextFlashCard}
+                    sx={{ backgroundColor: '#2196f3' }}
+                  >
+                    Tiếp
+                  </Button>
+                </Box>
+              </>
+            )}
+          </Box>
+        ) : groupMode === 'group' ? (
           <>
             <ConsonantGroup 
               title="Phụ âm cao" 
