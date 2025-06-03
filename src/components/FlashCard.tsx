@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Card, CardContent, Typography, Box, IconButton, Button } from '@mui/material';
-import { VolumeUp as VolumeUpIcon, FlipCameraAndroid as FlipIcon } from '@mui/icons-material';
+import { Card, CardContent, Typography, IconButton } from '@mui/material';
+import { VolumeUp as VolumeUpIcon } from '@mui/icons-material';
 
 interface FlashCardProps {
   letter: string;
