@@ -7,6 +7,7 @@ import Alphabet from './pages/Alphabet';
 import Lessons from './pages/Lessons';
 import Practice from './pages/Practice';
 import Tests from './pages/Tests';
+import Game from './pages/Game';
 
 const App: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ const App: React.FC = () => {
           <Route path="/lessons" element={<Lessons />} />
           <Route path="/practice" element={<Practice />} />
           <Route path="/tests" element={<Tests />} />
+          <Route path="/game" element={<Game />} />
         </Routes>
       </Layout>
     </Box>

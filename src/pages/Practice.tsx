@@ -108,7 +108,7 @@ const Practice: React.FC = () => {
     width: window.innerWidth,
     height: window.innerHeight,
   });
-  const [questionTimer, setQuestionTimer] = useState(practiceConfig.questionTimeLimit);
+  const [questionTimer, setQuestionTimer] = useState<number | null>(practiceConfig.questionTimeLimit);
 
   const generateQuestions = useCallback(() => {
     const newQuestions: Question[] = [];
@@ -286,6 +286,10 @@ const Practice: React.FC = () => {
 
   useEffect(() => {
     if (showResults) return;
+    if (currentQuestionIndex === 0) {
+      setQuestionTimer(null); // Không đếm thời gian câu 1
+      return;
+    }
     setQuestionTimer(practiceConfig.questionTimeLimit);
     const timer = setInterval(() => {
       setQuestionTimer(prev => {
@@ -293,7 +297,7 @@ const Practice: React.FC = () => {
           handleNext();
           return practiceConfig.questionTimeLimit;
         }
-        return prev - 1;
+        return (prev ?? practiceConfig.questionTimeLimit) - 1;
       });
     }, 1000);
     return () => clearInterval(timer);
@@ -386,7 +390,9 @@ const Practice: React.FC = () => {
               fontWeight: 'bold'
             }}
           >
-            Thời gian: {questionTimer}s
+            {currentQuestionIndex === 0
+              ? 'Không giới hạn thời gian'
+              : `Thời gian: ${questionTimer}s`}
           </Typography>
           <Typography variant="h6" color="primary">
             Câu {currentQuestionIndex + 1}/{questions.length}

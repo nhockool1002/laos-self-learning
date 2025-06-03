@@ -20,6 +20,7 @@ import {
   Mic as MicIcon,
   Assignment as AssignmentIcon,
   Brightness4 as DarkModeIcon,
+  SportsEsports as SportsEsportsIcon,
 } from '@mui/icons-material';
 
 interface LayoutProps {
@@ -42,6 +43,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const menuItems = [
     { text: 'Trang chủ', icon: <HomeIcon />, path: '/' },
     { text: 'Bảng chữ cái', icon: <SchoolIcon />, path: '/alphabet' },
+    { text: 'Trò chơi', icon: <SportsEsportsIcon />, path: '/game' },
     { text: 'Bài học', icon: <BookIcon />, path: '/lessons' },
     { text: 'Luyện tập', icon: <MicIcon />, path: '/practice' },
     { text: 'Kiểm tra', icon: <AssignmentIcon />, path: '/tests' },
