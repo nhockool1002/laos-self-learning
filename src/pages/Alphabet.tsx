@@ -7,7 +7,6 @@ import {
   Grid,
   Card,
   CardContent,
-  IconButton,
   List,
   ListItem,
   ListItemText,
@@ -16,7 +15,6 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from '@mui/material';
-import { VolumeUp as VolumeUpIcon } from '@mui/icons-material';
 import FlashCard from '../components/FlashCard';
 
 interface TabPanelProps {
@@ -37,14 +35,15 @@ interface ConsonantGroupProps {
   type: 'consonant' | 'vowel' | 'tone';
 }
 
-const ConsonantCard: React.FC<ConsonantCardProps> = ({ letter, pronunciationVi, type }) => (
+const ConsonantCard: React.FC<ConsonantCardProps & { bgColor?: string; opacity?: number }> = ({ letter, pronunciationVi, type, bgColor, opacity }) => (
   <Card sx={{ 
     transition: 'transform 0.2s',
     '&:hover': {
       transform: 'scale(1.05)',
       boxShadow: 3
     },
-    backgroundColor: '#1a1a1a',
+    backgroundColor: bgColor || '#1a1a1a',
+    opacity: opacity ?? 1,
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
@@ -147,24 +146,23 @@ const getLetterColor = (type: 'consonant' | 'vowel' | 'tone') => {
 };
 
 const laoAlphabetOrder = [
-  // Thứ tự bảng chữ cái Lào (theo hình bạn gửi, có thể điều chỉnh lại nếu cần)
-  { letter: 'ກ', pronunciationVi: 'co' },
-  { letter: 'ຂ', pronunciationVi: 'khó' },
+  { letter: 'ກ', pronunciationVi: 'cò' },
+  { letter: 'ຂ', pronunciationVi: 'khỏ' },
   { letter: 'ຄ', pronunciationVi: 'kho' },
   { letter: 'ງ', pronunciationVi: 'ngo' },
   { letter: 'ຈ', pronunciationVi: 'cho' },
-  { letter: 'ສ', pronunciationVi: 'xó' },
+  { letter: 'ສ', pronunciationVi: 'xỏ' },
   { letter: 'ຊ', pronunciationVi: 'xo' },
   { letter: 'ຍ', pronunciationVi: 'nho' },
-  { letter: 'ດ', pronunciationVi: 'do' },
-  { letter: 'ຕ', pronunciationVi: 'to' },
-  { letter: 'ຖ', pronunciationVi: 'thó' },
+  { letter: 'ດ', pronunciationVi: 'đo' },
+  { letter: 'ຕ', pronunciationVi: 'tò' },
+  { letter: 'ຖ', pronunciationVi: 'thỏ' },
   { letter: 'ທ', pronunciationVi: 'tho' },
   { letter: 'ນ', pronunciationVi: 'no' },
   { letter: 'ບ', pronunciationVi: 'bo' },
   { letter: 'ປ', pronunciationVi: 'po' },
-  { letter: 'ຜ', pronunciationVi: 'phó' },
-  { letter: 'ຝ', pronunciationVi: 'fó' },
+  { letter: 'ຜ', pronunciationVi: 'phỏ' },
+  { letter: 'ຝ', pronunciationVi: 'fỏ' },
   { letter: 'ພ', pronunciationVi: 'pho' },
   { letter: 'ຟ', pronunciationVi: 'fo' },
   { letter: 'ມ', pronunciationVi: 'mo' },
@@ -173,7 +171,7 @@ const laoAlphabetOrder = [
   { letter: 'ລ', pronunciationVi: 'lo' },
   { letter: 'ວ', pronunciationVi: 'vo' },
   { letter: 'ອ', pronunciationVi: 'o' },
-  { letter: 'ຮ', pronunciationVi: 'hó' },
+  { letter: 'ຮ', pronunciationVi: 'hỏ' },
 ];
 
 const vowelsFull = [
@@ -246,12 +244,27 @@ const vowelsGroup = {
   ]
 };
 
+// Hàm xác định loại phụ âm theo bảng chuẩn
+const getConsonantLevel = (letter: string): 'high' | 'mid' | 'low' | undefined => {
+  if ([
+    'ຂ', 'ສ', 'ຖ', 'ຜ', 'ຝ', 'ຫ'
+  ].includes(letter)) return 'high';
+  if ([
+    'ກ', 'ຈ', 'ດ', 'ຕ', 'ບ', 'ປ', 'ຢ', 'ອ'
+  ].includes(letter)) return 'mid';
+  if ([
+    'ຄ', 'ງ', 'ຊ', 'ຍ', 'ທ', 'ນ', 'ພ', 'ຟ', 'ມ', 'ຣ', 'ລ', 'ວ', 'ຮ'
+  ].includes(letter)) return 'low';
+  return undefined;
+};
+
 const Alphabet: React.FC = () => {
   const [value, setValue] = useState(0);
   const [groupMode, setGroupMode] = useState<'group' | 'all' | 'flashcard'>('group');
   const [vowelMode, setVowelMode] = useState<'group' | 'all'>('group');
   const [currentFlashCardIndex, setCurrentFlashCardIndex] = useState(0);
   const [shuffledList, setShuffledList] = useState<typeof laoAlphabetOrder>([]);
+  const [consonantFilter, setConsonantFilter] = useState<'all' | 'high' | 'mid' | 'low'>('all');
 
   // Hàm xáo trộn mảng
   const shuffleArray = <T,>(array: T[]): T[] => {
@@ -292,18 +305,18 @@ const Alphabet: React.FC = () => {
 
   const consonants = {
     high: [
-      { letter: 'ຂ', pronunciationVi: 'khó' },
-      { letter: 'ສ', pronunciationVi: 'xó' },
-      { letter: 'ຖ', pronunciationVi: 'thó' },
-      { letter: 'ຜ', pronunciationVi: "phó" },
-      { letter: 'ຝ', pronunciationVi: 'fó' },
-      { letter: 'ຫ', pronunciationVi: 'hó' },
+      { letter: 'ຂ', pronunciationVi: 'khỏ' },
+      { letter: 'ສ', pronunciationVi: 'xỏ' },
+      { letter: 'ຖ', pronunciationVi: 'thỏ' },
+      { letter: 'ຜ', pronunciationVi: "phỏ" },
+      { letter: 'ຝ', pronunciationVi: 'fo' },
+      { letter: 'ຫ', pronunciationVi: 'hỏ' },
     ],
     mid: [
-      { letter: 'ກ', pronunciationVi: 'co' },
+      { letter: 'ກ', pronunciationVi: 'cò' },
       { letter: 'ຈ', pronunciationVi: 'cho' },
-      { letter: 'ດ', pronunciationVi: 'do' },
-      { letter: 'ຕ', pronunciationVi: 'to' },
+      { letter: 'ດ', pronunciationVi: 'đo' },
+      { letter: 'ຕ', pronunciationVi: 'tò' },
       { letter: 'ບ', pronunciationVi: 'bo' },
       { letter: 'ປ', pronunciationVi: 'po' },
       { letter: 'ຢ', pronunciationVi: 'yo' },
@@ -322,7 +335,7 @@ const Alphabet: React.FC = () => {
       { letter: 'ຣ', pronunciationVi: 'ro' },
       { letter: 'ລ', pronunciationVi: 'lo' },
       { letter: 'ວ', pronunciationVi: 'vo' },
-      { letter: 'ຮ', pronunciationVi: 'hó' },
+      { letter: 'ຮ', pronunciationVi: 'hỏ' },
     ]
   };
 
@@ -499,14 +512,56 @@ const Alphabet: React.FC = () => {
             />
           </>
         ) : (
-          <ConsonantGroup
-            title="Bảng chữ cái Lào"
-            consonants={laoAlphabetOrder.map(consonant => ({
-              ...consonant,
-              type: 'consonant' as const
-            }))}
-            type="consonant"
-          />
+          <>
+            <Box sx={{ mb: 2, display: 'flex', justifyContent: 'center', gap: 2 }}>
+              <Button
+                variant={consonantFilter === 'high' ? 'contained' : 'outlined'}
+                color="warning"
+                onClick={() => setConsonantFilter('high')}
+              >
+                Cao
+              </Button>
+              <Button
+                variant={consonantFilter === 'mid' ? 'contained' : 'outlined'}
+                color="primary"
+                onClick={() => setConsonantFilter('mid')}
+              >
+                Trung
+              </Button>
+              <Button
+                variant={consonantFilter === 'low' ? 'contained' : 'outlined'}
+                color="secondary"
+                onClick={() => setConsonantFilter('low')}
+              >
+                Thấp
+              </Button>
+              <Button
+                variant={consonantFilter === 'all' ? 'contained' : 'outlined'}
+                onClick={() => setConsonantFilter('all')}
+              >
+                Huỷ
+              </Button>
+            </Box>
+            <ConsonantGroup
+              title="Bảng chữ cái Lào"
+              consonants={laoAlphabetOrder.map(consonant => {
+                const level = getConsonantLevel(consonant.letter);
+                let bgColor = '#1a1a1a';
+                if (level === 'high') bgColor = '#FFF9C4';
+                if (level === 'mid') bgColor = '#BBDEFB';
+                if (level === 'low') bgColor = '#F8BBD0';
+                let opacity = 1;
+                if (consonantFilter !== 'all' && level !== consonantFilter) opacity = 0;
+                return {
+                  ...consonant,
+                  type: 'consonant' as const,
+                  bgColor,
+                  opacity
+                };
+              })}
+              type="consonant"
+            />
+          </>
         )}
       </TabPanel>
 
