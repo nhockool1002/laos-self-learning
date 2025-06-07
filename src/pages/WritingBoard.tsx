@@ -4,10 +4,6 @@ import {
   Paper,
   IconButton,
   Tooltip,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   Typography,
   Button,
   Stack,
@@ -22,8 +18,6 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   Divider,
-  Card,
-  CardContent,
   Switch,
   FormControlLabel,
   Popover,
@@ -31,11 +25,11 @@ import {
   ToggleButtonGroup,
   Slider,
   Menu,
+  MenuItem,
 } from '@mui/material';
 import {
   Delete as DeleteIcon,
   Save as SaveIcon,
-  Restore as RestoreIcon,
   Brush as BrushIcon,
   Edit as EditIcon,
   Create as CreateIcon,
@@ -43,14 +37,13 @@ import {
   TextFields as TextFieldsIcon,
   GridOn as GridOnIcon,
   Colorize as ColorizeIcon,
-  Palette as PaletteIcon,
   Undo as UndoIcon,
   Redo as RedoIcon,
   FormatColorFill as FillIcon,
   OpenWith as MoveIcon,
   SaveAlt as ExportIcon,
 } from '@mui/icons-material';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { practiceData, PracticeWord } from '../data/practiceData';
 import { HexColorPicker } from 'react-colorful';
 
@@ -146,14 +139,12 @@ const WritingBoard: React.FC = () => {
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
   const [showSavedDrawingsDialog, setShowSavedDrawingsDialog] = useState(false);
   const [savedDrawings, setSavedDrawings] = useState<SavedDrawing[]>([]);
-  const [showRandomWord, setShowRandomWord] = useState(false);
   const [currentWord, setCurrentWord] = useState<PracticeWord | null>(null);
   const [showGrid, setShowGrid] = useState(true);
   const [gridSize] = useState(40);
   const gridCanvasRef = useRef<HTMLCanvasElement>(null);
   const theme = useTheme();
   const navigate = useNavigate();
-  const location = useLocation();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [customColor, setCustomColor] = useState('#000000');
   const [eraserSize, setEraserSize] = useState(20);
@@ -163,7 +154,6 @@ const WritingBoard: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(-1);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
-  const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
   const [isMoving, setIsMoving] = useState(false);
   const [selectedArea, setSelectedArea] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
   const [moveStartPoint, setMoveStartPoint] = useState<{ x: number; y: number } | null>(null);
@@ -380,7 +370,6 @@ const WritingBoard: React.FC = () => {
       return;
     }
 
-    setStartPoint({ x: offsetX, y: offsetY });
     setIsDrawing(true);
 
     if (selectedTool.type === 'fill') {
@@ -396,7 +385,6 @@ const WritingBoard: React.FC = () => {
     if (!context) return;
     context.closePath();
     setIsDrawing(false);
-    setStartPoint(null);
     setIsMoving(false);
     setMoveStartPoint(null);
     saveCanvasState();
@@ -457,15 +445,6 @@ const WritingBoard: React.FC = () => {
       hour: '2-digit',
       minute: '2-digit',
     });
-  };
-
-  const handleNavigation = (path: string) => {
-    if (!isCanvasEmpty) {
-      setPendingNavigation(path);
-      setShowConfirmDialog(true);
-    } else {
-      navigate(path);
-    }
   };
 
   const handleConfirmNavigation = () => {
