@@ -11,6 +11,8 @@ import {
   ListItemText,
   Toolbar,
   Typography,
+  useTheme,
+  useMediaQuery,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -20,26 +22,26 @@ import {
   Mic as MicIcon,
   Assignment as AssignmentIcon,
   Brightness4 as DarkModeIcon,
+  Brightness7 as LightModeIcon,
   SportsEsports as SportsEsportsIcon,
+  Create as CreateIcon,
 } from '@mui/icons-material';
 import Footer from './Footer';
 
 interface LayoutProps {
   children: React.ReactNode;
+  onToggleColorMode: () => void;
+  mode: 'light' | 'dark';
 }
 
 const drawerWidth = 240;
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout: React.FC<LayoutProps> = ({ children, onToggleColorMode, mode }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-
-  const handleDarkModeToggle = () => {
-    setDarkMode(!darkMode);
-    // TODO: Implement dark mode theme switching
-  };
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const menuItems = [
     { text: 'Trang chủ', icon: <HomeIcon />, path: '/' },
@@ -48,6 +50,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { text: 'Bài học', icon: <BookIcon />, path: '/lessons' },
     { text: 'Luyện tập', icon: <MicIcon />, path: '/practice' },
     { text: 'Kiểm tra', icon: <AssignmentIcon />, path: '/tests' },
+    { text: 'Bảng viết', icon: <CreateIcon />, path: '/writing-board' },
   ];
 
   const handleDrawerToggle = () => {
@@ -56,7 +59,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const drawer = (
     <div>
-      <Toolbar />
+      <Toolbar>
+        <Typography variant="h6" noWrap component="div">
+          Tiếng Lào
+        </Typography>
+      </Toolbar>
       <List>
         {menuItems.map((item) => (
           <ListItem
@@ -64,7 +71,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             key={item.text}
             onClick={() => {
               navigate(item.path);
-              setMobileOpen(false);
+              if (isMobile) {
+                setMobileOpen(false);
+              }
             }}
             selected={location.pathname === item.path}
           >
@@ -103,10 +112,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-              Học Tiếng Lào
+              {menuItems.find((item) => item.path === location.pathname)?.text || 'Trang chủ'}
             </Typography>
-            <IconButton color="inherit" onClick={handleDarkModeToggle}>
-              <DarkModeIcon />
+            <IconButton color="inherit" onClick={onToggleColorMode}>
+              {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
             </IconButton>
           </Toolbar>
         </AppBar>

@@ -29,6 +29,7 @@ import {
 import { VolumeUp as VolumeUpIcon, EmojiEvents as EmojiEventsIcon } from '@mui/icons-material';
 import ReactConfetti from 'react-confetti';
 import practiceConfig from '../practiceConfig.json';
+import { practiceData } from '../data/practiceData';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -54,31 +55,6 @@ interface ScoreRecord {
   time: number;
   date: string;
 }
-
-const practiceData = {
-  consonants: [
-    { letter: 'ກ', pronunciationVi: 'cò' },
-    { letter: 'ຂ', pronunciationVi: 'khỏ' },
-    { letter: 'ຄ', pronunciationVi: 'kho' },
-    { letter: 'ງ', pronunciationVi: 'ngo' },
-    { letter: 'ຈ', pronunciationVi: 'cho' },
-    { letter: 'ສ', pronunciationVi: 'xỏ' },
-    { letter: 'ຊ', pronunciationVi: 'xo' },
-    { letter: 'ຍ', pronunciationVi: 'nho' },
-    { letter: 'ດ', pronunciationVi: 'đo' },
-    { letter: 'ຕ', pronunciationVi: 'tò' },
-    { letter: 'ຖ', pronunciationVi: 'thỏ' },
-    { letter: 'ທ', pronunciationVi: 'tho' },
-    { letter: 'ນ', pronunciationVi: 'no' },
-    { letter: 'ບ', pronunciationVi: 'bo' },
-    { letter: 'ປ', pronunciationVi: 'po' },
-    { letter: 'ຜ', pronunciationVi: 'phỏ' },
-    { letter: 'ຝ', pronunciationVi: 'fỏ' },
-    { letter: 'ພ', pronunciationVi: 'pho' },
-    { letter: 'ຟ', pronunciationVi: 'fo' },
-    { letter: 'ມ', pronunciationVi: 'mo' },
-  ]
-};
 
 const rainbowAnimation = keyframes`
   0% { color: #ff0000; }
