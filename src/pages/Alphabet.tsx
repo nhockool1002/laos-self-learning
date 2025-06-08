@@ -170,6 +170,7 @@ const laoAlphabetOrder = [
   { letter: 'ຣ', pronunciationVi: 'ro' },
   { letter: 'ລ', pronunciationVi: 'lo' },
   { letter: 'ວ', pronunciationVi: 'vo' },
+  { letter: 'ຫ', pronunciationVi: 'ho' },
   { letter: 'ອ', pronunciationVi: 'o' },
   { letter: 'ຮ', pronunciationVi: 'hỏ' },
 ];

@@ -43,7 +43,7 @@ import {
   OpenWith as MoveIcon,
   SaveAlt as ExportIcon,
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { practiceData, PracticeWord } from '../data/practiceData';
 import { HexColorPicker } from 'react-colorful';
 
@@ -145,6 +145,7 @@ const WritingBoard: React.FC = () => {
   const gridCanvasRef = useRef<HTMLCanvasElement>(null);
   const theme = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [customColor, setCustomColor] = useState('#000000');
   const [eraserSize, setEraserSize] = useState(20);
@@ -224,6 +225,11 @@ const WritingBoard: React.FC = () => {
       img.src = savedDrawing;
     }
 
+    // Vẽ grid ngay khi khởi tạo
+    if (showGrid) {
+      drawGrid(gridCtx, canvas.width, canvas.height);
+    }
+
     // Handle window resize
     const handleResize = () => {
       const savedImage = canvas.toDataURL();
@@ -234,11 +240,11 @@ const WritingBoard: React.FC = () => {
       const img = new Image();
       img.onload = () => {
         ctx.drawImage(img, 0, 0);
+        if (showGrid) {
+          drawGrid(gridCtx, canvas.width, canvas.height);
+        }
       };
       img.src = savedImage;
-      if (showGrid) {
-        drawGrid(gridCtx, canvas.width, canvas.height);
-      }
     };
 
     window.addEventListener('resize', handleResize);
@@ -450,15 +456,50 @@ const WritingBoard: React.FC = () => {
   const handleConfirmNavigation = () => {
     if (pendingNavigation) {
       navigate(pendingNavigation);
+      setShowConfirmDialog(false);
+      setPendingNavigation(null);
     }
-    setShowConfirmDialog(false);
-    setPendingNavigation(null);
   };
 
   const handleSaveAndNavigate = () => {
     setShowConfirmDialog(false);
     setShowSaveDialog(true);
   };
+
+  // Xử lý click vào các link trong menu
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a');
+      if (link && !link.getAttribute('href')?.startsWith('#')) {
+        const path = link.getAttribute('href');
+        if (path && !isCanvasEmpty) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (window.confirm('Bạn có muốn rời khỏi bảng vẽ không?')) {
+            navigate(path);
+          }
+        }
+      }
+    };
+
+    document.addEventListener('click', handleClick);
+    return () => document.removeEventListener('click', handleClick);
+  }, [isCanvasEmpty, navigate]);
+
+  // Xử lý chuyển trang trong ứng dụng
+  useEffect(() => {
+    const handleRouteChange = () => {
+      if (!isCanvasEmpty) {
+        if (!window.confirm('Bạn có muốn rời khỏi bảng vẽ không?')) {
+          window.history.pushState(null, '', location.pathname);
+        }
+      }
+    };
+
+    window.addEventListener('popstate', handleRouteChange);
+    return () => window.removeEventListener('popstate', handleRouteChange);
+  }, [isCanvasEmpty, location.pathname]);
 
   // Thêm event listener cho navigation
   useEffect(() => {
@@ -968,7 +1009,7 @@ const WritingBoard: React.FC = () => {
         <DialogActions>
           <Button onClick={() => setShowConfirmDialog(false)}>Hủy</Button>
           <Button onClick={handleConfirmNavigation} color="primary">
-            Rời đi
+            Rời đi không cần lưu
           </Button>
           <Button onClick={handleSaveAndNavigate} color="secondary">
             Lưu và rời đi
