@@ -1,4 +1,5 @@
 import { SHEET_CONFIG } from '../config/sheetConfig';
+import bcrypt from 'bcryptjs';
 
 interface ScoreRecord {
   username: string;
@@ -7,10 +8,18 @@ interface ScoreRecord {
   date: string;
 }
 
+interface UserRegistration {
+  username: string;
+  email: string;
+  password: string;
+  createdAt: string;
+}
+
 class SheetService {
   private readonly CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
   private readonly SPREADSHEET_ID = SHEET_CONFIG.SPREADSHEET_ID;
   private readonly SHEET_NAME = SHEET_CONFIG.SHEETS.LEADERBOARD.TITLE;
+  private readonly USERS_SHEET = SHEET_CONFIG.SHEETS.USERS.TITLE;
   private accessToken: string | null = null;
 
   constructor() {
@@ -55,12 +64,12 @@ class SheetService {
     }
   }
 
-  private async fetchSheet(range: string) {
+  private async fetchSheet(range: string, sheetName: string = this.SHEET_NAME) {
     try {
       console.log('Fetching sheet with range:', range);
       const accessToken = await this.getAccessToken();
       
-      const url = `https://sheets.googleapis.com/v4/spreadsheets/${this.SPREADSHEET_ID}/values/${this.SHEET_NAME}!${range}`;
+      const url = `https://sheets.googleapis.com/v4/spreadsheets/${this.SPREADSHEET_ID}/values/${sheetName}!${range}`;
       console.log('Request URL:', url);
 
       const response = await fetch(url, {
@@ -81,11 +90,11 @@ class SheetService {
     }
   }
 
-  private async appendToSheet(values: any[][]) {
+  private async appendToSheet(values: any[][], sheetName: string = this.SHEET_NAME) {
     try {
       const accessToken = await this.getAccessToken();
       const response = await fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${this.SPREADSHEET_ID}/values/${this.SHEET_NAME}!A:C:append?valueInputOption=USER_ENTERED`,
+        `https://sheets.googleapis.com/v4/spreadsheets/${this.SPREADSHEET_ID}/values/${sheetName}!A:E:append?valueInputOption=USER_ENTERED`,
         {
           method: 'POST',
           headers: {
@@ -121,6 +130,57 @@ class SheetService {
     }
   }
 
+  private async ensureUsersSheetExists() {
+    try {
+      const data = await this.fetchSheet('A1:D1', this.USERS_SHEET);
+      if (!data.values || data.values.length === 0) {
+        await this.appendToSheet([
+          ['username', 'email', 'password', 'createdAt']
+        ], this.USERS_SHEET);
+      }
+    } catch (error) {
+      console.error('Error ensuring users sheet exists:', error);
+      throw error;
+    }
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, salt);
+  }
+
+  private async comparePasswords(plainPassword: string, hashedPassword: string): Promise<boolean> {
+    return bcrypt.compare(plainPassword, hashedPassword);
+  }
+
+  private async updateSheetValues(range: string, values: any[][], sheetName: string = this.SHEET_NAME) {
+    try {
+      const accessToken = await this.getAccessToken();
+      const response = await fetch(
+        `https://sheets.googleapis.com/v4/spreadsheets/${this.SPREADSHEET_ID}/values/${sheetName}!${range}?valueInputOption=USER_ENTERED`,
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            values,
+          }),
+        }
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Sheet API Error:', errorData);
+        throw new Error(`Failed to update sheet data: ${JSON.stringify(errorData)}`);
+      }
+      return response.json();
+    } catch (error) {
+      console.error('Error in updateSheetValues:', error);
+      throw error;
+    }
+  }
+
   async getLeaderboard(): Promise<ScoreRecord[]> {
     try {
       await this.ensureSheetExists();
@@ -128,7 +188,7 @@ class SheetService {
       const records: ScoreRecord[] = data.values
         .slice(1)
         .map((row: any[]) => ({
-          username: row[0] || 'AAA',
+          username: row[0],
           score: Number(row[1]),
           time: Number(row[2]),
           date: row[3],
@@ -144,10 +204,120 @@ class SheetService {
   async addScore(record: ScoreRecord): Promise<void> {
     try {
       await this.ensureSheetExists();
-      await this.appendToSheet([['AAA', record.score, record.time, record.date]]);
-      console.log('Score added successfully:', record);
+      const data = await this.fetchSheet('A:D');
+      const existingUserIndex = data.values?.findIndex((row: any[]) => row[0] === record.username) ?? -1;
+
+      if (existingUserIndex > 0) {
+        // Nếu người dùng đã tồn tại, cập nhật kết quả
+        const existingScore = Number(data.values[existingUserIndex][1]);
+        const existingTime = Number(data.values[existingUserIndex][2]);
+
+        if (record.score > existingScore || (record.score === existingScore && record.time < existingTime)) {
+          // Cập nhật kết quả nếu điểm cao hơn hoặc thời gian thấp hơn
+          const range = `A${existingUserIndex + 1}:D${existingUserIndex + 1}`;
+          await this.updateSheetValues(range, [[
+            record.username,
+            record.score,
+            record.time,
+            record.date
+          ]]);
+        }
+      } else {
+        // Nếu người dùng chưa tồn tại, thêm mới
+        await this.appendToSheet([[
+          record.username,
+          record.score,
+          record.time,
+          record.date
+        ]]);
+      }
+      console.log('Score processed successfully:', record);
     } catch (error) {
-      console.error('Error adding score:', error);
+      console.error('Error processing score:', error);
+      throw error;
+    }
+  }
+
+  async registerUser(userData: UserRegistration): Promise<boolean> {
+    try {
+      await this.ensureUsersSheetExists();
+      // Kiểm tra xem username đã tồn tại chưa
+      const existingUsers = await this.fetchSheet('A:A', this.USERS_SHEET);
+      const isUsernameExists = existingUsers.values?.some((row: any[]) => row[0] === userData.username);
+      if (isUsernameExists) {
+        throw new Error('Username đã tồn tại');
+      }
+      // Mã hóa mật khẩu
+      const hashedPassword = await this.hashPassword(userData.password);
+      // Thêm user mới vào sheet
+      await this.appendToSheet([
+        [
+          userData.username,
+          userData.email,
+          hashedPassword,
+          userData.createdAt
+        ]
+      ], this.USERS_SHEET);
+      return true;
+    } catch (error) {
+      console.error('Error registering user:', error);
+      throw error;
+    }
+  }
+
+  async getUserByUsername(username: string): Promise<UserRegistration | null> {
+    try {
+      const data = await this.fetchSheet('A:D', this.USERS_SHEET);
+      const user = data.values?.find((row: any[]) => row[0] === username);
+      if (!user) {
+        return null;
+      }
+      return {
+        username: user[0],
+        email: user[1],
+        password: user[2],
+        createdAt: user[3]
+      };
+    } catch (error) {
+      console.error('Error fetching user:', error);
+      throw error;
+    }
+  }
+
+  async checkUserExists(username: string, email: string): Promise<boolean> {
+    try {
+      const data = await this.fetchSheet('A:B', this.USERS_SHEET);
+      return data.values?.some((row: any[]) => 
+        row[0] === username || row[1] === email
+      ) ?? false;
+    } catch (error) {
+      console.error('Error checking user existence:', error);
+      throw error;
+    }
+  }
+
+  async loginUser(usernameOrEmail: string, password: string): Promise<UserRegistration | null> {
+    try {
+      const data = await this.fetchSheet('A:D', this.USERS_SHEET);
+      const user = data.values?.find((row: any[]) =>
+        row[0] === usernameOrEmail || row[1] === usernameOrEmail
+      );
+      if (!user) {
+        return null;
+      }
+      // Kiểm tra mật khẩu
+      const isPasswordValid = await this.comparePasswords(password, user[2]);
+      if (!isPasswordValid) {
+        return null;
+      }
+      return {
+        username: user[0],
+        email: user[1],
+        password: user[2],
+        createdAt: user[3]
+      };
+    } catch (error) {
+      console.error('Error logging in user:', error);
       throw error;
     }
   }

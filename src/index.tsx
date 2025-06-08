@@ -6,6 +6,37 @@ import CssBaseline from '@mui/material/CssBaseline';
 import App from './App';
 import './i18n';
 
+// Ẩn cảnh báo ResizeObserver loop completed with undelivered notifications
+window.addEventListener('error', (err) => {
+  if (
+    err.message &&
+    err.message.includes('ResizeObserver loop completed with undelivered notifications')
+  ) {
+    err.preventDefault && err.preventDefault();
+    return false;
+  }
+  console.error(err);
+});
+
+window.onerror = function (message) {
+  if (
+    typeof message === 'string' &&
+    message.includes('ResizeObserver loop completed with undelivered notifications')
+  ) {
+    return true;
+  }
+};
+
+window.addEventListener('unhandledrejection', (event) => {
+  if (
+    event.reason &&
+    event.reason.message &&
+    event.reason.message.includes('ResizeObserver loop completed with undelivered notifications')
+  ) {
+    event.preventDefault();
+  }
+});
+
 const darkTheme = createTheme({
   palette: {
     mode: 'dark',

@@ -11,6 +11,7 @@ import Tests from './pages/Tests';
 import Game from './pages/Game';
 import WritingBoard from './pages/WritingBoard';
 import PaperPractice from './pages/PaperPractice';
+import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
   const [mode, setMode] = useState<'light' | 'dark'>(() => {
@@ -29,21 +30,23 @@ function App() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Layout onToggleColorMode={toggleColorMode} mode={mode}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/lessons" element={<Lessons />} />
-          <Route path="/alphabet" element={<Alphabet />} />
-          <Route path="/practice" element={<Practice />} />
-          <Route path="/tests" element={<Tests />} />
-          <Route path="/game" element={<Game />} />
-          <Route path="/writing-board" element={<WritingBoard />} />
-          <Route path="/paper-practice" element={<PaperPractice />} />
-        </Routes>
-      </Layout>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Layout onToggleColorMode={toggleColorMode} mode={mode}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/lessons" element={<Lessons />} />
+            <Route path="/alphabet" element={<Alphabet />} />
+            <Route path="/practice" element={<Practice />} />
+            <Route path="/tests" element={<Tests />} />
+            <Route path="/game" element={<Game />} />
+            <Route path="/writing-board" element={<WritingBoard />} />
+            <Route path="/paper-practice" element={<PaperPractice />} />
+          </Routes>
+        </Layout>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 

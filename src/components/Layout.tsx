@@ -28,6 +28,7 @@ import {
   Draw as DrawIcon,
 } from '@mui/icons-material';
 import Footer from './Footer';
+import { LoginButton } from './LoginButton';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -116,6 +117,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onToggleColorMode, mode }) =>
             <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
               {menuItems.find((item) => item.path === location.pathname)?.text || 'Trang chủ'}
             </Typography>
+            <LoginButton />
             <IconButton color="inherit" onClick={onToggleColorMode}>
               {mode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
             </IconButton>

@@ -31,6 +31,7 @@ import ReactConfetti from 'react-confetti';
 import practiceConfig from '../practiceConfig.json';
 import { practiceData } from '../data/practiceData';
 import { sheetService } from '../services/sheetService';
+import { useAuth } from '../contexts/AuthContext';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -69,6 +70,7 @@ const rainbowAnimation = keyframes`
 `;
 
 const Practice: React.FC = () => {
+  const { currentUser } = useAuth();
   const [value, setValue] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [userAnswer, setUserAnswer] = useState('');
@@ -176,23 +178,45 @@ const Practice: React.FC = () => {
       setUserAnswer('');
     } else {
       const finalTime = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
-      const newScore = {
-        username: 'AAA',
-        score,
-        time: finalTime,
-        date: new Date().toLocaleDateString()
-      };
+      
+      if (currentUser) {
+        const newScore = {
+          username: currentUser.username,
+          score,
+          time: finalTime,
+          date: new Date().toLocaleDateString()
+        };
 
-      try {
-        await sheetService.addScore(newScore);
-        const updatedLeaderboard = await sheetService.getLeaderboard();
-        setLeaderboard(updatedLeaderboard);
-      } catch (error) {
-        console.error('Error saving score:', error);
+        try {
+          const currentLeaderboard = await sheetService.getLeaderboard();
+          
+          const existingUserScore = currentLeaderboard.find(record => record.username === currentUser.username);
+          
+          let shouldUpdate = false;
+          
+          if (!existingUserScore) {
+            shouldUpdate = true;
+          } else {
+            if (score > existingUserScore.score) {
+              shouldUpdate = true;
+            } else if (score === existingUserScore.score && finalTime < existingUserScore.time) {
+              shouldUpdate = true;
+            }
+          }
+          
+          if (shouldUpdate) {
+            await sheetService.addScore(newScore);
+            const updatedLeaderboard = await sheetService.getLeaderboard();
+            setLeaderboard(updatedLeaderboard);
+          }
+        } catch (error) {
+          console.error('Error saving score:', error);
+        }
       }
+      
       setShowResults(true);
     }
-  }, [currentQuestionIndex, questions, score, startTime]);
+  }, [currentQuestionIndex, questions, score, startTime, currentUser]);
 
   const handleRestart = useCallback(() => {
     const newQuestions = generateQuestions();
@@ -427,6 +451,11 @@ const Practice: React.FC = () => {
             <Typography variant="h6" sx={{ mb: 2, color: '#fff', textAlign: 'center' }}>
               Thời gian: {formatTime(elapsedTime)}
             </Typography>
+            {!currentUser && (
+              <Typography variant="body1" sx={{ mb: 2, color: '#aaa', textAlign: 'center' }}>
+                Đăng nhập để lưu kết quả và xem bảng xếp hạng
+              </Typography>
+            )}
             {wrongAnswers.length > 0 && (
               <>
                 <Typography variant="h6" sx={{ mb: 2, color: '#fff' }}>
@@ -469,14 +498,16 @@ const Practice: React.FC = () => {
           >
             Làm lại
           </Button>
-          <Button
-            variant="contained"
-            onClick={() => setShowLeaderboard(true)}
-            startIcon={<EmojiEventsIcon />}
-            sx={{ backgroundColor: '#ffd700' }}
-          >
-            Bảng xếp hạng
-          </Button>
+          {currentUser && (
+            <Button
+              variant="contained"
+              onClick={() => setShowLeaderboard(true)}
+              startIcon={<EmojiEventsIcon />}
+              sx={{ backgroundColor: '#ffd700' }}
+            >
+              Bảng xếp hạng
+            </Button>
+          )}
         </Box>
       </Box>
     );
@@ -493,20 +524,22 @@ const Practice: React.FC = () => {
 
       <TabPanel value={value} index={0}>
         <Box sx={{ position: 'relative' }}>
-          <IconButton
-            onClick={() => setShowLeaderboard(true)}
-            sx={{
-              position: 'absolute',
-              top: 0,
-              right: 0,
-              color: '#ffd700',
-              '&:hover': {
-                backgroundColor: 'rgba(255, 215, 0, 0.1)'
-              }
-            }}
-          >
-            <EmojiEventsIcon />
-          </IconButton>
+          {currentUser && (
+            <IconButton
+              onClick={() => setShowLeaderboard(true)}
+              sx={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                color: '#ffd700',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 215, 0, 0.1)'
+                }
+              }}
+            >
+              <EmojiEventsIcon />
+            </IconButton>
+          )}
 
           {showResults ? renderResults() : renderQuestion()}
         </Box>
@@ -528,7 +561,7 @@ const Practice: React.FC = () => {
         }}
       >
         <Box sx={{
-          width: 400,
+          width: 500,
           bgcolor: '#1a1a1a',
           borderRadius: 2,
           p: 3,
@@ -543,6 +576,7 @@ const Practice: React.FC = () => {
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ color: '#fff' }}>Hạng</TableCell>
+                  <TableCell sx={{ color: '#fff' }}>Tên người dùng</TableCell>
                   <TableCell sx={{ color: '#fff' }}>Điểm</TableCell>
                   <TableCell sx={{ color: '#fff' }}>Thời gian</TableCell>
                   <TableCell sx={{ color: '#fff' }}>Ngày</TableCell>
@@ -552,6 +586,7 @@ const Practice: React.FC = () => {
                 {leaderboard.map((record, index) => (
                   <TableRow key={index}>
                     <TableCell sx={{ color: '#fff' }}>{index + 1}</TableCell>
+                    <TableCell sx={{ color: '#fff' }}>{record.username}</TableCell>
                     <TableCell sx={{ color: '#fff' }}>{record.score}/25</TableCell>
                     <TableCell sx={{ color: '#fff' }}>{formatTime(record.time)}</TableCell>
                     <TableCell sx={{ color: '#fff' }}>{record.date}</TableCell>
