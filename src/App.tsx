@@ -10,6 +10,7 @@ import Practice from './pages/Practice';
 import Tests from './pages/Tests';
 import Game from './pages/Game';
 import WritingBoard from './pages/WritingBoard';
+import PaperPractice from './pages/PaperPractice';
 
 function App() {
   const [mode, setMode] = useState<'light' | 'dark'>(() => {
@@ -39,6 +40,7 @@ function App() {
           <Route path="/tests" element={<Tests />} />
           <Route path="/game" element={<Game />} />
           <Route path="/writing-board" element={<WritingBoard />} />
+          <Route path="/paper-practice" element={<PaperPractice />} />
         </Routes>
       </Layout>
     </ThemeProvider>

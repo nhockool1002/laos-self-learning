@@ -24,7 +24,8 @@ import {
   Brightness4 as DarkModeIcon,
   Brightness7 as LightModeIcon,
   SportsEsports as SportsEsportsIcon,
-  Create as CreateIcon,
+  Edit as EditIcon,
+  Draw as DrawIcon,
 } from '@mui/icons-material';
 import Footer from './Footer';
 
@@ -50,7 +51,8 @@ const Layout: React.FC<LayoutProps> = ({ children, onToggleColorMode, mode }) =>
     { text: 'Bài học', icon: <BookIcon />, path: '/lessons' },
     { text: 'Luyện tập', icon: <MicIcon />, path: '/practice' },
     { text: 'Kiểm tra', icon: <AssignmentIcon />, path: '/tests' },
-    { text: 'Bảng viết', icon: <CreateIcon />, path: '/writing-board' },
+    { text: 'Bảng viết', icon: <DrawIcon />, path: '/writing-board' },
+    { text: 'Luyện viết', icon: <EditIcon />, path: '/paper-practice' },
   ];
 
   const handleDrawerToggle = () => {

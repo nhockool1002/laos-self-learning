@@ -7,6 +7,8 @@ import {
   Mic as MicIcon,
   Assignment as AssignmentIcon,
   Games as GamesIcon,
+  Draw as DrawIcon,
+  Edit as EditIcon,
 } from '@mui/icons-material';
 
 const Home: React.FC = () => {
@@ -43,6 +45,18 @@ const Home: React.FC = () => {
       icon: <GamesIcon sx={{ fontSize: 40 }} />,
       path: '/game',
     },
+    {
+      title: 'Bảng viết',
+      description: 'Luyện viết chữ Lào trên bảng viết điện tử',
+      icon: <DrawIcon sx={{ fontSize: 40 }} />,
+      path: '/writing-board',
+    },
+    {
+      title: 'Luyện viết',
+      description: 'Luyện viết chữ Lào trên giấy với các bài tập',
+      icon: <EditIcon sx={{ fontSize: 40 }} />,
+      path: '/paper-practice',
+    },
   ];
 
   return (
@@ -71,7 +85,7 @@ const Home: React.FC = () => {
 
       <Grid container spacing={4} sx={{ mt: 4 }}>
         {features.map((feature) => (
-          <Grid item key={feature.title} xs={12} sm={6} md={3}>
+          <Grid item key={feature.title} xs={12} sm={6} md={4}>
             <Card
               sx={{
                 height: '100%',
@@ -82,7 +96,9 @@ const Home: React.FC = () => {
                          feature.title === 'Bài học' ? '#E8F5E9' :
                          feature.title === 'Luyện tập' ? '#FFF3E0' :
                          feature.title === 'Kiểm tra' ? '#FCE4EC' :
-                         '#F3E5F5',
+                         feature.title === 'Trò chơi' ? '#F3E5F5' :
+                         feature.title === 'Bảng viết' ? '#E0F7FA' :
+                         '#F1F8E9',
                 '&:hover': {
                   transform: 'scale(1.02)',
                   transition: 'transform 0.2s ease-in-out',
@@ -96,7 +112,9 @@ const Home: React.FC = () => {
                                         feature.title === 'Bài học' ? '#2E7D32' :
                                         feature.title === 'Luyện tập' ? '#ED6C02' :
                                         feature.title === 'Kiểm tra' ? '#C2185B' :
-                                        '#7B1FA2' }}>{feature.icon}</Box>
+                                        feature.title === 'Trò chơi' ? '#7B1FA2' :
+                                        feature.title === 'Bảng viết' ? '#0097A7' :
+                                        '#689F38' }}>{feature.icon}</Box>
                 <Typography 
                   gutterBottom 
                   variant="h5" 
@@ -106,7 +124,9 @@ const Home: React.FC = () => {
                            feature.title === 'Bài học' ? '#1B5E20' :
                            feature.title === 'Luyện tập' ? '#E65100' :
                            feature.title === 'Kiểm tra' ? '#AD1457' :
-                           '#6A1B9A',
+                           feature.title === 'Trò chơi' ? '#6A1B9A' :
+                           feature.title === 'Bảng viết' ? '#006064' :
+                           '#33691E',
                     fontWeight: 'bold'
                   }}
                 >
@@ -118,7 +138,9 @@ const Home: React.FC = () => {
                            feature.title === 'Bài học' ? '#1B5E20' :
                            feature.title === 'Luyện tập' ? '#BF360C' :
                            feature.title === 'Kiểm tra' ? '#880E4F' :
-                           '#4A148C',
+                           feature.title === 'Trò chơi' ? '#4A148C' :
+                           feature.title === 'Bảng viết' ? '#004D40' :
+                           '#1B5E20',
                     opacity: 0.8
                   }}
                 >
