@@ -52,6 +52,7 @@ interface AnswerResult {
 }
 
 interface ScoreRecord {
+  username: string;
   score: number;
   time: number;
   date: string;
@@ -175,7 +176,8 @@ const Practice: React.FC = () => {
       setUserAnswer('');
     } else {
       const finalTime = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
-      const newScore: ScoreRecord = {
+      const newScore = {
+        username: 'AAA',
         score,
         time: finalTime,
         date: new Date().toLocaleDateString()

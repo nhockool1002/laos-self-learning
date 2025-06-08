@@ -1,6 +1,7 @@
 import { SHEET_CONFIG } from '../config/sheetConfig';
 
 interface ScoreRecord {
+  username: string;
   score: number;
   time: number;
   date: string;
@@ -9,7 +10,7 @@ interface ScoreRecord {
 class SheetService {
   private readonly CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
   private readonly SPREADSHEET_ID = SHEET_CONFIG.SPREADSHEET_ID;
-  private readonly SHEET_NAME = SHEET_CONFIG.SHEET_TITLE;
+  private readonly SHEET_NAME = SHEET_CONFIG.SHEETS.LEADERBOARD.TITLE;
   private accessToken: string | null = null;
 
   constructor() {
@@ -123,13 +124,14 @@ class SheetService {
   async getLeaderboard(): Promise<ScoreRecord[]> {
     try {
       await this.ensureSheetExists();
-      const data = await this.fetchSheet('A:C');
+      const data = await this.fetchSheet('A:D');
       const records: ScoreRecord[] = data.values
         .slice(1)
         .map((row: any[]) => ({
-          score: Number(row[0]),
-          time: Number(row[1]),
-          date: row[2],
+          username: row[0] || 'AAA',
+          score: Number(row[1]),
+          time: Number(row[2]),
+          date: row[3],
         }))
         .sort((a: ScoreRecord, b: ScoreRecord) => b.score - a.score || a.time - b.time);
       return records;
@@ -142,7 +144,7 @@ class SheetService {
   async addScore(record: ScoreRecord): Promise<void> {
     try {
       await this.ensureSheetExists();
-      await this.appendToSheet([[record.score, record.time, record.date]]);
+      await this.appendToSheet([['AAA', record.score, record.time, record.date]]);
       console.log('Score added successfully:', record);
     } catch (error) {
       console.error('Error adding score:', error);
