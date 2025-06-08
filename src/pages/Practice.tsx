@@ -30,6 +30,7 @@ import { VolumeUp as VolumeUpIcon, EmojiEvents as EmojiEventsIcon } from '@mui/i
 import ReactConfetti from 'react-confetti';
 import practiceConfig from '../practiceConfig.json';
 import { practiceData } from '../data/practiceData';
+import { sheetService } from '../services/sheetService';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -86,27 +87,37 @@ const Practice: React.FC = () => {
   });
   const [questionTimer, setQuestionTimer] = useState<number | null>(practiceConfig.questionTimeLimit);
 
+  const formatTime = useCallback((seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  }, []);
+
+  const playSound = useCallback((text: string) => {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'th-TH';
+    utterance.rate = 0.7;
+    utterance.pitch = 1.1;
+    window.speechSynthesis.speak(utterance);
+  }, []);
+
   const generateQuestions = useCallback(() => {
     const newQuestions: Question[] = [];
     const consonants = practiceData.consonants;
     const usedKeys = new Set<string>();
 
-    // Helper để lấy 7 đáp án sai ngẫu nhiên, không trùng đáp án đúng
     function getOptions(correct: string, isLetter: boolean) {
       const pool = consonants
         .filter(c => (isLetter ? c.letter : c.pronunciationVi) !== correct)
         .map(c => isLetter ? c.letter : c.pronunciationVi);
-      // Loại bỏ trùng lặp
       const uniquePool = Array.from(new Set(pool));
       const wrongOptions = uniquePool.sort(() => Math.random() - 0.5).slice(0, practiceConfig.numOptions - 1);
-      // Chèn đáp án đúng vào vị trí ngẫu nhiên
       const insertIdx = Math.floor(Math.random() * practiceConfig.numOptions);
       const options = [...wrongOptions];
       options.splice(insertIdx, 0, correct);
       return options;
     }
 
-    // Tạo câu hỏi nhìn phiên âm chọn chữ Lào
     consonants.forEach(consonant => {
       const options = getOptions(consonant.letter, true);
       const key = `pronunciation-to-letter-${consonant.pronunciationVi}`;
@@ -121,7 +132,6 @@ const Practice: React.FC = () => {
       }
     });
 
-    // Tạo câu hỏi nhìn chữ Lào đoán phiên âm
     consonants.forEach(consonant => {
       const options = getOptions(consonant.pronunciationVi, false);
       const key = `letter-to-pronunciation-${consonant.letter}`;
@@ -136,22 +146,7 @@ const Practice: React.FC = () => {
       }
     });
 
-    // Xáo trộn và lấy 25 câu không lặp lại
     return newQuestions.sort(() => Math.random() - 0.5).slice(0, 25);
-  }, []);
-
-  const formatTime = useCallback((seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-  }, []);
-
-  const playSound = useCallback((text: string) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'th-TH';
-    utterance.rate = 0.7;
-    utterance.pitch = 1.1;
-    window.speechSynthesis.speak(utterance);
   }, []);
 
   const handleAnswer = useCallback((answer: string) => {
@@ -172,7 +167,7 @@ const Practice: React.FC = () => {
     }
   }, [currentQuestion, currentQuestionIndex, startTime]);
 
-  const handleNext = useCallback(() => {
+  const handleNext = useCallback(async () => {
     if (currentQuestionIndex < questions.length - 1) {
       const nextIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextIndex);
@@ -186,13 +181,13 @@ const Practice: React.FC = () => {
         date: new Date().toLocaleDateString()
       };
 
-      setLeaderboard(prev => {
-        const updated = [...prev, newScore]
-          .sort((a, b) => b.score - a.score || a.time - b.time)
-          .slice(0, 10);
-        localStorage.setItem('consonantLeaderboard', JSON.stringify(updated));
-        return updated;
-      });
+      try {
+        await sheetService.addScore(newScore);
+        const updatedLeaderboard = await sheetService.getLeaderboard();
+        setLeaderboard(updatedLeaderboard);
+      } catch (error) {
+        console.error('Error saving score:', error);
+      }
       setShowResults(true);
     }
   }, [currentQuestionIndex, questions, score, startTime]);
@@ -217,12 +212,53 @@ const Practice: React.FC = () => {
     }, 5000);
   }, []);
 
+  // Load leaderboard data
   useEffect(() => {
-    const newQuestions = generateQuestions();
-    setQuestions(newQuestions);
-    setCurrentQuestion(newQuestions[0]);
-  }, [value, generateQuestions]);
+    const loadLeaderboard = async () => {
+      try {
+        const records = await sheetService.getLeaderboard();
+        setLeaderboard(records);
+      } catch (error) {
+        console.error('Error loading leaderboard:', error);
+      }
+    };
+    loadLeaderboard();
+  }, []); // Chỉ load một lần khi component mount
 
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Handle question timer
+  useEffect(() => {
+    if (showResults) return;
+    if (currentQuestionIndex === 0) {
+      setQuestionTimer(null);
+      return;
+    }
+    setQuestionTimer(practiceConfig.questionTimeLimit);
+    const timer = setInterval(() => {
+      setQuestionTimer(prev => {
+        if (prev === 1) {
+          handleNext();
+          return practiceConfig.questionTimeLimit;
+        }
+        return (prev ?? practiceConfig.questionTimeLimit) - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [currentQuestionIndex, showResults, handleNext]);
+
+  // Handle elapsed time
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (startTime && !showResults) {
@@ -237,48 +273,12 @@ const Practice: React.FC = () => {
     };
   }, [startTime, showResults]);
 
+  // Generate questions
   useEffect(() => {
-    try {
-      const savedLeaderboard = localStorage.getItem('consonantLeaderboard');
-      if (savedLeaderboard) {
-        setLeaderboard(JSON.parse(savedLeaderboard));
-      }
-    } catch (error) {
-      console.error('Error loading leaderboard:', error);
-    }
-  }, []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowSize({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      });
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (showResults) return;
-    if (currentQuestionIndex === 0) {
-      setQuestionTimer(null); // Không đếm thời gian câu 1
-      return;
-    }
-    setQuestionTimer(practiceConfig.questionTimeLimit);
-    const timer = setInterval(() => {
-      setQuestionTimer(prev => {
-        if (prev === 1) {
-          handleNext();
-          return practiceConfig.questionTimeLimit;
-        }
-        return (prev ?? practiceConfig.questionTimeLimit) - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  // eslint-disable-next-line
-  }, [currentQuestionIndex, showResults]);
+    const newQuestions = generateQuestions();
+    setQuestions(newQuestions);
+    setCurrentQuestion(newQuestions[0]);
+  }, [value, generateQuestions]);
 
   const renderQuestion = () => {
     if (!currentQuestion) return null;
