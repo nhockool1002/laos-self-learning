@@ -47,15 +47,20 @@ const ConsonantCard: React.FC<ConsonantCardProps & { bgColor?: string; opacity?:
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
-    maxWidth: '160px',
-    margin: '0 auto'
+    width: '100%',
+    maxWidth: '100%',
+    minWidth: 0,
+    margin: 0,
+    minHeight: { xs: 70, sm: 120 },
+    boxShadow: { xs: 1, sm: 3 },
+    borderRadius: { xs: 1, sm: 3 },
   }}>
     <CardContent sx={{ 
       height: '100%',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'space-between',
-      p: 1.5
+      p: { xs: 0.5, sm: 1.5 }
     }}>
       <Box>
         <Typography 
@@ -66,11 +71,13 @@ const ConsonantCard: React.FC<ConsonantCardProps & { bgColor?: string; opacity?:
             color: getLetterColor(type),
             fontWeight: 'bold',
             textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
-            minHeight: '60px',
+            minHeight: { xs: 24, sm: 60 },
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '2.5rem'
+            fontSize: { xs: '1.2rem', sm: '2.5rem' },
+            width: '100%',
+            minWidth: 0
           }}
         >
           {letter}
@@ -78,7 +85,9 @@ const ConsonantCard: React.FC<ConsonantCardProps & { bgColor?: string; opacity?:
         <Box sx={{ 
           display: 'flex', 
           alignItems: 'center', 
-          justifyContent: 'center'
+          justifyContent: 'center',
+          width: '100%',
+          minWidth: 0
         }}>
           <Typography 
             variant="subtitle1" 
@@ -87,12 +96,14 @@ const ConsonantCard: React.FC<ConsonantCardProps & { bgColor?: string; opacity?:
               fontFamily: 'Pacifico, cursive',
               color: '#e53935',
               fontWeight: 'medium',
-              minHeight: '24px',
+              minHeight: { xs: 14, sm: 24 },
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '1.2rem',
-              mt: 1
+              fontSize: { xs: '0.8rem', sm: '1.2rem' },
+              mt: { xs: 0.5, sm: 1 },
+              width: '100%',
+              minWidth: 0
             }}
           >
             {pronunciationVi}
@@ -104,11 +115,11 @@ const ConsonantCard: React.FC<ConsonantCardProps & { bgColor?: string; opacity?:
 );
 
 const ConsonantGroup: React.FC<ConsonantGroupProps> = ({ title, consonants, type }) => (
-  <Box sx={{ mb: 3 }}>
-    <Typography variant="h6" sx={{ color: '#fff', mb: 1.5 }}>{title}</Typography>
-    <Grid container spacing={1.5}>
+  <Box sx={{ mb: 2, width: '100%', maxWidth: '100%', overflowX: 'hidden', px: { xs: 0, sm: 2 } }}>
+    <Typography variant="h6" sx={{ color: '#fff', mb: 1.5, fontSize: { xs: '1.05rem', sm: '1.25rem' } }}>{title}</Typography>
+    <Grid container spacing={{ xs: 0, sm: 1.5 }} sx={{ width: '100%', maxWidth: '100%', margin: 0, padding: 0, overflowX: 'hidden' }}>
       {consonants.map((consonant) => (
-        <Grid item xs={6} sm={4} md={3} lg={2} key={consonant.letter}>
+        <Grid item xs={6} sm={4} md={3} lg={2} key={consonant.letter} sx={{ p: 0, minWidth: 0 }}>
           <ConsonantCard {...consonant} type={type} />
         </Grid>
       ))}
@@ -126,8 +137,9 @@ function TabPanel(props: TabPanelProps) {
       id={`alphabet-tabpanel-${index}`}
       aria-labelledby={`alphabet-tab-${index}`}
       {...other}
+      style={{ overflowX: 'hidden', width: '100%' }}
     >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ p: { xs: 1, sm: 3 } }}>{children}</Box>}
     </div>
   );
 }
@@ -418,7 +430,7 @@ const Alphabet: React.FC = () => {
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%', maxWidth: '100%', overflowX: 'hidden', px: 0 }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs 
           value={value} 
@@ -426,6 +438,7 @@ const Alphabet: React.FC = () => {
           aria-label="alphabet tabs"
           variant="scrollable"
           scrollButtons="auto"
+          sx={{ width: '100%', minWidth: 0, maxWidth: '100%' }}
         >
           <Tab label="Phụ âm" />
           <Tab label="Nguyên âm" />

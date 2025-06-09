@@ -17,6 +17,7 @@ import {
   Lock as LockIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { sheetService } from '../services/sheetService';
 
 interface LoginModalProps {
   open: boolean;
@@ -158,6 +159,17 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onClose }) => {
     if (validateRegisterForm()) {
       try {
         setIsLoading(true);
+        // Kiểm tra username/email đã tồn tại
+        const exists = await sheetService.checkUserExists(registerForm.username, registerForm.email);
+        if (exists) {
+          setErrors(prev => ({
+            ...prev,
+            registerUsername: 'Username hoặc email đã tồn tại',
+            registerEmail: 'Username hoặc email đã tồn tại'
+          }));
+          setIsLoading(false);
+          return;
+        }
         await register({
           username: registerForm.username,
           email: registerForm.email,

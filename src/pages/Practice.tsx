@@ -25,6 +25,7 @@ import {
   TableRow,
   Paper,
   keyframes,
+  CircularProgress,
 } from '@mui/material';
 import { VolumeUp as VolumeUpIcon, EmojiEvents as EmojiEventsIcon } from '@mui/icons-material';
 import ReactConfetti from 'react-confetti';
@@ -32,6 +33,7 @@ import practiceConfig from '../practiceConfig.json';
 import { practiceData } from '../data/practiceData';
 import { sheetService } from '../services/sheetService';
 import { useAuth } from '../contexts/AuthContext';
+import { UserRankInline } from '../components/UserRank';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -89,6 +91,7 @@ const Practice: React.FC = () => {
     height: window.innerHeight,
   });
   const [questionTimer, setQuestionTimer] = useState<number | null>(practiceConfig.questionTimeLimit);
+  const [isSaving, setIsSaving] = useState(false);
 
   const formatTime = useCallback((seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -177,6 +180,7 @@ const Practice: React.FC = () => {
       setCurrentQuestion(questions[nextIndex]);
       setUserAnswer('');
     } else {
+      setIsSaving(true);
       const finalTime = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
       
       if (currentUser) {
@@ -214,6 +218,7 @@ const Practice: React.FC = () => {
         }
       }
       
+      setIsSaving(false);
       setShowResults(true);
     }
   }, [currentQuestionIndex, questions, score, startTime, currentUser]);
@@ -308,12 +313,11 @@ const Practice: React.FC = () => {
 
   const renderQuestion = () => {
     if (!currentQuestion) return null;
-
     return (
-      <Box sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
-        <Card sx={{ mb: 3, backgroundColor: '#1a1a1a' }}>
-          <CardContent>
-            <Typography variant="h5" sx={{ mb: 2, color: '#fff' }}>
+      <Box sx={{ maxWidth: { xs: '100%', sm: 600 }, mx: 'auto', mt: { xs: 1, sm: 4 }, px: { xs: 1, sm: 0 } }}>
+        <Card sx={{ mb: 3, backgroundColor: '#1a1a1a', borderRadius: { xs: 2, sm: 3 }, boxShadow: { xs: 1, sm: 3 } }}>
+          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+            <Typography variant="h5" sx={{ mb: 2, color: '#fff', fontSize: { xs: '1.1rem', sm: '1.5rem' } }}>
               {currentQuestion.type === 'pronunciation-to-letter' 
                 ? 'Chọn chữ cái Lào tương ứng với phiên âm:'
                 : 'Chọn phiên âm tương ứng với chữ cái Lào:'}
@@ -332,8 +336,8 @@ const Practice: React.FC = () => {
                     : 'Noto Serif Lao',
                   color: '#fff',
                   fontSize: currentQuestion.type === 'pronunciation-to-letter' 
-                    ? '2rem' 
-                    : '4rem'
+                    ? { xs: '1.3rem', sm: '2rem' } 
+                    : { xs: '2.2rem', sm: '4rem' }
                 }}
               >
                 {currentQuestion.question}
@@ -347,12 +351,17 @@ const Practice: React.FC = () => {
                 </IconButton>
               )}
             </Box>
-            <FormControl component="fieldset">
+            <FormControl component="fieldset" sx={{ width: '100%' }}>
               <RadioGroup
                 value={userAnswer}
                 onChange={(e) => handleAnswer(e.target.value)}
               >
-                <Box sx={{ display: 'grid', gridTemplateColumns: '50% 50%', width: '100%' }}>
+                <Box sx={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: { xs: '1fr 1fr', sm: '1fr 1fr 1fr' }, 
+                  width: '100%',
+                  gap: { xs: 1, sm: 2 }
+                }}>
                   {currentQuestion.options.slice(0, practiceConfig.numOptions).map((option, index) => (
                     <FormControlLabel
                       key={index}
@@ -365,8 +374,8 @@ const Practice: React.FC = () => {
                               ? 'inherit' 
                               : 'Noto Serif Lao',
                             fontSize: currentQuestion.type === 'letter-to-pronunciation' 
-                              ? '1.2rem' 
-                              : '2rem',
+                              ? { xs: '1rem', sm: '1.2rem' } 
+                              : { xs: '1.3rem', sm: '2rem' },
                             color: '#fff',
                             width: '100%',
                             textAlign: 'center'
@@ -375,7 +384,7 @@ const Practice: React.FC = () => {
                           {option}
                         </Typography>
                       }
-                      sx={{ width: '100%', justifyContent: 'center', m: 0 }}
+                      sx={{ width: '100%', justifyContent: 'center', m: 0, py: { xs: 0.5, sm: 1 } }}
                     />
                   ))}
                 </Box>
@@ -383,32 +392,35 @@ const Practice: React.FC = () => {
             </FormControl>
           </CardContent>
         </Card>
-
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
           <Typography 
             variant="h6" 
             sx={{ 
               animation: `${rainbowAnimation} 2s linear infinite`,
-              fontWeight: 'bold'
+              fontWeight: 'bold',
+              fontSize: { xs: '1rem', sm: '1.2rem' }
             }}
           >
             {currentQuestionIndex === 0
               ? 'Không giới hạn thời gian'
               : `Thời gian: ${questionTimer}s`}
           </Typography>
-          <Typography variant="h6" color="primary">
+          <Typography variant="h6" color="primary" sx={{ fontSize: { xs: '1rem', sm: '1.2rem' } }}>
             Câu {currentQuestionIndex + 1}/{questions.length}
           </Typography>
         </Box>
-
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Button 
             variant="contained" 
             onClick={handleNext}
-            disabled={!userAnswer}
-            sx={{ backgroundColor: '#2196f3' }}
+            disabled={!userAnswer || isSaving}
+            sx={{ backgroundColor: '#2196f3', minWidth: { xs: 90, sm: 120 }, fontSize: { xs: '0.95rem', sm: '1rem' }, py: { xs: 1, sm: 1.5 } }}
           >
-            Tiếp theo
+            {isSaving && currentQuestionIndex === questions.length - 1 ? (
+              <CircularProgress size={24} sx={{ color: '#fff' }} />
+            ) : (
+              'Tiếp theo'
+            )}
           </Button>
         </Box>
       </Box>
@@ -524,23 +536,6 @@ const Practice: React.FC = () => {
 
       <TabPanel value={value} index={0}>
         <Box sx={{ position: 'relative' }}>
-          {currentUser && (
-            <IconButton
-              onClick={() => setShowLeaderboard(true)}
-              sx={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                color: '#ffd700',
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 215, 0, 0.1)'
-                }
-              }}
-            >
-              <EmojiEventsIcon />
-            </IconButton>
-          )}
-
           {showResults ? renderResults() : renderQuestion()}
         </Box>
       </TabPanel>
@@ -586,7 +581,9 @@ const Practice: React.FC = () => {
                 {leaderboard.map((record, index) => (
                   <TableRow key={index}>
                     <TableCell sx={{ color: '#fff' }}>{index + 1}</TableCell>
-                    <TableCell sx={{ color: '#fff' }}>{record.username}</TableCell>
+                    <TableCell sx={{ color: '#fff' }}>
+                      <UserRankInline username={record.username} rank={index + 1} />
+                    </TableCell>
                     <TableCell sx={{ color: '#fff' }}>{record.score}/25</TableCell>
                     <TableCell sx={{ color: '#fff' }}>{formatTime(record.time)}</TableCell>
                     <TableCell sx={{ color: '#fff' }}>{record.date}</TableCell>
