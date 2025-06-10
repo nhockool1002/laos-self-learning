@@ -21,33 +21,36 @@ const PaperPractice: React.FC = () => {
   const [pronunciations, setPronunciations] = useState<string[]>([]);
   const theme = useTheme();
 
-  const shuffleArray = (array: string[]) => {
-    const newArray = [...array];
-    for (let i = newArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-    }
-    return newArray;
-  };
-
-  const getNextPronunciation = (availablePronunciations: string[], lastAdded: string | null): string => {
-    const filteredPronunciations = availablePronunciations.filter(p => p !== lastAdded);
-    const randomIndex = Math.floor(Math.random() * filteredPronunciations.length);
-    return filteredPronunciations[randomIndex];
-  };
-
   const generatePronunciations = () => {
     const allPronunciations = practiceData.consonants.map(c => c.pronunciationVi);
-    const selected: string[] = [];
-    let lastAdded: string | null = null;
-
-    while (selected.length < count) {
-      const newPronunciation = getNextPronunciation(allPronunciations, lastAdded);
-      selected.push(newPronunciation);
-      lastAdded = newPronunciation;
+    if (allPronunciations.length === 0 || count <= 0) {
+      setPronunciations([]);
+      return;
     }
-
-    setPronunciations(shuffleArray(selected));
+    let result: string[] = [];
+    let attempts = 0;
+    const maxAttempts = 100;
+    while (attempts < maxAttempts) {
+      result = [];
+      let last: string | null = null;
+      for (let i = 0; i < count; i++) {
+        // eslint-disable-next-line no-loop-func
+        const candidates = allPronunciations.filter(p => p !== last); // Lọc ra các phiên âm không trùng với phần tử trước đó
+        if (candidates.length === 0) {
+          // Nếu không còn lựa chọn, thử lại từ đầu
+          break;
+        }
+        const next = candidates[Math.floor(Math.random() * candidates.length)];
+        result.push(next);
+        last = next;
+      }
+      // Nếu đủ số lượng và không có phần tử liền kề trùng nhau thì dừng
+      if (result.length === count) {
+        break;
+      }
+      attempts++;
+    }
+    setPronunciations(result);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -58,18 +61,20 @@ const PaperPractice: React.FC = () => {
   const handleRandomize = () => {
     if (pronunciations.length === 0) return;
 
-    const newPronunciations = [...pronunciations];
     let attempts = 0;
     const maxAttempts = 100;
+    let newPronunciations = [...pronunciations];
 
     while (attempts < maxAttempts) {
       let hasAdjacentDuplicates = false;
       
+      // Xáo trộn mảng
       for (let i = newPronunciations.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [newPronunciations[i], newPronunciations[j]] = [newPronunciations[j], newPronunciations[i]];
       }
 
+      // Kiểm tra xem có phiên âm liền kề trùng nhau không
       for (let i = 0; i < newPronunciations.length - 1; i++) {
         if (newPronunciations[i] === newPronunciations[i + 1]) {
           hasAdjacentDuplicates = true;

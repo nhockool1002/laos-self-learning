@@ -111,6 +111,7 @@ const Practice: React.FC = () => {
     const newQuestions: Question[] = [];
     const consonants = practiceData.consonants;
     const usedKeys = new Set<string>();
+    let lastQuestion: string | null = null;
 
     function getOptions(correct: string, isLetter: boolean) {
       const pool = consonants
@@ -124,12 +125,15 @@ const Practice: React.FC = () => {
       return options;
     }
 
+    // Tạo danh sách câu hỏi ngẫu nhiên
+    const allQuestions: Question[] = [];
+    
     consonants.forEach(consonant => {
       const options = getOptions(consonant.letter, true);
       const key = `pronunciation-to-letter-${consonant.pronunciationVi}`;
       if (!usedKeys.has(key)) {
         usedKeys.add(key);
-        newQuestions.push({
+        allQuestions.push({
           type: 'pronunciation-to-letter',
           question: consonant.pronunciationVi,
           options,
@@ -143,7 +147,7 @@ const Practice: React.FC = () => {
       const key = `letter-to-pronunciation-${consonant.letter}`;
       if (!usedKeys.has(key)) {
         usedKeys.add(key);
-        newQuestions.push({
+        allQuestions.push({
           type: 'letter-to-pronunciation',
           question: consonant.letter,
           options,
@@ -152,7 +156,36 @@ const Practice: React.FC = () => {
       }
     });
 
-    return newQuestions.sort(() => Math.random() - 0.5).slice(0, 25);
+    // Xáo trộn và lọc để tránh lặp lại phiên âm liền kề
+    const shuffledQuestions = allQuestions.sort(() => Math.random() - 0.5);
+    
+    for (let i = 0; i < shuffledQuestions.length && newQuestions.length < 25; i++) {
+      const currentQuestion = shuffledQuestions[i];
+      const currentPhonetic = currentQuestion.type === 'pronunciation-to-letter' 
+        ? currentQuestion.question 
+        : currentQuestion.correctAnswer;
+
+      if (lastQuestion !== currentPhonetic) {
+        newQuestions.push(currentQuestion);
+        lastQuestion = currentPhonetic;
+      } else {
+        // Nếu bị trùng, tìm câu hỏi khác không trùng
+        const remainingQuestions = shuffledQuestions.slice(i + 1);
+        const nextQuestion: Question | undefined = remainingQuestions.find(q => {
+          const phonetic = q.type === 'pronunciation-to-letter' ? q.question : q.correctAnswer;
+          return phonetic !== currentPhonetic;
+        });
+
+        if (nextQuestion) {
+          newQuestions.push(nextQuestion);
+          lastQuestion = nextQuestion.type === 'pronunciation-to-letter' 
+            ? nextQuestion.question 
+            : nextQuestion.correctAnswer;
+        }
+      }
+    }
+
+    return newQuestions;
   }, []);
 
   const handleAnswer = useCallback((answer: string) => {
