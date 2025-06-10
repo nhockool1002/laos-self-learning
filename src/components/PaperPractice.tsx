@@ -19,6 +19,9 @@ import { Shuffle as ShuffleIcon } from '@mui/icons-material';
 const PaperPractice: React.FC = () => {
   const [count, setCount] = useState<number>(0);
   const [pronunciations, setPronunciations] = useState<string[]>([]);
+  const [flipped, setFlipped] = useState<{ [index: number]: boolean }>({});
+  const [countClick, setCountClick] = useState<number>(0);
+  const [cellBgColors, setCellBgColors] = useState<string[]>([]);
   const theme = useTheme();
 
   const generatePronunciations = () => {
@@ -51,6 +54,9 @@ const PaperPractice: React.FC = () => {
       attempts++;
     }
     setPronunciations(result);
+    setCellBgColors(generateCellBgColors(result.length));
+    setFlipped({});
+    setCountClick(0);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -90,7 +96,19 @@ const PaperPractice: React.FC = () => {
     }
 
     setPronunciations(newPronunciations);
+    setCellBgColors(generateCellBgColors(newPronunciations.length));
+    setFlipped({});
+    setCountClick(0);
   };
+
+  // Lấy mapping pronunciationVi -> letter
+  const pronunciationToLetter: Record<string, string> = React.useMemo(() => {
+    const map: Record<string, string> = {};
+    practiceData.consonants.forEach(c => {
+      map[c.pronunciationVi] = c.letter;
+    });
+    return map;
+  }, []);
 
   // Chia pronunciations thành các hàng 8 cột
   const rows = [];
@@ -135,13 +153,23 @@ const PaperPractice: React.FC = () => {
     '#e0f7fa',
   ];
 
-  // Hàm lấy màu ngẫu nhiên
-  const getRandomColor = (index: number) => {
+  // Hàm random màu nền cho từng ô
+  const generateCellBgColors = (length: number) => {
     const colors = theme.palette.mode === 'dark' ? darkModeColors : lightModeColors;
-    // Tạo một số ngẫu nhiên thực sự dựa trên index và thời gian
-    const seed = index + Date.now();
-    const randomIndex = Math.floor(Math.sin(seed) * colors.length);
-    return colors[Math.abs(randomIndex) % colors.length];
+    const arr: string[] = [];
+    for (let i = 0; i < length; i++) {
+      arr.push(colors[Math.floor(Math.random() * colors.length)]);
+    }
+    return arr;
+  };
+
+  // Hàm xử lý khi nhấn vào ô
+  const handleFlip = (cellIndex: number) => {
+    setFlipped(prev => ({ ...prev, [cellIndex]: true }));
+    setCountClick(prev => prev + 1);
+    setTimeout(() => {
+      setFlipped(prev => ({ ...prev, [cellIndex]: false }));
+    }, 10000); // 10 giây
   };
 
   return (
@@ -186,12 +214,18 @@ const PaperPractice: React.FC = () => {
                 Ngẫu nhiên
               </Button>
             </Box>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              <b>Số lần lật ô: {countClick}</b>
+            </Typography>
             <TableContainer 
               component={Paper} 
               elevation={2}
               sx={{
                 '& .MuiTableCell-root': {
                   border: `1px solid ${theme.palette.divider}`,
+                  cursor: 'pointer',
+                  perspective: 600,
+                  p: 0,
                 },
               }}
             >
@@ -199,25 +233,87 @@ const PaperPractice: React.FC = () => {
                 <TableBody>
                   {rows.map((row, rowIndex) => (
                     <TableRow key={rowIndex}>
-                      {[...Array(8)].map((_, colIndex) => (
-                        <TableCell
-                          key={colIndex}
-                          align="center"
-                          sx={{
-                            height: 80,
-                            fontSize: '1.2rem',
-                            fontWeight: 'bold',
-                            bgcolor: getRandomColor(rowIndex * 8 + colIndex),
-                            color: theme.palette.mode === 'dark' ? '#fff' : '#000',
-                            '&:hover': {
-                              filter: 'brightness(1.1)',
-                              transition: 'filter 0.2s ease-in-out',
-                            },
-                          }}
-                        >
-                          {row[colIndex] || ''}
-                        </TableCell>
-                      ))}
+                      {[...Array(8)].map((_, colIndex) => {
+                        const cellIndex = rowIndex * 8 + colIndex;
+                        const pronunciation = row[colIndex];
+                        const isFlipped = flipped[cellIndex];
+                        return (
+                          <TableCell
+                            key={colIndex}
+                            align="center"
+                            sx={{
+                              height: 80,
+                              fontSize: '1.2rem',
+                              fontWeight: 'bold',
+                              bgcolor: cellBgColors[cellIndex] || (theme.palette.mode === 'dark' ? darkModeColors[0] : lightModeColors[0]),
+                              color: theme.palette.mode === 'dark' ? '#fff' : '#000',
+                              '&:hover': {
+                                filter: 'brightness(1.1)',
+                                transition: 'filter 0.2s ease-in-out',
+                              },
+                              p: 0,
+                            }}
+                            onClick={() => pronunciation && handleFlip(cellIndex)}
+                          >
+                            <Box
+                              sx={{
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: isFlipped ? { xs: '2rem', sm: '2.5rem' } : '1.2rem',
+                                fontFamily: isFlipped ? 'Noto Serif Lao' : 'inherit',
+                                transition: 'transform 0.6s',
+                                transformStyle: 'preserve-3d',
+                                position: 'relative',
+                                perspective: 600,
+                                transform: isFlipped ? 'rotateY(180deg)' : 'none',
+                                cursor: pronunciation ? 'pointer' : 'default',
+                                minHeight: 80,
+                              }}
+                            >
+                              {/* Mặt trước */}
+                              <Box
+                                sx={{
+                                  position: 'absolute',
+                                  width: '100%',
+                                  height: '100%',
+                                  backfaceVisibility: 'hidden',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: '1.2rem',
+                                  fontWeight: 'bold',
+                                  opacity: isFlipped ? 0 : 1,
+                                  transition: 'opacity 0.3s',
+                                }}
+                              >
+                                {pronunciation || ''}
+                              </Box>
+                              {/* Mặt sau */}
+                              <Box
+                                sx={{
+                                  position: 'absolute',
+                                  width: '100%',
+                                  height: '100%',
+                                  backfaceVisibility: 'hidden',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  fontSize: { xs: '2rem', sm: '2.5rem' },
+                                  fontFamily: 'Noto Serif Lao',
+                                  transform: 'rotateY(180deg)',
+                                  opacity: isFlipped ? 1 : 0,
+                                  transition: 'opacity 0.3s',
+                                }}
+                              >
+                                {pronunciation ? pronunciationToLetter[pronunciation] : ''}
+                              </Box>
+                            </Box>
+                          </TableCell>
+                        );
+                      })}
                     </TableRow>
                   ))}
                 </TableBody>
