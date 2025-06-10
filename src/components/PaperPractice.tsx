@@ -28,30 +28,54 @@ const PaperPractice: React.FC = () => {
     const allPronunciations = practiceData.consonants.map(c => c.pronunciationVi);
     if (allPronunciations.length === 0 || count <= 0) {
       setPronunciations([]);
+      setCellBgColors([]);
+      setFlipped({});
+      setCountClick(0);
       return;
     }
     let result: string[] = [];
     let attempts = 0;
-    const maxAttempts = 100;
+    const maxAttempts = 1000;
     while (attempts < maxAttempts) {
+      // Bước 1: Đảm bảo mỗi chữ xuất hiện ít nhất 1 lần
+      result = [...allPronunciations];
+      // Bước 2: Thêm các chữ random nếu cần
+      while (result.length < count) {
+        const next = allPronunciations[Math.floor(Math.random() * allPronunciations.length)];
+        result.push(next);
+      }
+      // Bước 3: Xáo trộn nhiều lần để tăng tính ngẫu nhiên
+      for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
+      }
+      // Kiểm tra không có hai chữ liền kề giống nhau
+      let hasAdjacentDuplicates = false;
+      for (let i = 0; i < result.length - 1; i++) {
+        if (result[i] === result[i + 1]) {
+          hasAdjacentDuplicates = true;
+          break;
+        }
+      }
+      if (!hasAdjacentDuplicates) break;
+      attempts++;
+    }
+    // Nếu thử nhiều lần vẫn không được, dùng thuật toán greedy
+    if (attempts === maxAttempts) {
       result = [];
       let last: string | null = null;
       for (let i = 0; i < count; i++) {
         // eslint-disable-next-line no-loop-func
-        const candidates = allPronunciations.filter(p => p !== last); // Lọc ra các phiên âm không trùng với phần tử trước đó
+        const candidates = allPronunciations.filter(p => p !== last && (!result.includes(p) || result.length >= allPronunciations.length));
         if (candidates.length === 0) {
-          // Nếu không còn lựa chọn, thử lại từ đầu
-          break;
+          // fallback: cho phép trùng nếu không còn lựa chọn
+          result.push(allPronunciations[Math.floor(Math.random() * allPronunciations.length)]);
+        } else {
+          const next = candidates[Math.floor(Math.random() * candidates.length)];
+          result.push(next);
+          last = next;
         }
-        const next = candidates[Math.floor(Math.random() * candidates.length)];
-        result.push(next);
-        last = next;
       }
-      // Nếu đủ số lượng và không có phần tử liền kề trùng nhau thì dừng
-      if (result.length === count) {
-        break;
-      }
-      attempts++;
     }
     setPronunciations(result);
     setCellBgColors(generateCellBgColors(result.length));
