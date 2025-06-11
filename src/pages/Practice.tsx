@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Box,
   Tabs,
@@ -27,7 +27,7 @@ import {
   keyframes,
   CircularProgress,
 } from '@mui/material';
-import { VolumeUp as VolumeUpIcon, EmojiEvents as EmojiEventsIcon } from '@mui/icons-material';
+import { VolumeUp as VolumeUpIcon, EmojiEvents as EmojiEventsIcon, HourglassEmpty as HourglassEmptyIcon } from '@mui/icons-material';
 import ReactConfetti from 'react-confetti';
 import practiceConfig from '../practiceConfig.json';
 import { practiceData } from '../data/practiceData';
@@ -92,6 +92,81 @@ const Practice: React.FC = () => {
   });
   const [questionTimer, setQuestionTimer] = useState<number | null>(practiceConfig.questionTimeLimit);
   const [isSaving, setIsSaving] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const handleNextRef = useRef<() => Promise<void>>();
+  const [totalTimer, setTotalTimer] = useState(0);
+  const totalTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [isTotalTimerRunning, setIsTotalTimerRunning] = useState(false);
+
+  const handleNext = useCallback(async () => {
+    if (!currentQuestion) return;
+
+    // Cập nhật score và answerResults khi chuyển câu
+    const isCorrect = userAnswer === currentQuestion.correctAnswer;
+    setScore(prev => prev + (isCorrect ? 1 : 0));
+    setAnswerResults(prev => [...prev, {
+      question: currentQuestion,
+      userAnswer,
+      isCorrect
+    }]);
+
+    if (currentQuestionIndex === 0 && !startTime) {
+      setStartTime(Date.now());
+    }
+
+    if (currentQuestionIndex < questions.length - 1) {
+      const nextIndex = currentQuestionIndex + 1;
+      setCurrentQuestionIndex(nextIndex);
+      setCurrentQuestion(questions[nextIndex]);
+      setUserAnswer('');
+    } else {
+      setIsSaving(true);
+      const finalTime = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
+      
+      if (currentUser) {
+        const newScore = {
+          username: currentUser.username,
+          score,
+          time: finalTime,
+          date: new Date().toLocaleDateString()
+        };
+
+        try {
+          const currentLeaderboard = await sheetService.getLeaderboard();
+          
+          const existingUserScore = currentLeaderboard.find(record => record.username === currentUser.username);
+          
+          let shouldUpdate = false;
+          
+          if (!existingUserScore) {
+            shouldUpdate = true;
+          } else {
+            if (score > existingUserScore.score) {
+              shouldUpdate = true;
+            } else if (score === existingUserScore.score && finalTime < existingUserScore.time) {
+              shouldUpdate = true;
+            }
+          }
+          
+          if (shouldUpdate) {
+            await sheetService.addScore(newScore);
+            const updatedLeaderboard = await sheetService.getLeaderboard();
+            setLeaderboard(updatedLeaderboard);
+          }
+        } catch (error) {
+          console.error('Error saving score:', error);
+        }
+      }
+      
+      setIsSaving(false);
+      setShowResults(true);
+    }
+  }, [currentQuestion, currentQuestionIndex, questions, score, startTime, currentUser, userAnswer]);
+
+  // Update handleNextRef when handleNext changes
+  useEffect(() => {
+    handleNextRef.current = handleNext;
+  }, [handleNext]);
 
   const formatTime = useCallback((seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -188,73 +263,36 @@ const Practice: React.FC = () => {
     return newQuestions;
   }, []);
 
+  // Quản lý timer chỉ bằng effect này:
+  useEffect(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+
+    // Không có timer cho câu đầu tiên hoặc khi đã xong
+    if (showResults || currentQuestionIndex === 0) {
+      setQuestionTimer(null);
+      return;
+    }
+
+    setQuestionTimer(practiceConfig.questionTimeLimit);
+    timerRef.current = setInterval(() => {
+      setQuestionTimer(prev => {
+        if (prev === 1) {
+          handleNextRef.current?.();
+          return practiceConfig.questionTimeLimit;
+        }
+        return (prev ?? practiceConfig.questionTimeLimit) - 1;
+      });
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [currentQuestionIndex, showResults]);
+
   const handleAnswer = useCallback((answer: string) => {
     if (!currentQuestion) return;
-    
     setUserAnswer(answer);
-    const isCorrect = answer === currentQuestion.correctAnswer;
-    
-    setScore(prev => prev + (isCorrect ? 1 : 0));
-    setAnswerResults(prev => [...prev, {
-      question: currentQuestion,
-      userAnswer: answer,
-      isCorrect
-    }]);
-
-    if (currentQuestionIndex === 0 && !startTime) {
-      setStartTime(Date.now());
-    }
-  }, [currentQuestion, currentQuestionIndex, startTime]);
-
-  const handleNext = useCallback(async () => {
-    if (currentQuestionIndex < questions.length - 1) {
-      const nextIndex = currentQuestionIndex + 1;
-      setCurrentQuestionIndex(nextIndex);
-      setCurrentQuestion(questions[nextIndex]);
-      setUserAnswer('');
-    } else {
-      setIsSaving(true);
-      const finalTime = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
-      
-      if (currentUser) {
-        const newScore = {
-          username: currentUser.username,
-          score,
-          time: finalTime,
-          date: new Date().toLocaleDateString()
-        };
-
-        try {
-          const currentLeaderboard = await sheetService.getLeaderboard();
-          
-          const existingUserScore = currentLeaderboard.find(record => record.username === currentUser.username);
-          
-          let shouldUpdate = false;
-          
-          if (!existingUserScore) {
-            shouldUpdate = true;
-          } else {
-            if (score > existingUserScore.score) {
-              shouldUpdate = true;
-            } else if (score === existingUserScore.score && finalTime < existingUserScore.time) {
-              shouldUpdate = true;
-            }
-          }
-          
-          if (shouldUpdate) {
-            await sheetService.addScore(newScore);
-            const updatedLeaderboard = await sheetService.getLeaderboard();
-            setLeaderboard(updatedLeaderboard);
-          }
-        } catch (error) {
-          console.error('Error saving score:', error);
-        }
-      }
-      
-      setIsSaving(false);
-      setShowResults(true);
-    }
-  }, [currentQuestionIndex, questions, score, startTime, currentUser]);
+  }, [currentQuestion]);
 
   const handleRestart = useCallback(() => {
     const newQuestions = generateQuestions();
@@ -302,26 +340,6 @@ const Practice: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Handle question timer
-  useEffect(() => {
-    if (showResults) return;
-    if (currentQuestionIndex === 0) {
-      setQuestionTimer(null);
-      return;
-    }
-    setQuestionTimer(practiceConfig.questionTimeLimit);
-    const timer = setInterval(() => {
-      setQuestionTimer(prev => {
-        if (prev === 1) {
-          handleNext();
-          return practiceConfig.questionTimeLimit;
-        }
-        return (prev ?? practiceConfig.questionTimeLimit) - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [currentQuestionIndex, showResults, handleNext]);
-
   // Handle elapsed time
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -343,6 +361,34 @@ const Practice: React.FC = () => {
     setQuestions(newQuestions);
     setCurrentQuestion(newQuestions[0]);
   }, [value, generateQuestions]);
+
+  // Bắt đầu totalTimer khi sang câu 2, dừng khi showResults
+  useEffect(() => {
+    if (currentQuestionIndex === 1 && !showResults) {
+      setIsTotalTimerRunning(true);
+      totalTimerRef.current = setInterval(() => {
+        setTotalTimer(prev => prev + 1);
+      }, 1000);
+    }
+    if (showResults && isTotalTimerRunning) {
+      setIsTotalTimerRunning(false);
+      if (totalTimerRef.current) clearInterval(totalTimerRef.current);
+    }
+    return () => {
+      if (totalTimerRef.current && (showResults || currentQuestionIndex === 0)) {
+        clearInterval(totalTimerRef.current);
+      }
+    };
+  }, [currentQuestionIndex, showResults, isTotalTimerRunning]);
+
+  // Reset totalTimer khi làm lại
+  useEffect(() => {
+    if (!showResults && currentQuestionIndex === 0) {
+      setTotalTimer(0);
+      setIsTotalTimerRunning(false);
+      if (totalTimerRef.current) clearInterval(totalTimerRef.current);
+    }
+  }, [showResults, currentQuestionIndex]);
 
   const renderQuestion = () => {
     if (!currentQuestion) return null;
@@ -425,7 +471,7 @@ const Practice: React.FC = () => {
             </FormControl>
           </CardContent>
         </Card>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, alignItems: 'center' }}>
           <Typography 
             variant="h6" 
             sx={{ 
@@ -438,6 +484,14 @@ const Practice: React.FC = () => {
               ? 'Không giới hạn thời gian'
               : `Thời gian: ${questionTimer}s`}
           </Typography>
+          {currentQuestionIndex > 0 && !showResults && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <HourglassEmptyIcon sx={{ color: '#ff9800', animation: 'swing 1s infinite alternate' }} />
+              <Typography variant="h6" sx={{ color: '#ff9800', fontWeight: 'bold', fontSize: { xs: '1rem', sm: '1.2rem' } }}>
+                {formatTime(totalTimer)}
+              </Typography>
+            </Box>
+          )}
           <Typography variant="h6" color="primary" sx={{ fontSize: { xs: '1rem', sm: '1.2rem' } }}>
             Câu {currentQuestionIndex + 1}/{questions.length}
           </Typography>
@@ -493,6 +547,12 @@ const Practice: React.FC = () => {
               Kết quả: {score}/{questions.length} câu đúng
               {hasEnoughCorrect && ' 🎉'}
             </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1, mb: 2 }}>
+              <HourglassEmptyIcon sx={{ color: '#ff9800', animation: 'swing 1s infinite alternate' }} />
+              <Typography variant="h6" sx={{ color: '#ff9800', fontWeight: 'bold' }}>
+                Tổng thời gian: {formatTime(totalTimer)}
+              </Typography>
+            </Box>
             <Typography variant="h6" sx={{ mb: 2, color: '#fff', textAlign: 'center' }}>
               Thời gian: {formatTime(elapsedTime)}
             </Typography>
@@ -560,6 +620,7 @@ const Practice: React.FC = () => {
 
   return (
     <Box sx={{ width: '100%' }}>
+      <style>{swing}</style>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={(e, v) => setValue(v)} aria-label="practice tabs">
           <Tab label="Luyện tập phụ âm" />
@@ -646,5 +707,10 @@ function TabPanel(props: TabPanelProps) {
     </div>
   );
 }
+
+const swing = `@keyframes swing {
+  0% { transform: rotate(-15deg); }
+  100% { transform: rotate(15deg); }
+}`;
 
 export default Practice; 
