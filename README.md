@@ -4,13 +4,30 @@
 
 ## Tính năng chính
 
-- Học bảng chữ cái tiếng Lào (phụ âm, nguyên âm, thanh)
-- Bài học theo chủ đề từ cơ bản đến nâng cao
-- Bài tập tương tác và luyện tập
-- Kiểm tra kiến thức
-- Hỗ trợ đa ngôn ngữ (Tiếng Việt và Tiếng Anh)
-- Giao diện tối (Dark theme)
-- Có thể đóng gói thành ứng dụng desktop cho Windows và MacOS
+- **Học bảng chữ cái tiếng Lào**
+  - Học phụ âm với hình ảnh minh họa
+  - Học nguyên âm với hình ảnh minh họa
+  - Học thanh với hình ảnh minh họa
+  - Phát âm chuẩn cho từng chữ cái
+
+- **Luyện tập phụ âm**
+  - Bài tập trắc nghiệm tương tác
+  - Chuyển đổi giữa phiên âm và chữ cái
+  - Tính điểm và thời gian hoàn thành
+  - Bảng xếp hạng người dùng
+  - Hệ thống huy hiệu (badges) cho thành tích
+
+- **Hệ thống người dùng**
+  - Đăng ký và đăng nhập
+  - Lưu trữ tiến độ học tập
+  - Theo dõi thành tích
+  - Hiển thị huy hiệu đạt được
+
+- **Giao diện**
+  - Thiết kế tối (Dark theme) thân thiện với mắt
+  - Responsive trên mọi thiết bị
+  - Hiệu ứng và animation mượt mà
+  - Hỗ trợ đa ngôn ngữ (Tiếng Việt và Tiếng Anh)
 
 ## Yêu cầu hệ thống
 
@@ -35,41 +52,45 @@ npm install
 npm start
 ```
 
-4. Đóng gói ứng dụng:
-```bash
-npm run electron-pack
-```
-
 ## Cấu trúc dự án
 
 ```
 laos-learning/
 ├── public/
 │   ├── index.html
-│   └── assets/
+│   ├── badges/         # Thư mục chứa hình ảnh huy hiệu
+│   └── assets/         # Thư mục chứa hình ảnh và tài nguyên
 ├── src/
-│   ├── components/
-│   │   └── Layout.tsx
-│   ├── pages/
-│   │   ├── Home.tsx
-│   │   ├── Alphabet.tsx
-│   │   ├── Lessons.tsx
-│   │   ├── Practice.tsx
-│   │   └── Tests.tsx
+│   ├── components/     # Các component tái sử dụng
+│   ├── contexts/       # React contexts
+│   ├── pages/          # Các trang chính của ứng dụng
+│   ├── services/       # Các service xử lý logic
+│   ├── config/         # Cấu hình ứng dụng
+│   ├── data/          # Dữ liệu tĩnh
 │   ├── App.tsx
-│   ├── index.tsx
-│   └── i18n.ts
-├── electron.js
+│   └── index.tsx
 ├── package.json
 └── README.md
 ```
 
 ## Công nghệ sử dụng
 
-- ReactJS với TypeScript
-- Material UI
-- i18next cho đa ngôn ngữ
-- Electron cho đóng gói ứng dụng desktop
+- **Frontend**
+  - ReactJS với TypeScript
+  - Material UI cho giao diện
+  - i18next cho đa ngôn ngữ
+  - React Router cho điều hướng
+
+- **Backend & Storage**
+  - Google Sheets API cho lưu trữ dữ liệu
+  - Firebase Authentication cho xác thực người dùng
+
+## Tính năng đang phát triển
+
+- Luyện tập từ vựng
+- Bài học theo chủ đề
+- Kiểm tra kiến thức
+- Đóng gói thành ứng dụng desktop
 
 ## Đóng góp
 

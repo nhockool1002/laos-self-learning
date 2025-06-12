@@ -34,6 +34,7 @@ import { practiceData } from '../data/practiceData';
 import { sheetService } from '../services/sheetService';
 import { useAuth } from '../contexts/AuthContext';
 import { UserRankInline } from '../components/UserRank';
+import { badgeService } from '../services/badgeService';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -146,6 +147,21 @@ const Practice: React.FC = () => {
             await sheetService.addScore(newScore);
             const updatedLeaderboard = await sheetService.getLeaderboard();
             setLeaderboard(updatedLeaderboard);
+          }
+
+          // Kiểm tra và trao huy hiệu nếu đạt 25/25
+          if (finalScore === 25) {
+            try {
+              const userBadges = await badgeService.getUserBadges(currentUser.username);
+              const hasBadge = userBadges.some(badge => badge.id === 'badge_001');
+              
+              if (!hasBadge) {
+                await badgeService.addUserBadge(currentUser.username, 'badge_001');
+                console.log('Đã trao huy hiệu badge_001 cho người dùng', currentUser.username);
+              }
+            } catch (error) {
+              console.error('Lỗi khi trao huy hiệu:', error);
+            }
           }
         } catch (error) {
           console.error('Error saving score:', error);

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, keyframes } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 import { sheetService } from '../services/sheetService';
+import UserTooltip from './UserTooltip';
 
 const rainbowAnimation1 = keyframes`
   0% { color: #ff0000; }
@@ -113,11 +114,13 @@ export const UserRank: React.FC = () => {
   // Nếu không có xếp hạng hoặc ngoài top 10, chỉ hiển thị username bình thường
   if (!userRank || userRank > 10) {
     return (
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <Typography sx={{ fontWeight: 'bold', display: { xs: 'none', sm: 'block' } }}>
-          {currentUser.username}
-        </Typography>
-      </Box>
+      <UserTooltip username={currentUser.username}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography sx={{ fontWeight: 'bold', display: { xs: 'none', sm: 'block' } }}>
+            {currentUser.username}
+          </Typography>
+        </Box>
+      </UserTooltip>
     );
   }
 
@@ -150,21 +153,23 @@ export const UserRank: React.FC = () => {
   if (!medalInfo) return null;
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      <img 
-        src={medalInfo.medal} 
-        alt={`Rank ${userRank}`} 
-        style={{ width: 24, height: 24, display: 'inline-block' }}
-      />
-      <Typography
-        sx={{
-          animation: `${medalInfo.animation} 2s linear infinite`,
-          fontWeight: 'bold',
-          display: { xs: 'none', sm: 'block' }
-        }}
-      >
-        {currentUser.username}
-      </Typography>
-    </Box>
+    <UserTooltip username={currentUser.username}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <img 
+          src={medalInfo.medal} 
+          alt={`Rank ${userRank}`} 
+          style={{ width: 24, height: 24, display: 'inline-block' }}
+        />
+        <Typography
+          sx={{
+            animation: `${medalInfo.animation} 2s linear infinite`,
+            fontWeight: 'bold',
+            display: { xs: 'none', sm: 'block' }
+          }}
+        >
+          {currentUser.username}
+        </Typography>
+      </Box>
+    </UserTooltip>
   );
 }; 
