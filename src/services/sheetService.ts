@@ -15,14 +15,18 @@ interface UserRegistration {
   createdAt: string;
 }
 
-class SheetService {
-  private readonly CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-  private readonly SPREADSHEET_ID = SHEET_CONFIG.SPREADSHEET_ID;
-  private readonly SHEET_NAME = SHEET_CONFIG.SHEETS.LEADERBOARD.TITLE;
-  private readonly USERS_SHEET = SHEET_CONFIG.SHEETS.USERS.TITLE;
-  private accessToken: string | null = null;
+interface SheetOperation {
+  fetchSheet(range: string, sheetName: string): Promise<any>;
+  appendToSheet(values: any[][], sheetName: string): Promise<any>;
+  updateSheetValues(range: string, values: any[][], sheetName: string): Promise<any>;
+}
 
-  private async getAccessToken(): Promise<string> {
+class BaseSheetService implements SheetOperation {
+  protected readonly CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
+  protected readonly SPREADSHEET_ID = SHEET_CONFIG.SPREADSHEET_ID;
+  protected accessToken: string | null = null;
+
+  protected async getAccessToken(): Promise<string> {
     if (this.accessToken) {
       return this.accessToken;
     }
@@ -53,7 +57,7 @@ class SheetService {
     }
   }
 
-  private async fetchSheet(range: string, sheetName: string = this.SHEET_NAME) {
+  async fetchSheet(range: string, sheetName: string): Promise<any> {
     try {
       const accessToken = await this.getAccessToken();
       const url = `https://sheets.googleapis.com/v4/spreadsheets/${this.SPREADSHEET_ID}/values/${sheetName}!${range}`;
@@ -71,7 +75,7 @@ class SheetService {
     }
   }
 
-  private async appendToSheet(values: any[][], sheetName: string = this.SHEET_NAME) {
+  async appendToSheet(values: any[][], sheetName: string): Promise<any> {
     try {
       const accessToken = await this.getAccessToken();
       const response = await fetch(
@@ -96,11 +100,41 @@ class SheetService {
     }
   }
 
+  async updateSheetValues(range: string, values: any[][], sheetName: string): Promise<any> {
+    try {
+      const accessToken = await this.getAccessToken();
+      const response = await fetch(
+        `https://sheets.googleapis.com/v4/spreadsheets/${this.SPREADSHEET_ID}/values/${sheetName}!${range}?valueInputOption=USER_ENTERED`,
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            values,
+          }),
+        }
+      );
+      if (!response.ok) {
+        throw new Error('Failed to update sheet data');
+      }
+      return response.json();
+    } catch (error) {
+      throw error;
+    }
+  }
+}
+
+class SheetService extends BaseSheetService {
+  private readonly SHEET_NAME = SHEET_CONFIG.SHEETS.LEADERBOARD.TITLE;
+  private readonly USERS_SHEET = SHEET_CONFIG.SHEETS.USERS.TITLE;
+
   private async ensureSheetExists() {
     try {
-      const data = await this.fetchSheet('A1:C1');
+      const data = await this.fetchSheet('A1:C1', this.SHEET_NAME);
       if (!data.values || data.values.length === 0) {
-        await this.appendToSheet([['score', 'time', 'date']]);
+        await this.appendToSheet([['score', 'time', 'date']], this.SHEET_NAME);
       }
     } catch (error) {
       throw error;
@@ -129,35 +163,10 @@ class SheetService {
     return bcrypt.compare(plainPassword, hashedPassword);
   }
 
-  private async updateSheetValues(range: string, values: any[][], sheetName: string = this.SHEET_NAME) {
-    try {
-      const accessToken = await this.getAccessToken();
-      const response = await fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${this.SPREADSHEET_ID}/values/${sheetName}!${range}?valueInputOption=USER_ENTERED`,
-        {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            values,
-          }),
-        }
-      );
-      if (!response.ok) {
-        throw new Error('Failed to update sheet data');
-      }
-      return response.json();
-    } catch (error) {
-      throw error;
-    }
-  }
-
   async getLeaderboard(): Promise<ScoreRecord[]> {
     try {
       await this.ensureSheetExists();
-      const data = await this.fetchSheet('A:D');
+      const data = await this.fetchSheet('A:D', this.SHEET_NAME);
       const records: ScoreRecord[] = data.values
         .slice(1)
         .map((row: any[]) => ({
@@ -176,7 +185,7 @@ class SheetService {
   async addScore(record: ScoreRecord): Promise<void> {
     try {
       await this.ensureSheetExists();
-      const data = await this.fetchSheet('A:D');
+      const data = await this.fetchSheet('A:D', this.SHEET_NAME);
       const existingUserIndex = data.values?.findIndex((row: any[]) => row[0] === record.username) ?? -1;
       if (existingUserIndex > 0) {
         const existingScore = Number(data.values[existingUserIndex][1]);
@@ -188,7 +197,7 @@ class SheetService {
             record.score,
             record.time,
             record.date
-          ]]);
+          ]], this.SHEET_NAME);
         }
       } else {
         await this.appendToSheet([[
@@ -196,7 +205,7 @@ class SheetService {
           record.score,
           record.time,
           record.date
-        ]]);
+        ]], this.SHEET_NAME);
       }
     } catch (error) {
       throw error;

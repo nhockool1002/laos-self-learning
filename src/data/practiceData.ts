@@ -27,8 +27,8 @@ export const practiceData = {
     { letter: 'ມ', pronunciationVi: 'mo' },
     { letter: 'ຢ', pronunciationVi: 'yo' },
     { letter: 'ຣ', pronunciationVi: 'ro' },
-    // { letter: 'ລ', pronunciationVi: 'lo' },
-    // { letter: 'ວ', pronunciationVi: 'vo' },
+    { letter: 'ລ', pronunciationVi: 'lo' },
+    { letter: 'ວ', pronunciationVi: 'vo' },
     { letter: 'ຫ', pronunciationVi: 'hỏ' },
     { letter: 'ອ', pronunciationVi: 'o' },
     { letter: 'ຮ', pronunciationVi: 'ho' }
