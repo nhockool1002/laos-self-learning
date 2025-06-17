@@ -44,7 +44,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 export const LoginModal: React.FC<LoginModalProps> = ({ open, onClose }) => {
-  const { login, register, error } = useAuth();
+  const { login, register, error, setError } = useAuth();
   const [tabValue, setTabValue] = useState(0);
   const [loginForm, setLoginForm] = useState({ emailOrUsername: '', password: '' });
   const [registerForm, setRegisterForm] = useState({
@@ -206,6 +206,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onClose }) => {
       confirmPassword: '',
     });
     setIsLoading(false);
+    setError(null);
     onClose();
   };
 
@@ -213,7 +214,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onClose }) => {
     <>
       <Modal
         open={open}
-        onClose={onClose}
+        onClose={handleClose}
         aria-labelledby="login-modal-title"
         aria-describedby="login-modal-description"
         closeAfterTransition

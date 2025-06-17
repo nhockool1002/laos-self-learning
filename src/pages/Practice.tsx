@@ -97,7 +97,7 @@ const Practice: React.FC = () => {
 
   const handleNext = useCallback(async () => {
     try {
-      if (!currentUser || !currentQuestion) return;
+      if (!currentQuestion) return;
 
       setIsSaving(true);
 
@@ -119,46 +119,48 @@ const Practice: React.FC = () => {
         const finalTime = totalTimer;
         const today = new Date().toISOString().slice(0, 10);
 
-        const query = supabase
-          .from(TABLES.LEADERBOARD)
-          .select('*')
-          .eq('username', currentUser.username)
-          .single();
-        const { data: existingRecord, error: leaderboardError } = await query;
-        if (leaderboardError && leaderboardError.code !== 'PGRST116') {
-          throw leaderboardError;
-        }
-
-        if (existingRecord) {
-          if (finalScore > existingRecord.score || 
-              (finalScore === existingRecord.score && finalTime < existingRecord.time)) {
-            await supabase
-              .from(TABLES.LEADERBOARD)
-              .update({ score: finalScore, time: finalTime, date: today })
-              .eq('username', currentUser.username);
-          }
-        } else {
-          await supabase
+        if (currentUser) {
+          const query = supabase
             .from(TABLES.LEADERBOARD)
-            .insert([{ username: currentUser.username, score: finalScore, time: finalTime, date: today }]);
-        }
-
-        // Check và trao badge_001 nếu đúng 25 câu
-        if (finalScore === 25) {
-          const { data: existingBadge } = await supabase
-            .from(TABLES.USER_BADGES)
             .select('*')
             .eq('username', currentUser.username)
-            .eq('badge_id', 'badge_001')
             .single();
-          if (!existingBadge) {
+          const { data: existingRecord, error: leaderboardError } = await query;
+          if (leaderboardError && leaderboardError.code !== 'PGRST116') {
+            throw leaderboardError;
+          }
+
+          if (existingRecord) {
+            if (finalScore > existingRecord.score || 
+                (finalScore === existingRecord.score && finalTime < existingRecord.time)) {
+              await supabase
+                .from(TABLES.LEADERBOARD)
+                .update({ score: finalScore, time: finalTime, date: today })
+                .eq('username', currentUser.username);
+            }
+          } else {
             await supabase
+              .from(TABLES.LEADERBOARD)
+              .insert([{ username: currentUser.username, score: finalScore, time: finalTime, date: today }]);
+          }
+
+          // Check và trao badge_001 nếu đúng 25 câu
+          if (finalScore === 25) {
+            const { data: existingBadge } = await supabase
               .from(TABLES.USER_BADGES)
-              .insert([{
-                username: currentUser.username,
-                badge_id: 'badge_001',
-                achieved_date: new Date().toISOString()
-              }]);
+              .select('*')
+              .eq('username', currentUser.username)
+              .eq('badge_id', 'badge_001')
+              .single();
+            if (!existingBadge) {
+              await supabase
+                .from(TABLES.USER_BADGES)
+                .insert([{
+                  username: currentUser.username,
+                  badge_id: 'badge_001',
+                  achieved_date: new Date().toISOString()
+                }]);
+            }
           }
         }
 
@@ -525,7 +527,7 @@ const Practice: React.FC = () => {
     }
     
     return (
-      <Box sx={{ maxWidth: 800, mx: 'auto', mt: 4 }}>
+      <Box sx={{ width: '100%', maxWidth: 800, mx: 'auto' }}>
         {showConfetti && (
           <ReactConfetti
             width={windowSize.width}
@@ -535,32 +537,26 @@ const Practice: React.FC = () => {
             gravity={0.2}
           />
         )}
-        <Card sx={{ mb: 3, backgroundColor: '#1a1a1a' }}>
-          <CardContent>
-            <Typography 
-              variant="h5" 
-              sx={{ 
-                mb: 2, 
-                color: hasEnoughCorrect ? '#ffd700' : '#fff', 
-                textAlign: 'center',
-                animation: hasEnoughCorrect ? `${rainbowAnimation} 2s linear infinite` : 'none',
-                fontWeight: 'bold'
-              }}
-            >
-              Kết quả: {score}/{questions.length} câu đúng
-              {hasEnoughCorrect && ' 🎉'}
+        <Card sx={{ mb: 3, backgroundColor: '#1a1a1a', borderRadius: { xs: 2, sm: 3 }, boxShadow: { xs: 1, sm: 3 } }}>
+          <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+            <Typography variant="h5" sx={{ mb: 3, color: '#fff', textAlign: 'center' }}>
+              Kết quả
             </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1, mb: 2 }}>
-              <HourglassEmptyIcon sx={{ color: '#ff9800', animation: 'swing 1s infinite alternate' }} />
-              <Typography variant="h6" sx={{ color: '#ff9800', fontWeight: 'bold' }}>
-                Tổng thời gian: {formatTime(totalTimer)}
-              </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, mb: 3 }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="h4" sx={{ color: '#4caf50', mb: 1 }}>
+                  {score}/25
+                </Typography>
+                <Typography sx={{ color: '#aaa' }}>Câu đúng</Typography>
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="h4" sx={{ color: '#2196f3', mb: 1 }}>
+                  {formatTime(totalTimer)}
+                </Typography>
+                <Typography sx={{ color: '#aaa' }}>Thời gian</Typography>
+              </Box>
             </Box>
-            {!currentUser && (
-              <Typography variant="body1" sx={{ mb: 2, color: '#aaa', textAlign: 'center' }}>
-                Đăng nhập để lưu kết quả và xem bảng xếp hạng
-              </Typography>
-            )}
+
             {wrongAnswers.length > 0 && (
               <>
                 <Typography variant="h6" sx={{ mb: 2, color: '#fff' }}>
@@ -603,16 +599,14 @@ const Practice: React.FC = () => {
           >
             Làm lại
           </Button>
-          {currentUser && (
-            <Button
-              variant="contained"
-              onClick={() => setShowLeaderboard(true)}
-              startIcon={<EmojiEventsIcon />}
-              sx={{ backgroundColor: '#ffd700' }}
-            >
-              Bảng xếp hạng
-            </Button>
-          )}
+          <Button
+            variant="contained"
+            onClick={() => setShowLeaderboard(true)}
+            startIcon={<EmojiEventsIcon />}
+            sx={{ backgroundColor: '#ffd700' }}
+          >
+            Bảng xếp hạng
+          </Button>
         </Box>
       </Box>
     );

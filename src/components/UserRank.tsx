@@ -96,6 +96,8 @@ export const UserRank: React.FC = () => {
 
   useEffect(() => {
     const fetchUserRank = async () => {
+      if (!currentUser) return;
+      
       try {
         const query = supabase
           .from(TABLES.LEADERBOARD)

@@ -14,6 +14,7 @@ interface AuthContextType {
     createdat: string;
   }) => Promise<boolean>;
   error: string | null;
+  setError: (error: string | null) => void;
   isGlobalLoading: boolean;
   setGlobalLoading: (loading: boolean) => void;
 }
@@ -35,6 +36,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (username: string, password: string) => {
     try {
+      setError(null);
       const query = supabase
         .from(TABLES.USERS)
         .select('*')
@@ -51,8 +53,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           return true;
         }
       }
+      setError('Tên đăng nhập hoặc mật khẩu không đúng');
       return false;
     } catch (error) {
+      setError('Tên đăng nhập hoặc mật khẩu không đúng');
       console.error('Login error:', error);
       return false;
     }
@@ -105,7 +109,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, currentUser, login, logout, register, error, isGlobalLoading, setGlobalLoading }}>
+    <AuthContext.Provider value={{ isAuthenticated, currentUser, login, logout, register, error, setError, isGlobalLoading, setGlobalLoading }}>
       {children}
     </AuthContext.Provider>
   );
