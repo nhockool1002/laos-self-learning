@@ -39,7 +39,7 @@ import {
 import Footer from './Footer';
 import { LoginButton } from './LoginButton';
 import { UserRank, UserRankInline } from './UserRank';
-import { sheetService } from '../services/sheetService';
+import { supabase, TABLES } from '../config/supabaseConfig';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -72,10 +72,22 @@ const Layout: React.FC<LayoutProps> = ({ children, onToggleColorMode, mode }) =>
   }, []);
 
   useEffect(() => {
-    if (showLeaderboard) {
-      sheetService.getLeaderboard().then((data) => setLeaderboard(data));
-    }
-  }, [showLeaderboard]);
+    const fetchLeaderboard = async () => {
+      try {
+        const query = supabase
+          .from(TABLES.LEADERBOARD)
+          .select('*')
+          .order('score', { ascending: false })
+          .order('time', { ascending: true });
+        const { data, error } = await query;
+        if (error) throw error;
+        setLeaderboard(data || []);
+      } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+      }
+    };
+    fetchLeaderboard();
+  }, []);
 
   const menuItems = [
     { text: 'Trang chủ', icon: <HomeIcon />, path: '/' },

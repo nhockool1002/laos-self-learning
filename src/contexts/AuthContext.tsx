@@ -1,17 +1,18 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { sheetService } from '../services/sheetService';
+import { supabase, TABLES } from '../config/supabaseConfig';
+import bcrypt from 'bcryptjs';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   currentUser: any | null;
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   register: (userData: {
     username: string;
     email: string;
     password: string;
-    createdAt: string;
-  }) => Promise<void>;
+    createdat: string;
+  }) => Promise<boolean>;
   error: string | null;
   isGlobalLoading: boolean;
   setGlobalLoading: (loading: boolean) => void;
@@ -34,28 +35,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (username: string, password: string) => {
     try {
-      setError(null);
-      setGlobalLoading(true);
-      const user = await sheetService.loginUser(username, password);
-      
-      if (!user) {
-        setError('Tên đăng nhập hoặc mật khẩu không đúng');
-        setGlobalLoading(false);
-        return;
+      const query = supabase
+        .from(TABLES.USERS)
+        .select('*')
+        .eq('username', username)
+        .single();
+      const { data, error } = await query;
+      if (error) throw error;
+      if (data) {
+        const isMatch = await bcrypt.compare(password, data.password);
+        if (isMatch) {
+          setCurrentUser({ username: data.username });
+          setIsAuthenticated(true);
+          localStorage.setItem('user', JSON.stringify({ username: data.username }));
+          return true;
+        }
       }
-
-      setCurrentUser(user);
-      setIsAuthenticated(true);
-      // Lưu thông tin user vào localStorage
-      localStorage.setItem('user', JSON.stringify({
-        username: user.username,
-        email: user.email,
-        createdAt: user.createdAt
-      }));
-    } catch (err) {
-      setError('Đăng nhập thất bại. Vui lòng thử lại.');
-      setGlobalLoading(false);
-      throw err;
+      return false;
+    } catch (error) {
+      console.error('Login error:', error);
+      return false;
     }
   };
 
@@ -70,19 +69,35 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     username: string;
     email: string;
     password: string;
-    createdAt: string;
-  }) => {
+    createdat: string;
+  }): Promise<boolean> => {
     try {
       setError(null);
-      // Check if user already exists
-      const exists = await sheetService.checkUserExists(userData.username, userData.email);
-      if (exists) {
-        setError('Username hoặc email đã tồn tại');
-        return;
+      const { data: exists, error } = await supabase
+        .from(TABLES.USERS)
+        .select('*')
+        .or(`username.eq.${userData.username},email.eq.${userData.email}`);
+      if (error) throw error;
+      if (exists && exists.length > 0) {
+        setError('Username hoặc email đã tồn tại trong hệ thống.');
+        return false;
       }
-      await sheetService.registerUser(userData);
+      // Hash password trước khi lưu
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      await supabase
+        .from(TABLES.USERS)
+        .insert([
+          {
+            username: userData.username,
+            email: userData.email,
+            password: hashedPassword,
+            createdat: userData.createdat
+          }
+        ]);
       setCurrentUser(userData);
       setIsAuthenticated(true);
+      localStorage.setItem('user', JSON.stringify(userData));
+      return true;
     } catch (err) {
       setError('Đăng ký thất bại. Vui lòng thử lại.');
       throw err;

@@ -31,10 +31,9 @@ import { VolumeUp as VolumeUpIcon, EmojiEvents as EmojiEventsIcon, HourglassEmpt
 import ReactConfetti from 'react-confetti';
 import practiceConfig from '../practiceConfig.json';
 import { practiceData } from '../data/practiceData';
-import { sheetService } from '../services/sheetService';
 import { useAuth } from '../contexts/AuthContext';
 import { UserRankInline } from '../components/UserRank';
-import { badgeService } from '../services/badgeService';
+import { supabase, TABLES } from '../config/supabaseConfig';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -82,7 +81,6 @@ const Practice: React.FC = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answerResults, setAnswerResults] = useState<AnswerResult[]>([]);
   const [showResults, setShowResults] = useState(false);
-  const [startTime, setStartTime] = useState<number | null>(null);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [leaderboard, setLeaderboard] = useState<ScoreRecord[]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -98,79 +96,91 @@ const Practice: React.FC = () => {
   const totalTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleNext = useCallback(async () => {
-    if (!currentQuestion) return;
+    try {
+      if (!currentUser || !currentQuestion) return;
 
-    // Cập nhật score và answerResults khi chuyển câu
-    const isCorrect = userAnswer === currentQuestion.correctAnswer;
-    setScore(prev => prev + (isCorrect ? 1 : 0));
-    setAnswerResults(prev => [...prev, {
-      question: currentQuestion,
-      userAnswer,
-      isCorrect
-    }]);
-
-    if (currentQuestionIndex === 0 && !startTime) {
-      setStartTime(Date.now());
-    }
-
-    if (currentQuestionIndex < questions.length - 1) {
-      const nextIndex = currentQuestionIndex + 1;
-      setCurrentQuestionIndex(nextIndex);
-      setCurrentQuestion(questions[nextIndex]);
-      setUserAnswer('');
-    } else {
       setIsSaving(true);
-      // Tính điểm thực tế cho lần cuối
-      const finalScore = score + (userAnswer === currentQuestion.correctAnswer ? 1 : 0);
-      const finalTime = totalTimer;
-      if (currentUser) {
-        const newScore = {
-          username: currentUser.username,
-          score: finalScore,
-          time: finalTime,
-          date: new Date().toLocaleDateString()
-        };
-        try {
-          const currentLeaderboard = await sheetService.getLeaderboard();
-          const existingUserScore = currentLeaderboard.find(record => record.username === currentUser.username);
-          let shouldUpdate = false;
-          if (!existingUserScore) {
-            shouldUpdate = true;
-          } else {
-            if (finalScore > existingUserScore.score) {
-              shouldUpdate = true;
-            } else if (finalScore === existingUserScore.score && finalTime < existingUserScore.time) {
-              shouldUpdate = true;
-            }
-          }
-          if (shouldUpdate) {
-            await sheetService.addScore(newScore);
-            const updatedLeaderboard = await sheetService.getLeaderboard();
-            setLeaderboard(updatedLeaderboard);
-          }
 
-          // Kiểm tra và trao huy hiệu nếu đạt 25/25
-          if (finalScore === 25) {
-            try {
-              const userBadges = await badgeService.getUserBadges(currentUser.username);
-              const hasBadge = userBadges.some(badge => badge.id === 'badge_001');
-              
-              if (!hasBadge) {
-                await badgeService.addUserBadge(currentUser.username, 'badge_001');
-                console.log('Đã trao huy hiệu badge_001 cho người dùng', currentUser.username);
-              }
-            } catch (error) {
-              console.error('Lỗi khi trao huy hiệu:', error);
-            }
-          }
-        } catch (error) {
-          console.error('Error saving score:', error);
+      // Tính kết quả tạm thời cho câu hiện tại
+      const isCorrect = userAnswer === currentQuestion.correctAnswer;
+      const nextScore = score + (isCorrect ? 1 : 0);
+      const nextAnswerResults = [
+        ...answerResults,
+        {
+          question: currentQuestion,
+          userAnswer,
+          isCorrect,
+        },
+      ];
+
+      if (currentQuestionIndex === questions.length - 1) {
+        // Lưu leaderboard với score mới nhất và date
+        const finalScore = nextScore;
+        const finalTime = totalTimer;
+        const today = new Date().toISOString().slice(0, 10);
+
+        const query = supabase
+          .from(TABLES.LEADERBOARD)
+          .select('*')
+          .eq('username', currentUser.username)
+          .single();
+        const { data: existingRecord, error: leaderboardError } = await query;
+        if (leaderboardError && leaderboardError.code !== 'PGRST116') {
+          throw leaderboardError;
         }
+
+        if (existingRecord) {
+          if (finalScore > existingRecord.score || 
+              (finalScore === existingRecord.score && finalTime < existingRecord.time)) {
+            await supabase
+              .from(TABLES.LEADERBOARD)
+              .update({ score: finalScore, time: finalTime, date: today })
+              .eq('username', currentUser.username);
+          }
+        } else {
+          await supabase
+            .from(TABLES.LEADERBOARD)
+            .insert([{ username: currentUser.username, score: finalScore, time: finalTime, date: today }]);
+        }
+
+        // Check và trao badge_001 nếu đúng 25 câu
+        if (finalScore === 25) {
+          const { data: existingBadge } = await supabase
+            .from(TABLES.USER_BADGES)
+            .select('*')
+            .eq('username', currentUser.username)
+            .eq('badge_id', 'badge_001')
+            .single();
+          if (!existingBadge) {
+            await supabase
+              .from(TABLES.USER_BADGES)
+              .insert([{
+                username: currentUser.username,
+                badge_id: 'badge_001',
+                achieved_date: new Date().toISOString()
+              }]);
+          }
+        }
+
+        setAnswerResults(nextAnswerResults);
+        setScore(finalScore);
+        setShowResults(true);
+      } else {
+        setAnswerResults(nextAnswerResults);
+        setScore(nextScore);
+        setCurrentQuestionIndex(prev => {
+          const nextIndex = prev + 1;
+          setCurrentQuestion(questions[nextIndex] || null);
+          return nextIndex;
+        });
+        setUserAnswer('');
       }
       setIsSaving(false);
-      setShowResults(true);
+    } catch (error) {
+      console.error('Error saving results:', error);
+      setIsSaving(false);
     }
-  }, [currentQuestion, currentQuestionIndex, questions, score, startTime, currentUser, userAnswer, totalTimer]);
+  }, [currentUser, currentQuestion, score, userAnswer, totalTimer, currentQuestionIndex, questions, answerResults]);
 
   // Update handleNextRef when handleNext changes
   useEffect(() => {
@@ -311,7 +321,6 @@ const Practice: React.FC = () => {
     setScore(0);
     setAnswerResults([]);
     setShowResults(false);
-    setStartTime(null);
     setTotalTimer(0);
     setUserAnswer('');
   }, [generateQuestions]);
@@ -327,14 +336,20 @@ const Practice: React.FC = () => {
   useEffect(() => {
     const loadLeaderboard = async () => {
       try {
-        const records = await sheetService.getLeaderboard();
-        setLeaderboard(records);
+        const query = supabase
+          .from(TABLES.LEADERBOARD)
+          .select('*')
+          .order('score', { ascending: false })
+          .order('time', { ascending: true });
+        const { data, error }: { data: ScoreRecord[] | null, error: any } = await query;
+        if (error) throw error;
+        setLeaderboard(data || []);
       } catch (error) {
         console.error('Error loading leaderboard:', error);
       }
     };
     loadLeaderboard();
-  }, []); // Chỉ load một lần khi component mount
+  }, []);
 
   // Handle window resize
   useEffect(() => {

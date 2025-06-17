@@ -9,7 +9,6 @@ import {
   Alert,
   InputAdornment,
   Backdrop,
-  CircularProgress,
 } from '@mui/material';
 import {
   Email as EmailIcon,
@@ -17,7 +16,6 @@ import {
   Lock as LockIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
-import { sheetService } from '../services/sheetService';
 
 interface LoginModalProps {
   open: boolean;
@@ -63,7 +61,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onClose }) => {
     confirmPassword: '',
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [showGlobalLoading, setShowGlobalLoading] = useState(false);
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -131,57 +128,31 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onClose }) => {
     });
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validateLoginForm()) {
-      try {
-        setIsLoading(true);
-        await login(loginForm.emailOrUsername, loginForm.password);
-        if (!error && localStorage.getItem('user')) {
-          setShowGlobalLoading(true);
-          setTimeout(() => {
-            setShowGlobalLoading(false);
-            // Đóng modal và reset form, force update layout
-            handleClose();
-            window.requestAnimationFrame(() => {});
-          }, 800);
-        }
-      } catch (err) {
-        console.error('Login error:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-  };
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validateRegisterForm()) {
-      try {
-        setIsLoading(true);
-        // Kiểm tra username/email đã tồn tại
-        const exists = await sheetService.checkUserExists(registerForm.username, registerForm.email);
-        if (exists) {
-          setErrors(prev => ({
-            ...prev,
-            registerUsername: 'Username hoặc email đã tồn tại',
-            registerEmail: 'Username hoặc email đã tồn tại'
-          }));
-          setIsLoading(false);
-          return;
+    try {
+      if (tabValue === 0) {
+        const success = await login(loginForm.emailOrUsername, loginForm.password);
+        if (success) {
+          handleClose();
         }
-        await register({
+      } else {
+        const success = await register({
           username: registerForm.username,
           email: registerForm.email,
           password: registerForm.password,
-          createdAt: new Date().toISOString()
+          createdat: new Date().toISOString()
         });
-        onClose();
-      } catch (err) {
-        console.error('Register error:', err);
-      } finally {
-        setIsLoading(false);
+        if (success) {
+          handleClose();
+        }
       }
+    } catch (err) {
+      // Có thể set thêm error nếu muốn
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -277,7 +248,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onClose }) => {
           </Tabs>
 
           <TabPanel value={tabValue} index={0}>
-            <form onSubmit={handleLogin}>
+            <form onSubmit={handleSubmit}>
               <TextField
                 fullWidth
                 label="Email / Tên đăng nhập"
@@ -327,7 +298,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onClose }) => {
           </TabPanel>
 
           <TabPanel value={tabValue} index={1}>
-            <form onSubmit={handleRegister}>
+            <form onSubmit={handleSubmit}>
               <TextField
                 fullWidth
                 label="Tên đăng nhập"
@@ -417,12 +388,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({ open, onClose }) => {
           </TabPanel>
         </Box>
       </Modal>
-      <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={showGlobalLoading}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
     </>
   );
 }; 

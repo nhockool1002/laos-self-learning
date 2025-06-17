@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, keyframes } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
-import { sheetService } from '../services/sheetService';
+import { supabase, TABLES } from '../config/supabaseConfig';
 import UserTooltip from './UserTooltip';
 
 const rainbowAnimation1 = keyframes`
@@ -95,18 +95,24 @@ export const UserRank: React.FC = () => {
   const [userRank, setUserRank] = useState<number | null>(null);
 
   useEffect(() => {
-    const fetchLeaderboard = async () => {
-      if (currentUser) {
-        try {
-          const records = await sheetService.getLeaderboard();
-          const rank = records.findIndex(record => record.username === currentUser.username) + 1;
-          setUserRank(rank > 0 ? rank : null);
-        } catch (error) {
-          console.error('Error fetching leaderboard:', error);
-        }
+    const fetchUserRank = async () => {
+      try {
+        const query = supabase
+          .from(TABLES.LEADERBOARD)
+          .select('*')
+          .order('score', { ascending: false })
+          .order('time', { ascending: true });
+        const { data, error } = await query;
+        if (error) throw error;
+        const rank = data
+          ? data.findIndex((record: { username: string }) => record.username === currentUser.username) + 1
+          : null;
+        setUserRank(rank && rank > 0 ? rank : null);
+      } catch (error) {
+        console.error('Error fetching leaderboard:', error);
       }
     };
-    fetchLeaderboard();
+    fetchUserRank();
   }, [currentUser]);
 
   if (!currentUser) return null;
