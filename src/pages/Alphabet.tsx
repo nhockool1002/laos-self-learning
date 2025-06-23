@@ -7,15 +7,13 @@ import {
   Grid,
   Card,
   CardContent,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
   Button,
   ToggleButton,
   ToggleButtonGroup,
 } from '@mui/material';
 import FlashCard from '../components/FlashCard';
+import { practiceData } from '../data/practiceData';
+import { vowelsFull, vowelsGroup } from '../data/VowelsData';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -33,6 +31,12 @@ interface ConsonantGroupProps {
   title: string;
   consonants: ConsonantCardProps[];
   type: 'consonant' | 'vowel' | 'tone';
+  gridColumns?: {
+    xs?: number;
+    sm?: number;
+    md?: number;
+    lg?: number;
+  };
 }
 
 const ConsonantCard: React.FC<ConsonantCardProps & { bgColor?: string; opacity?: number }> = ({ letter, pronunciationVi, type, bgColor, opacity }) => (
@@ -114,18 +118,32 @@ const ConsonantCard: React.FC<ConsonantCardProps & { bgColor?: string; opacity?:
   </Card>
 );
 
-const ConsonantGroup: React.FC<ConsonantGroupProps> = ({ title, consonants, type }) => (
-  <Box sx={{ mb: 2, width: '100%', maxWidth: '100%', overflowX: 'hidden', px: { xs: 0, sm: 2 } }}>
-    <Typography variant="h6" sx={{ color: '#fff', mb: 1.5, fontSize: { xs: '1.05rem', sm: '1.25rem' } }}>{title}</Typography>
-    <Grid container spacing={{ xs: 0, sm: 1.5 }} sx={{ width: '100%', maxWidth: '100%', margin: 0, padding: 0, overflowX: 'hidden' }}>
-      {consonants.map((consonant) => (
-        <Grid item xs={6} sm={4} md={3} lg={2} key={consonant.letter} sx={{ p: 0, minWidth: 0 }}>
-          <ConsonantCard {...consonant} type={type} />
-        </Grid>
-      ))}
-    </Grid>
-  </Box>
-);
+const ConsonantGroup: React.FC<ConsonantGroupProps> = ({ title, consonants, type, gridColumns }) => {
+  const finalGridColumns = {
+    xs: 6, sm: 4, md: 3, lg: 2, ...gridColumns,
+  };
+
+  return (
+    <Box sx={{ mb: 2, width: '100%', maxWidth: '100%', overflowX: 'hidden', px: { xs: 0, sm: 2 } }}>
+      <Typography variant="h6" sx={{ color: '#fff', mb: 1.5, fontSize: { xs: '1.05rem', sm: '1.25rem' } }}>{title}</Typography>
+      <Grid container spacing={{ xs: 0, sm: 1.5 }} sx={{ width: '100%', maxWidth: '100%', margin: 0, padding: 0, overflowX: 'hidden' }}>
+        {consonants.map((consonant) => (
+          <Grid
+            item
+            xs={finalGridColumns.xs}
+            sm={finalGridColumns.sm}
+            md={finalGridColumns.md}
+            lg={finalGridColumns.lg}
+            key={consonant.letter}
+            sx={{ p: 0, minWidth: 0 }}
+          >
+            <ConsonantCard {...consonant} type={type} />
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
+  );
+};
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
@@ -149,7 +167,7 @@ const getLetterColor = (type: 'consonant' | 'vowel' | 'tone') => {
     case 'consonant':
       return '#2196f3';
     case 'vowel':
-      return '#f50057';
+      return '#2196f3';
     case 'tone':
       return '#4caf50';
     default:
@@ -157,105 +175,7 @@ const getLetterColor = (type: 'consonant' | 'vowel' | 'tone') => {
   }
 };
 
-const laoAlphabetOrder = [
-  { letter: 'ກ', pronunciationVi: 'cò' },
-  { letter: 'ຂ', pronunciationVi: 'khỏ' },
-  { letter: 'ຄ', pronunciationVi: 'kho' },
-  { letter: 'ງ', pronunciationVi: 'ngo' },
-  { letter: 'ຈ', pronunciationVi: 'cho' },
-  { letter: 'ສ', pronunciationVi: 'xỏ' },
-  { letter: 'ຊ', pronunciationVi: 'xo' },
-  { letter: 'ຍ', pronunciationVi: 'nho' },
-  { letter: 'ດ', pronunciationVi: 'đo' },
-  { letter: 'ຕ', pronunciationVi: 'tò' },
-  { letter: 'ຖ', pronunciationVi: 'thỏ' },
-  { letter: 'ທ', pronunciationVi: 'tho' },
-  { letter: 'ນ', pronunciationVi: 'no' },
-  { letter: 'ບ', pronunciationVi: 'bo' },
-  { letter: 'ປ', pronunciationVi: 'po' },
-  { letter: 'ຜ', pronunciationVi: 'phỏ' },
-  { letter: 'ຝ', pronunciationVi: 'fỏ' },
-  { letter: 'ພ', pronunciationVi: 'pho' },
-  { letter: 'ຟ', pronunciationVi: 'fo' },
-  { letter: 'ມ', pronunciationVi: 'mo' },
-  { letter: 'ຢ', pronunciationVi: 'yo' },
-  { letter: 'ຣ', pronunciationVi: 'ro' },
-  { letter: 'ລ', pronunciationVi: 'lo' },
-  { letter: 'ວ', pronunciationVi: 'vo' },
-  { letter: 'ຫ', pronunciationVi: 'ho' },
-  { letter: 'ອ', pronunciationVi: 'o' },
-  { letter: 'ຮ', pronunciationVi: 'hỏ' },
-];
-
-const vowelsFull = [
-  { letter: 'ະ', pronunciationVi: 'a' },
-  { letter: 'າ', pronunciationVi: 'aa' },
-  { letter: 'ິ', pronunciationVi: 'i' },
-  { letter: 'ີ', pronunciationVi: 'ii' },
-  { letter: 'ຶ', pronunciationVi: 'ư' },
-  { letter: 'ື', pronunciationVi: 'ưư' },
-  { letter: 'ຸ', pronunciationVi: 'u' },
-  { letter: 'ູ', pronunciationVi: 'uu' },
-  { letter: 'ເ', pronunciationVi: 'e' },
-  { letter: 'ແ', pronunciationVi: 'e' },
-  { letter: 'ໂ', pronunciationVi: 'o' },
-  { letter: 'ໃ', pronunciationVi: 'ai' },
-  { letter: 'ໄ', pronunciationVi: 'ai' },
-  { letter: 'ໍ', pronunciationVi: 'o' },
-  { letter: 'ົ', pronunciationVi: 'o' },
-  { letter: 'ັ', pronunciationVi: 'ă' },
-  { letter: 'ົວ', pronunciationVi: 'ua' },
-  { letter: 'ວ', pronunciationVi: 'ua' },
-  { letter: 'ຽ', pronunciationVi: 'ia' },
-  { letter: 'ືອ', pronunciationVi: 'ưa' },
-  { letter: 'ເອ', pronunciationVi: 'ê' },
-  { letter: 'ເວ', pronunciationVi: 'êu' },
-  { letter: 'ເຍ', pronunciationVi: 'ia' },
-  { letter: 'ເືອ', pronunciationVi: 'ưa' },
-  { letter: 'ເັຍ', pronunciationVi: 'ia' },
-  { letter: 'ເົາ', pronunciationVi: 'ao' },
-  { letter: 'ເັຍະ', pronunciationVi: 'ia' },
-  { letter: 'ເືອະ', pronunciationVi: 'ưa' },
-];
-
-const vowelsGroup = {
-  truoc: [
-    { letter: 'ເ', pronunciationVi: 'e' },
-    { letter: 'ແ', pronunciationVi: 'e' },
-    { letter: 'ໂ', pronunciationVi: 'o' },
-    { letter: 'ໃ', pronunciationVi: 'ai' },
-    { letter: 'ໄ', pronunciationVi: 'ai' },
-    { letter: 'ເອ', pronunciationVi: 'ê' },
-    { letter: 'ເວ', pronunciationVi: 'êu' },
-    { letter: 'ເຍ', pronunciationVi: 'ia' },
-    { letter: 'ເືອ', pronunciationVi: 'ưa' },
-    { letter: 'ເັຍ', pronunciationVi: 'ia' },
-    { letter: 'ເົາ', pronunciationVi: 'ao' },
-    { letter: 'ເັຍະ', pronunciationVi: 'ia' },
-    { letter: 'ເືອະ', pronunciationVi: 'ưa' },
-  ],
-  sau: [
-    { letter: 'ະ', pronunciationVi: 'a' },
-    { letter: 'າ', pronunciationVi: 'aa' },
-    { letter: 'ົ', pronunciationVi: 'o' },
-    { letter: 'ັ', pronunciationVi: 'ă' },
-    { letter: 'ົວ', pronunciationVi: 'ua' },
-    { letter: 'ວ', pronunciationVi: 'ua' },
-    { letter: 'ຽ', pronunciationVi: 'ia' },
-    { letter: 'ືອ', pronunciationVi: 'ưa' },
-  ],
-  tren: [
-    { letter: 'ິ', pronunciationVi: 'i' },
-    { letter: 'ີ', pronunciationVi: 'ii' },
-    { letter: 'ຶ', pronunciationVi: 'ư' },
-    { letter: 'ື', pronunciationVi: 'ưư' },
-  ],
-  duoi: [
-    { letter: 'ຸ', pronunciationVi: 'u' },
-    { letter: 'ູ', pronunciationVi: 'uu' },
-    { letter: 'ໍ', pronunciationVi: 'o' },
-  ]
-};
+const laoAlphabetOrder = practiceData.consonants;
 
 // Hàm xác định loại phụ âm theo bảng chuẩn
 const getConsonantLevel = (letter: string): 'high' | 'mid' | 'low' | undefined => {
@@ -352,73 +272,6 @@ const Alphabet: React.FC = () => {
     ]
   };
 
-  const tones = [
-    { letter: '˧', pronunciationVi: 'ngang' },
-    { letter: '˨˦', pronunciationVi: 'sắc' },
-    { letter: '˧˩', pronunciationVi: 'huyền' },
-    { letter: '˨˩˦', pronunciationVi: 'hỏi' },
-    { letter: '˧˥', pronunciationVi: 'ngã' },
-  ];
-
-  const consonantClusters = [
-    { letter: 'ກຣ', pronunciationVi: 'kro' },
-    { letter: 'ຂຣ', pronunciationVi: 'khro' },
-    { letter: 'ຄຣ', pronunciationVi: 'khro' },
-    { letter: 'ພຣ', pronunciationVi: 'phro' },
-  ];
-
-  const diphthongs = [
-    { letter: 'ເອະ', pronunciationVi: 'eo' },
-    { letter: 'ແອະ', pronunciationVi: 'aeo' },
-    { letter: 'ໂອະ', pronunciationVi: 'oo' },
-  ];
-
-  const finalConsonants = [
-    { letter: 'ກ', pronunciationVi: 'k' },
-    { letter: 'ງ', pronunciationVi: 'ng' },
-    { letter: 'ຍ', pronunciationVi: 'nh' },
-    { letter: 'ດ', pronunciationVi: 't' },
-    { letter: 'ນ', pronunciationVi: 'n' },
-    { letter: 'ບ', pronunciationVi: 'p' },
-    { letter: 'ມ', pronunciationVi: 'm' },
-  ];
-
-  const irregularPronunciations = [
-    {
-      word: 'ຫຼື',
-      pronunciation: 'lue',
-      explanation: 'Đọc là "lue" thay vì "hue"'
-    },
-    {
-      word: 'ເຫຼືອ',
-      pronunciation: 'luea',
-      explanation: 'Đọc là "luea" thay vì "huea"'
-    },
-    {
-      word: 'ຫຼັງ',
-      pronunciation: 'lang',
-      explanation: 'Đọc là "lang" thay vì "hlang"'
-    },
-  ];
-
-  const intonationExercises = [
-    {
-      sentence: 'ສະບາຍດີ',
-      meaning: 'Xin chào',
-      intonation: 'Thanh ngang'
-    },
-    {
-      sentence: 'ຂໍອະນຸຍາດ',
-      meaning: 'Xin phép',
-      intonation: 'Thanh sắc'
-    },
-    {
-      sentence: 'ຂໍຂອບໃຈ',
-      meaning: 'Cảm ơn',
-      intonation: 'Thanh huyền'
-    },
-  ];
-
   const handleNextFlashCard = () => {
     setShuffledList(shuffleArray(shuffledList));
     setCurrentFlashCardIndex(0);
@@ -442,12 +295,6 @@ const Alphabet: React.FC = () => {
         >
           <Tab label="Phụ âm" />
           <Tab label="Nguyên âm" />
-          <Tab label="Thanh" />
-          <Tab label="Phụ âm kép" />
-          <Tab label="Nguyên âm đôi" />
-          <Tab label="Phụ âm cuối" />
-          <Tab label="Bất quy tắc" />
-          <Tab label="Ngữ điệu" />
         </Tabs>
       </Box>
 
@@ -593,28 +440,32 @@ const Alphabet: React.FC = () => {
           </ToggleButtonGroup>
         </Box>
         {vowelMode === 'group' ? (
-          <>
-            <ConsonantGroup
-              title="Nguyên âm đứng trước"
-              consonants={vowelsGroup.truoc.map(vowel => ({ ...vowel, type: 'vowel' as const }))}
-              type="vowel"
-            />
-            <ConsonantGroup
-              title="Nguyên âm đứng sau"
-              consonants={vowelsGroup.sau.map(vowel => ({ ...vowel, type: 'vowel' as const }))}
-              type="vowel"
-            />
-            <ConsonantGroup
-              title="Nguyên âm đứng trên"
-              consonants={vowelsGroup.tren.map(vowel => ({ ...vowel, type: 'vowel' as const }))}
-              type="vowel"
-            />
-            <ConsonantGroup
-              title="Nguyên âm đứng dưới"
-              consonants={vowelsGroup.duoi.map(vowel => ({ ...vowel, type: 'vowel' as const }))}
-              type="vowel"
-            />
-          </>
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
+            <Grid item xs={12} sm={6} md={4}>
+              <ConsonantGroup
+                title="Nguyên âm ngắn"
+                consonants={vowelsGroup.ngan.map(vowel => ({ ...vowel, type: 'vowel' as const }))}
+                type="vowel"
+                gridColumns={{ sm: 6, md: 6, lg: 6 }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <ConsonantGroup
+                title="Nguyên âm dài"
+                consonants={vowelsGroup.dai.map(vowel => ({ ...vowel, type: 'vowel' as const }))}
+                type="vowel"
+                gridColumns={{ sm: 6, md: 6, lg: 6 }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12} md={4}>
+              <ConsonantGroup
+                title="Nguyên âm đặc biệt"
+                consonants={vowelsGroup.dacbiet.map(vowel => ({ ...vowel, type: 'vowel' as const }))}
+                type="vowel"
+                gridColumns={{ sm: 6, md: 6, lg: 6 }}
+              />
+            </Grid>
+          </Grid>
         ) : (
           <ConsonantGroup
             title="Bảng nguyên âm Lào"
@@ -622,138 +473,6 @@ const Alphabet: React.FC = () => {
             type="vowel"
           />
         )}
-      </TabPanel>
-
-      <TabPanel value={value} index={2}>
-        <ConsonantGroup 
-          title="Thanh" 
-          consonants={tones.map(tone => ({
-            ...tone,
-            type: 'tone' as const
-          }))} 
-          type="tone" 
-        />
-      </TabPanel>
-
-      <TabPanel value={value} index={3}>
-        <ConsonantGroup 
-          title="Phụ âm kép" 
-          consonants={consonantClusters.map(cluster => ({
-            ...cluster,
-            type: 'consonant' as const
-          }))} 
-          type="consonant" 
-        />
-      </TabPanel>
-
-      <TabPanel value={value} index={4}>
-        <ConsonantGroup 
-          title="Nguyên âm đôi" 
-          consonants={diphthongs.map(diphthong => ({
-            ...diphthong,
-            type: 'vowel' as const
-          }))} 
-          type="vowel" 
-        />
-      </TabPanel>
-
-      <TabPanel value={value} index={5}>
-        <ConsonantGroup 
-          title="Phụ âm cuối" 
-          consonants={finalConsonants.map(final => ({
-            ...final,
-            type: 'consonant' as const
-          }))} 
-          type="consonant" 
-        />
-      </TabPanel>
-
-      <TabPanel value={value} index={6}>
-        <List sx={{ width: '100%', bgcolor: '#1a1a1a', borderRadius: 1 }}>
-          {irregularPronunciations.map((item, index) => (
-            <React.Fragment key={item.word}>
-              <ListItem alignItems="flex-start">
-                <ListItemText
-                  primary={
-                    <Typography
-                      sx={{
-                        fontFamily: 'Noto Sans Lao',
-                        color: '#fff',
-                        fontSize: '1.2rem',
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      {item.word}
-                    </Typography>
-                  }
-                  secondary={
-                    <React.Fragment>
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{ color: '#aaa', display: 'block' }}
-                      >
-                        Phát âm: {item.pronunciation}
-                      </Typography>
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{ color: '#aaa', display: 'block' }}
-                      >
-                        {item.explanation}
-                      </Typography>
-                    </React.Fragment>
-                  }
-                />
-              </ListItem>
-              {index < irregularPronunciations.length - 1 && <Divider variant="inset" component="li" />}
-            </React.Fragment>
-          ))}
-        </List>
-      </TabPanel>
-
-      <TabPanel value={value} index={7}>
-        <List sx={{ width: '100%', bgcolor: '#1a1a1a', borderRadius: 1 }}>
-          {intonationExercises.map((exercise, index) => (
-            <React.Fragment key={exercise.sentence}>
-              <ListItem alignItems="flex-start">
-                <ListItemText
-                  primary={
-                    <Typography
-                      sx={{
-                        fontFamily: 'Noto Sans Lao',
-                        color: '#fff',
-                        fontSize: '1.2rem',
-                        fontWeight: 'bold'
-                      }}
-                    >
-                      {exercise.sentence}
-                    </Typography>
-                  }
-                  secondary={
-                    <React.Fragment>
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{ color: '#aaa', display: 'block' }}
-                      >
-                        Nghĩa: {exercise.meaning}
-                      </Typography>
-                      <Typography
-                        component="span"
-                        variant="body2"
-                        sx={{ color: '#aaa', display: 'block' }}
-                      >
-                        Ngữ điệu: {exercise.intonation}
-                      </Typography>
-                    </React.Fragment>
-                  }
-                />
-              </ListItem>
-              {index < intonationExercises.length - 1 && <Divider variant="inset" component="li" />}
-            </React.Fragment>
-          ))}
-        </List>
       </TabPanel>
     </Box>
   );

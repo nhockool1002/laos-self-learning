@@ -5,16 +5,16 @@ export interface PracticeWord {
 
 export const practiceData = {
   consonants: [
-    { letter: 'ກ', pronunciationVi: 'cò' },
+    { letter: 'ກ', pronunciationVi: 'co' },
     { letter: 'ຂ', pronunciationVi: 'khỏ' },
     { letter: 'ຄ', pronunciationVi: 'kho' },
     { letter: 'ງ', pronunciationVi: 'ngo' },
     { letter: 'ຈ', pronunciationVi: 'cho' },
-    { letter: 'ສ', pronunciationVi: 'xỏ' },
+    { letter: 'ສ', pronunciationVi: 'sỏ' },
     { letter: 'ຊ', pronunciationVi: 'xo' },
     { letter: 'ຍ', pronunciationVi: 'nho' },
     { letter: 'ດ', pronunciationVi: 'đo' },
-    { letter: 'ຕ', pronunciationVi: 'tò' },
+    { letter: 'ຕ', pronunciationVi: 'to' },
     { letter: 'ຖ', pronunciationVi: 'thỏ' },
     { letter: 'ທ', pronunciationVi: 'tho' },
     { letter: 'ນ', pronunciationVi: 'no' },
@@ -25,7 +25,7 @@ export const practiceData = {
     { letter: 'ພ', pronunciationVi: 'pho' },
     { letter: 'ຟ', pronunciationVi: 'fo' },
     { letter: 'ມ', pronunciationVi: 'mo' },
-    { letter: 'ຢ', pronunciationVi: 'yo' },
+    { letter: 'ຢ', pronunciationVi: 'do' },
     { letter: 'ຣ', pronunciationVi: 'ro' },
     { letter: 'ລ', pronunciationVi: 'lo' },
     { letter: 'ວ', pronunciationVi: 'vo' },
