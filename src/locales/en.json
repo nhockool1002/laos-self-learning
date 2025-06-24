@@ -1,0 +1,237 @@
+{
+  "sidebar": {
+    "title": "Lao Language",
+    "subtitle": "Learning App",
+    "footer": "© 2025 Lao Language"
+  },
+  "menu": {
+    "home": "Home",
+    "alphabet": "Alphabet",
+    "game": "Games",
+    "lessons": "Lessons",
+    "practice": "Practice",
+    "tests": "Tests",
+    "writing_board": "Writing Board",
+    "paper_practice": "Paper Practice"
+  },
+  "home": {
+    "main_title": "Learn Lao with Nhut",
+    "description": "Learn Lao easily and effectively through interactive lessons, practical exercises, and knowledge assessments.",
+    "features": {
+      "alphabet": {
+        "title": "Alphabet",
+        "description": "Learn how to read and write the Lao alphabet"
+      },
+      "lessons": {
+        "title": "Lessons",
+        "description": "Topic-based lessons from basic to advanced"
+      },
+      "practice": {
+        "title": "Practice",
+        "description": "Practice communication and pronunciation"
+      },
+      "tests": {
+        "title": "Tests",
+        "description": "Assess knowledge through tests"
+      },
+      "game": {
+        "title": "Games",
+        "description": "Learn Lao through interactive games"
+      },
+      "writing_board": {
+        "title": "Writing Board",
+        "description": "Practice writing Lao on electronic board"
+      },
+      "paper_practice": {
+        "title": "Paper Practice",
+        "description": "Practice writing Lao on paper with exercises"
+      }
+    }
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "rank": "Rank",
+    "username": "Username",
+    "score": "Score",
+    "time": "Time",
+    "date": "Date"
+  },
+  "pages": {
+    "alphabet": {
+      "title": "Alphabet",
+      "consonants": "Consonants",
+      "vowels": "Vowels",
+      "group_mode": "Group Mode",
+      "all_mode": "All",
+      "flashcard_mode": "Flash Card",
+      "consonant_groups": {
+        "high": "High Consonants",
+        "mid": "Mid Consonants",
+        "low": "Low Consonants",
+        "combined": "Combined Consonants"
+      },
+      "vowel_groups": {
+        "short": "Short Vowels",
+        "long": "Long Vowels",
+        "special": "Special Vowels"
+      }
+    },
+    "lessons": {
+      "title": "Topic-based Lessons",
+      "lesson_list": "Lesson List",
+      "select_lesson": "Please select a lesson to view details",
+      "vocabulary": "Vocabulary",
+      "grammar": "Grammar",
+      "examples": "Examples"
+    },
+    "practice": {
+      "title": "Practice"
+    },
+    "tests": {
+      "title": "Tests"
+    },
+    "game": {
+      "title": "Games"
+    },
+    "writing_board": {
+      "title": "Writing Board",
+      "clear": "Clear",
+      "save": "Save",
+      "load": "Load",
+      "export": "Export",
+      "brush_size": "Brush Size",
+      "color": "Color",
+      "confirm_leave": "Do you want to leave the writing board?",
+      "saved_drawings": "Saved Drawings List",
+      "no_saved_drawings": "No drawings saved yet",
+      "drawing_name": "Drawing Name",
+      "save_drawing": "Save Drawing",
+      "enter_name": "Enter drawing name"
+    },
+    "paper_practice": {
+      "title": "Paper Practice"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "yes": "Yes",
+    "no": "No",
+    "ok": "OK",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "finish": "Finish",
+    "retry": "Retry",
+    "refresh": "Refresh",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "select": "Select",
+    "all": "All",
+    "none": "None",
+    "apply": "Apply",
+    "reset": "Reset",
+    "download": "Download",
+    "upload": "Upload",
+    "export": "Export",
+    "import": "Import",
+    "print": "Print",
+    "share": "Share",
+    "copy": "Copy",
+    "paste": "Paste",
+    "cut": "Cut",
+    "undo": "Undo",
+    "redo": "Redo",
+    "zoom_in": "Zoom In",
+    "zoom_out": "Zoom Out",
+    "fullscreen": "Fullscreen",
+    "settings": "Settings",
+    "help": "Help",
+    "about": "About",
+    "contact": "Contact",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "feedback": "Feedback",
+    "report": "Report",
+    "support": "Support",
+    "language": "Language",
+    "features": "Main Features",
+    "explore": "Explore"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "confirm_password": "Confirm Password",
+    "forgot_password": "Forgot Password?",
+    "remember_me": "Remember Me",
+    "login_with": "Login with",
+    "or": "or",
+    "already_have_account": "Already have an account?",
+    "dont_have_account": "Don't have an account?",
+    "create_account": "Create Account",
+    "sign_in": "Sign In",
+    "sign_up": "Sign Up",
+    "welcome_back": "Welcome Back",
+    "welcome": "Welcome",
+    "profile": "Profile",
+    "account": "Account",
+    "settings": "Settings"
+  },
+  "game": {
+    "start": "Start",
+    "pause": "Pause",
+    "resume": "Resume",
+    "restart": "Restart",
+    "quit": "Quit",
+    "score": "Score",
+    "level": "Level",
+    "time": "Time",
+    "lives": "Lives",
+    "game_over": "Game Over",
+    "you_win": "You Win!",
+    "you_lose": "You Lose!",
+    "high_score": "High Score",
+    "new_record": "New Record!",
+    "try_again": "Try Again",
+    "next_level": "Next Level",
+    "instructions": "Instructions",
+    "difficulty": "Difficulty",
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard",
+    "expert": "Expert"
+  },
+  "lessons": {
+    "greetings": "Greetings",
+    "numbers": "Numbers",
+    "food": "Food",
+    "family": "Family",
+    "time": "Time",
+    "colors": "Colors",
+    "weather": "Weather",
+    "transportation": "Transportation",
+    "occupations": "Occupations",
+    "places": "Places",
+    "emotions": "Emotions",
+    "vocabulary": "Vocabulary",
+    "grammar": "Grammar",
+    "examples": "Examples",
+    "practice": "Practice",
+    "quiz": "Quiz",
+    "progress": "Progress",
+    "completed": "Completed",
+    "in_progress": "In Progress",
+    "not_started": "Not Started"
+  }
+} 

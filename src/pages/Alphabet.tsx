@@ -165,9 +165,9 @@ function TabPanel(props: TabPanelProps) {
 const getLetterColor = (type: 'consonant' | 'vowel' | 'tone') => {
   switch (type) {
     case 'consonant':
-      return '#2196f3';
+      return '#667eea';
     case 'vowel':
-      return '#2196f3';
+      return '#667eea';
     case 'tone':
       return '#4caf50';
     default:
@@ -291,7 +291,23 @@ const Alphabet: React.FC = () => {
           aria-label="alphabet tabs"
           variant="scrollable"
           scrollButtons="auto"
-          sx={{ width: '100%', minWidth: 0, maxWidth: '100%' }}
+          sx={{ 
+            width: '100%', 
+            minWidth: 0, 
+            maxWidth: '100%',
+            '& .MuiTab-root': {
+              color: 'text.secondary',
+              fontWeight: 500,
+              '&.Mui-selected': {
+                color: '#667eea',
+                fontWeight: 600,
+              },
+            },
+            '& .MuiTabs-indicator': {
+              backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            },
+          }}
         >
           <Tab label="Phụ âm" />
           <Tab label="Nguyên âm" />
@@ -305,7 +321,23 @@ const Alphabet: React.FC = () => {
             exclusive
             onChange={handleToggleMode}
             size="small"
-            color="primary"
+            sx={{
+              '& .MuiToggleButton-root': {
+                color: 'text.secondary',
+                borderColor: 'divider',
+                '&.Mui-selected': {
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white',
+                  borderColor: 'transparent',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                  },
+                },
+                '&:hover': {
+                  background: 'rgba(102, 126, 234, 0.1)',
+                },
+              },
+            }}
           >
             <ToggleButton value="group">Phân nhóm</ToggleButton>
             <ToggleButton value="all">Toàn bộ</ToggleButton>
@@ -330,14 +362,24 @@ const Alphabet: React.FC = () => {
                   <Button 
                     variant="contained" 
                     onClick={handlePrevFlashCard}
-                    sx={{ backgroundColor: '#2196f3' }}
+                    sx={{ 
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                      }
+                    }}
                   >
                     Trước
                   </Button>
                   <Button 
                     variant="contained" 
                     onClick={handleNextFlashCard}
-                    sx={{ backgroundColor: '#2196f3' }}
+                    sx={{ 
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                      }
+                    }}
                   >
                     Tiếp
                   </Button>
@@ -433,7 +475,23 @@ const Alphabet: React.FC = () => {
             exclusive
             onChange={handleToggleVowelMode}
             size="small"
-            color="primary"
+            sx={{
+              '& .MuiToggleButton-root': {
+                color: 'text.secondary',
+                borderColor: 'divider',
+                '&.Mui-selected': {
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white',
+                  borderColor: 'transparent',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                  },
+                },
+                '&:hover': {
+                  background: 'rgba(102, 126, 234, 0.1)',
+                },
+              },
+            }}
           >
             <ToggleButton value="group">Phân loại</ToggleButton>
             <ToggleButton value="all">Toàn bộ</ToggleButton>

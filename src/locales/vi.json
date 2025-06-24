@@ -1,0 +1,237 @@
+{
+  "sidebar": {
+    "title": "Tiếng Lào",
+    "subtitle": "Learning App",
+    "footer": "© 2025 Tiếng Lào"
+  },
+  "menu": {
+    "home": "Trang chủ",
+    "alphabet": "Bảng chữ cái",
+    "game": "Trò chơi",
+    "lessons": "Bài học",
+    "practice": "Luyện tập",
+    "tests": "Kiểm tra",
+    "writing_board": "Bảng viết",
+    "paper_practice": "Luyện viết"
+  },
+  "home": {
+    "main_title": "Học Tiếng Lào với Nhựt",
+    "description": "Học tiếng Lào một cách dễ dàng và hiệu quả thông qua các bài học tương tác, bài tập thực hành và kiểm tra kiến thức.",
+    "features": {
+      "alphabet": {
+        "title": "Bảng chữ cái",
+        "description": "Học cách đọc và viết bảng chữ cái tiếng Lào"
+      },
+      "lessons": {
+        "title": "Bài học",
+        "description": "Các bài học theo chủ đề từ cơ bản đến nâng cao"
+      },
+      "practice": {
+        "title": "Luyện tập",
+        "description": "Thực hành giao tiếp và phát âm"
+      },
+      "tests": {
+        "title": "Kiểm tra",
+        "description": "Đánh giá kiến thức qua các bài kiểm tra"
+      },
+      "game": {
+        "title": "Trò chơi",
+        "description": "Học tiếng Lào thông qua các trò chơi tương tác"
+      },
+      "writing_board": {
+        "title": "Bảng viết",
+        "description": "Luyện viết chữ Lào trên bảng viết điện tử"
+      },
+      "paper_practice": {
+        "title": "Luyện viết",
+        "description": "Luyện viết chữ Lào trên giấy với các bài tập"
+      }
+    }
+  },
+  "leaderboard": {
+    "title": "Bảng xếp hạng",
+    "rank": "Hạng",
+    "username": "Tên người dùng",
+    "score": "Điểm",
+    "time": "Thời gian",
+    "date": "Ngày"
+  },
+  "pages": {
+    "alphabet": {
+      "title": "Bảng chữ cái",
+      "consonants": "Phụ âm",
+      "vowels": "Nguyên âm",
+      "group_mode": "Phân nhóm",
+      "all_mode": "Toàn bộ",
+      "flashcard_mode": "Flash Card",
+      "consonant_groups": {
+        "high": "Phụ âm cao",
+        "mid": "Phụ âm giữa",
+        "low": "Phụ âm thấp",
+        "combined": "Phụ âm kết hợp"
+      },
+      "vowel_groups": {
+        "short": "Nguyên âm ngắn",
+        "long": "Nguyên âm dài",
+        "special": "Nguyên âm đặc biệt"
+      }
+    },
+    "lessons": {
+      "title": "Bài học theo chủ đề",
+      "lesson_list": "Danh sách bài học",
+      "select_lesson": "Vui lòng chọn một bài học để xem chi tiết",
+      "vocabulary": "Từ vựng",
+      "grammar": "Ngữ pháp",
+      "examples": "Ví dụ"
+    },
+    "practice": {
+      "title": "Luyện tập"
+    },
+    "tests": {
+      "title": "Kiểm tra"
+    },
+    "game": {
+      "title": "Trò chơi"
+    },
+    "writing_board": {
+      "title": "Bảng viết",
+      "clear": "Xóa",
+      "save": "Lưu",
+      "load": "Tải",
+      "export": "Xuất",
+      "brush_size": "Kích thước bút",
+      "color": "Màu sắc",
+      "confirm_leave": "Bạn có muốn rời khỏi bảng vẽ không?",
+      "saved_drawings": "Danh sách bảng đã lưu",
+      "no_saved_drawings": "Chưa có bảng nào được lưu",
+      "drawing_name": "Tên bảng vẽ",
+      "save_drawing": "Lưu bảng vẽ",
+      "enter_name": "Nhập tên bảng vẽ"
+    },
+    "paper_practice": {
+      "title": "Luyện viết"
+    }
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Có lỗi xảy ra",
+    "success": "Thành công",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "delete": "Xóa",
+    "edit": "Sửa",
+    "close": "Đóng",
+    "confirm": "Xác nhận",
+    "yes": "Có",
+    "no": "Không",
+    "ok": "OK",
+    "back": "Quay lại",
+    "next": "Tiếp theo",
+    "previous": "Trước đó",
+    "finish": "Hoàn thành",
+    "retry": "Thử lại",
+    "refresh": "Làm mới",
+    "search": "Tìm kiếm",
+    "filter": "Lọc",
+    "sort": "Sắp xếp",
+    "select": "Chọn",
+    "all": "Tất cả",
+    "none": "Không có",
+    "apply": "Áp dụng",
+    "reset": "Đặt lại",
+    "download": "Tải xuống",
+    "upload": "Tải lên",
+    "export": "Xuất",
+    "import": "Nhập",
+    "print": "In",
+    "share": "Chia sẻ",
+    "copy": "Sao chép",
+    "paste": "Dán",
+    "cut": "Cắt",
+    "undo": "Hoàn tác",
+    "redo": "Làm lại",
+    "zoom_in": "Phóng to",
+    "zoom_out": "Thu nhỏ",
+    "fullscreen": "Toàn màn hình",
+    "settings": "Cài đặt",
+    "help": "Trợ giúp",
+    "about": "Giới thiệu",
+    "contact": "Liên hệ",
+    "privacy": "Quyền riêng tư",
+    "terms": "Điều khoản",
+    "feedback": "Phản hồi",
+    "report": "Báo cáo",
+    "support": "Hỗ trợ",
+    "language": "Ngôn ngữ",
+    "features": "Tính năng chính",
+    "explore": "Khám phá"
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "register": "Đăng ký",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "confirm_password": "Xác nhận mật khẩu",
+    "forgot_password": "Quên mật khẩu?",
+    "remember_me": "Ghi nhớ đăng nhập",
+    "login_with": "Đăng nhập bằng",
+    "or": "hoặc",
+    "already_have_account": "Đã có tài khoản?",
+    "dont_have_account": "Chưa có tài khoản?",
+    "create_account": "Tạo tài khoản",
+    "sign_in": "Đăng nhập",
+    "sign_up": "Đăng ký",
+    "welcome_back": "Chào mừng trở lại",
+    "welcome": "Chào mừng",
+    "profile": "Hồ sơ",
+    "account": "Tài khoản",
+    "settings": "Cài đặt"
+  },
+  "game": {
+    "start": "Bắt đầu",
+    "pause": "Tạm dừng",
+    "resume": "Tiếp tục",
+    "restart": "Chơi lại",
+    "quit": "Thoát",
+    "score": "Điểm số",
+    "level": "Cấp độ",
+    "time": "Thời gian",
+    "lives": "Mạng sống",
+    "game_over": "Game Over",
+    "you_win": "Bạn thắng!",
+    "you_lose": "Bạn thua!",
+    "high_score": "Điểm cao nhất",
+    "new_record": "Kỷ lục mới!",
+    "try_again": "Thử lại",
+    "next_level": "Cấp độ tiếp theo",
+    "instructions": "Hướng dẫn",
+    "difficulty": "Độ khó",
+    "easy": "Dễ",
+    "medium": "Trung bình",
+    "hard": "Khó",
+    "expert": "Chuyên gia"
+  },
+  "lessons": {
+    "greetings": "Chào hỏi",
+    "numbers": "Số đếm",
+    "food": "Thức ăn",
+    "family": "Gia đình",
+    "time": "Thời gian",
+    "colors": "Màu sắc",
+    "weather": "Thời tiết",
+    "transportation": "Giao thông",
+    "occupations": "Nghề nghiệp",
+    "places": "Địa điểm",
+    "emotions": "Cảm xúc",
+    "vocabulary": "Từ vựng",
+    "grammar": "Ngữ pháp",
+    "examples": "Ví dụ",
+    "practice": "Luyện tập",
+    "quiz": "Câu đố",
+    "progress": "Tiến độ",
+    "completed": "Hoàn thành",
+    "in_progress": "Đang học",
+    "not_started": "Chưa bắt đầu"
+  }
+} 

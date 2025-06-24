@@ -144,7 +144,13 @@ const Tests: React.FC = () => {
                 <Button
                   variant="contained"
                   onClick={() => handleStartTest(test)}
-                  sx={{ mt: 2 }}
+                  sx={{ 
+                    mt: 2,
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                    }
+                  }}
                 >
                   Bắt đầu kiểm tra
                 </Button>
@@ -245,12 +251,27 @@ const Tests: React.FC = () => {
                   <Button
                     onClick={handlePrevious}
                     disabled={currentQuestion === 0}
+                    sx={{
+                      color: '#667eea',
+                      '&:hover': {
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                      }
+                    }}
                   >
                     Câu trước
                   </Button>
                   <Button
                     onClick={handleNext}
                     disabled={!userAnswers[currentQuestion]}
+                    sx={{
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      '&:hover': {
+                        background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                      },
+                      '&:disabled': {
+                        background: 'rgba(102, 126, 234, 0.3)',
+                      }
+                    }}
                   >
                     {currentQuestion === selectedTest.questions.length - 1
                       ? 'Kết thúc'
@@ -258,7 +279,15 @@ const Tests: React.FC = () => {
                   </Button>
                 </>
               )}
-              <Button onClick={handleCloseDialog}>
+              <Button 
+                onClick={handleCloseDialog}
+                sx={{
+                  color: '#667eea',
+                  '&:hover': {
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                  }
+                }}
+              >
                 {showResults ? 'Đóng' : 'Hủy'}
               </Button>
             </DialogActions>

@@ -1,156 +1,390 @@
 import React from 'react';
-import { Typography, Grid, Card, CardContent, Box } from '@mui/material';
+import { 
+  Typography, 
+  Grid, 
+  Card, 
+  CardContent, 
+  Box, 
+  useTheme,
+  Container,
+  Button,
+  Chip
+} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import {
   School as SchoolIcon,
   Book as BookIcon,
   Mic as MicIcon,
   Assignment as AssignmentIcon,
-  Games as GamesIcon,
+  SportsEsports as GamesIcon,
   Draw as DrawIcon,
   Edit as EditIcon,
+  PlayArrow as PlayArrowIcon,
+  TrendingUp as TrendingUpIcon,
+  Star as StarIcon,
 } from '@mui/icons-material';
+import { useTranslation } from '../hooks/useI18n';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const theme = useTheme();
+  const { t } = useTranslation();
 
   const features = [
     {
-      title: 'Bảng chữ cái',
-      description: 'Học cách đọc và viết bảng chữ cái tiếng Lào',
-      icon: <SchoolIcon sx={{ fontSize: 40 }} />,
+      key: 'alphabet',
+      icon: <SchoolIcon sx={{ fontSize: 32 }} />,
       path: '/alphabet',
+      color: '#667eea',
+      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     },
     {
-      title: 'Bài học',
-      description: 'Các bài học theo chủ đề từ cơ bản đến nâng cao',
-      icon: <BookIcon sx={{ fontSize: 40 }} />,
+      key: 'lessons',
+      icon: <BookIcon sx={{ fontSize: 32 }} />,
       path: '/lessons',
+      color: '#764ba2',
+      gradient: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
     },
     {
-      title: 'Luyện tập',
-      description: 'Thực hành giao tiếp và phát âm',
-      icon: <MicIcon sx={{ fontSize: 40 }} />,
+      key: 'practice',
+      icon: <MicIcon sx={{ fontSize: 32 }} />,
       path: '/practice',
+      color: '#667eea',
+      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     },
     {
-      title: 'Kiểm tra',
-      description: 'Đánh giá kiến thức qua các bài kiểm tra',
-      icon: <AssignmentIcon sx={{ fontSize: 40 }} />,
+      key: 'tests',
+      icon: <AssignmentIcon sx={{ fontSize: 32 }} />,
       path: '/tests',
+      color: '#764ba2',
+      gradient: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
     },
     {
-      title: 'Trò chơi',
-      description: 'Học tiếng Lào thông qua các trò chơi tương tác',
-      icon: <GamesIcon sx={{ fontSize: 40 }} />,
+      key: 'game',
+      icon: <GamesIcon sx={{ fontSize: 32 }} />,
       path: '/game',
+      color: '#667eea',
+      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     },
     {
-      title: 'Bảng viết',
-      description: 'Luyện viết chữ Lào trên bảng viết điện tử',
-      icon: <DrawIcon sx={{ fontSize: 40 }} />,
+      key: 'writing_board',
+      icon: <DrawIcon sx={{ fontSize: 32 }} />,
       path: '/writing-board',
+      color: '#764ba2',
+      gradient: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
     },
     {
-      title: 'Luyện viết',
-      description: 'Luyện viết chữ Lào trên giấy với các bài tập',
-      icon: <EditIcon sx={{ fontSize: 40 }} />,
+      key: 'paper_practice',
+      icon: <EditIcon sx={{ fontSize: 32 }} />,
       path: '/paper-practice',
+      color: '#667eea',
+      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     },
   ];
 
   return (
-    <Box>
+    <Box sx={{ minHeight: '100vh' }}>
+      {/* Hero Section */}
       <Box
         sx={{
-          bgcolor: 'background.paper',
-          pt: 8,
-          pb: 6,
-          textAlign: 'center',
+          background: theme.palette.mode === 'dark'
+            ? 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)'
+            : 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)',
+          pt: { xs: 2, md: 4 },
+          pb: { xs: 3, md: 6 },
+          position: 'relative',
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: theme.palette.mode === 'dark'
+              ? 'linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%)'
+              : 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
+            zIndex: 0,
+          },
         }}
       >
-        <Typography
-          component="h1"
-          variant="h2"
-          color="text.primary"
-          gutterBottom
-        >
-          Học Tiếng Lào với Nhựt
-        </Typography>
-        <Typography variant="h5" color="text.secondary" paragraph>
-          Học tiếng Lào một cách dễ dàng và hiệu quả thông qua các bài học
-          tương tác, bài tập thực hành và kiểm tra kiến thức.
-        </Typography>
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+          <Box sx={{ textAlign: 'center', mb: 4 }}>
+            {/* Logo */}
+            <Box
+              sx={{
+                width: 60,
+                height: 60,
+                borderRadius: '16px',
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 1.5rem',
+                boxShadow: theme.palette.mode === 'dark'
+                  ? '0 8px 32px rgba(102, 126, 234, 0.4)'
+                  : '0 8px 32px rgba(102, 126, 234, 0.3)',
+              }}
+            >
+              <img
+                src="/laos.png"
+                alt="Laos Flag"
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  objectFit: 'contain',
+                }}
+              />
+            </Box>
+
+            {/* Main Title */}
+            <Typography
+              component="h1"
+              variant="h2"
+              sx={{
+                fontWeight: 700,
+                fontSize: { xs: '2rem', md: '2.8rem' },
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                mb: 2,
+                lineHeight: 1.2,
+              }}
+            >
+              {t('home.main_title', 'Học Tiếng Lào với Nhựt')}
+            </Typography>
+
+            {/* Description */}
+            <Typography 
+              variant="h6" 
+              sx={{
+                color: theme.palette.mode === 'dark' ? 'text.secondary' : 'text.secondary',
+                maxWidth: '700px',
+                margin: '0 auto',
+                mb: 3,
+                lineHeight: 1.5,
+                fontSize: { xs: '1rem', md: '1.1rem' },
+                opacity: theme.palette.mode === 'dark' ? 0.9 : 0.8,
+              }}
+            >
+              {t('home.description', 'Học tiếng Lào một cách dễ dàng và hiệu quả thông qua các bài học tương tác, bài tập thực hành và kiểm tra kiến thức.')}
+            </Typography>
+
+            {/* Stats */}
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 3, flexWrap: 'wrap' }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Chip
+                  icon={<TrendingUpIcon />}
+                  label="7 Chủ đề"
+                  size="small"
+                  sx={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: 'white',
+                    fontWeight: 600,
+                    boxShadow: theme.palette.mode === 'dark'
+                      ? '0 4px 12px rgba(102, 126, 234, 0.4)'
+                      : '0 4px 12px rgba(102, 126, 234, 0.3)',
+                  }}
+                />
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                <Chip
+                  icon={<StarIcon />}
+                  label="Tương tác"
+                  size="small"
+                  sx={{
+                    background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+                    color: 'white',
+                    fontWeight: 600,
+                    boxShadow: theme.palette.mode === 'dark'
+                      ? '0 4px 12px rgba(118, 75, 162, 0.4)'
+                      : '0 4px 12px rgba(118, 75, 162, 0.3)',
+                  }}
+                />
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                <Chip
+                  icon={<PlayArrowIcon />}
+                  label="Thực hành"
+                  size="small"
+                  sx={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: 'white',
+                    fontWeight: 600,
+                    boxShadow: theme.palette.mode === 'dark'
+                      ? '0 4px 12px rgba(102, 126, 234, 0.4)'
+                      : '0 4px 12px rgba(102, 126, 234, 0.3)',
+                  }}
+                />
+              </Box>
+            </Box>
+          </Box>
+        </Container>
       </Box>
 
-      <Grid container spacing={4} sx={{ mt: 4 }}>
-        {features.map((feature) => (
-          <Grid item key={feature.title} xs={12} sm={6} md={4}>
-            <Card
-              sx={{
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                cursor: 'pointer',
-                bgcolor: feature.title === 'Bảng chữ cái' ? '#E3F2FD' :
-                         feature.title === 'Bài học' ? '#E8F5E9' :
-                         feature.title === 'Luyện tập' ? '#FFF3E0' :
-                         feature.title === 'Kiểm tra' ? '#FCE4EC' :
-                         feature.title === 'Trò chơi' ? '#F3E5F5' :
-                         feature.title === 'Bảng viết' ? '#E0F7FA' :
-                         '#F1F8E9',
-                '&:hover': {
-                  transform: 'scale(1.02)',
-                  transition: 'transform 0.2s ease-in-out',
-                  boxShadow: 3,
-                },
-              }}
-              onClick={() => navigate(feature.path)}
-            >
-              <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
-                <Box sx={{ mb: 2, color: feature.title === 'Bảng chữ cái' ? '#1976D2' :
-                                        feature.title === 'Bài học' ? '#2E7D32' :
-                                        feature.title === 'Luyện tập' ? '#ED6C02' :
-                                        feature.title === 'Kiểm tra' ? '#C2185B' :
-                                        feature.title === 'Trò chơi' ? '#7B1FA2' :
-                                        feature.title === 'Bảng viết' ? '#0097A7' :
-                                        '#689F38' }}>{feature.icon}</Box>
-                <Typography 
-                  gutterBottom 
-                  variant="h5" 
-                  component="h2"
-                  sx={{
-                    color: feature.title === 'Bảng chữ cái' ? '#1565C0' :
-                           feature.title === 'Bài học' ? '#1B5E20' :
-                           feature.title === 'Luyện tập' ? '#E65100' :
-                           feature.title === 'Kiểm tra' ? '#AD1457' :
-                           feature.title === 'Trò chơi' ? '#6A1B9A' :
-                           feature.title === 'Bảng viết' ? '#006064' :
-                           '#33691E',
-                    fontWeight: 'bold'
+      {/* Features Section */}
+      <Container maxWidth="lg" sx={{ py: { xs: 3, md: 6 } }}>
+        <Typography
+          variant="h3"
+          sx={{
+            textAlign: 'center',
+            fontWeight: 600,
+            mb: 4,
+            fontSize: { xs: '1.8rem', md: '2.2rem' },
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+          }}
+        >
+          {t('common.features', 'Tính năng chính')}
+        </Typography>
+
+        <Grid container spacing={2.5}>
+          {features.map((feature, index) => (
+            <Grid item key={feature.key} xs={12} sm={6} md={4}>
+              <Card
+                sx={{
+                  height: '100%',
+                  cursor: 'pointer',
+                  background: theme.palette.mode === 'dark'
+                    ? 'rgba(255, 255, 255, 0.05)'
+                    : 'rgba(255, 255, 255, 0.9)',
+                  border: '1px solid',
+                  borderColor: theme.palette.mode === 'dark' 
+                    ? 'rgba(255, 255, 255, 0.1)' 
+                    : 'rgba(0, 0, 0, 0.1)',
+                  borderRadius: '12px',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  backdropFilter: 'blur(10px)',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: feature.gradient,
+                    opacity: 0,
+                    transition: 'opacity 0.3s ease',
+                    zIndex: 0,
+                  },
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: theme.palette.mode === 'dark'
+                      ? '0 12px 24px rgba(102, 126, 234, 0.25)'
+                      : '0 12px 24px rgba(102, 126, 234, 0.15)',
+                    borderColor: 'transparent',
+                    '&::before': {
+                      opacity: theme.palette.mode === 'dark' ? 0.08 : 0.05,
+                    },
+                    '& .feature-icon': {
+                      transform: 'scale(1.05) rotate(3deg)',
+                    },
+                    '& .feature-title': {
+                      background: feature.gradient,
+                      backgroundClip: 'text',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    },
+                  },
+                }}
+                onClick={() => navigate(feature.path)}
+              >
+                <CardContent 
+                  sx={{ 
+                    p: 2.5, 
+                    height: '100%', 
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    position: 'relative',
+                    zIndex: 1,
                   }}
                 >
-                  {feature.title}
-                </Typography>
-                <Typography
-                  sx={{
-                    color: feature.title === 'Bảng chữ cái' ? '#0D47A1' :
-                           feature.title === 'Bài học' ? '#1B5E20' :
-                           feature.title === 'Luyện tập' ? '#BF360C' :
-                           feature.title === 'Kiểm tra' ? '#880E4F' :
-                           feature.title === 'Trò chơi' ? '#4A148C' :
-                           feature.title === 'Bảng viết' ? '#004D40' :
-                           '#1B5E20',
-                    opacity: 0.8
-                  }}
-                >
-                  {feature.description}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+                  {/* Icon */}
+                  <Box
+                    className="feature-icon"
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: 48,
+                      height: 48,
+                      borderRadius: '12px',
+                      background: feature.gradient,
+                      mb: 1.5,
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      boxShadow: theme.palette.mode === 'dark'
+                        ? '0 6px 16px rgba(102, 126, 234, 0.3)'
+                        : '0 6px 16px rgba(102, 126, 234, 0.2)',
+                    }}
+                  >
+                    <Box sx={{ color: 'white' }}>
+                      {React.cloneElement(feature.icon, { sx: { fontSize: 24 } })}
+                    </Box>
+                  </Box>
+
+                  {/* Title */}
+                  <Typography
+                    className="feature-title"
+                    variant="h6"
+                    component="h3"
+                    sx={{
+                      fontWeight: 600,
+                      mb: 1,
+                      fontSize: '1rem',
+                      color: theme.palette.mode === 'dark' ? 'text.primary' : 'text.primary',
+                      transition: 'all 0.3s ease',
+                    }}
+                  >
+                    {t(`home.features.${feature.key}.title`, 'Tính năng')}
+                  </Typography>
+
+                  {/* Description */}
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: theme.palette.mode === 'dark' ? 'text.secondary' : 'text.secondary',
+                      lineHeight: 1.5,
+                      flex: 1,
+                      fontSize: '0.875rem',
+                      opacity: theme.palette.mode === 'dark' ? 0.8 : 0.7,
+                    }}
+                  >
+                    {t(`home.features.${feature.key}.description`, 'Mô tả tính năng')}
+                  </Typography>
+
+                  {/* Action Button */}
+                  <Button
+                    variant="text"
+                    size="small"
+                    sx={{
+                      mt: 1.5,
+                      alignSelf: 'flex-start',
+                      color: feature.color,
+                      fontWeight: 600,
+                      textTransform: 'none',
+                      fontSize: '0.8rem',
+                      p: 0,
+                      minWidth: 'auto',
+                      '&:hover': {
+                        background: theme.palette.mode === 'dark'
+                          ? 'rgba(102, 126, 234, 0.15)'
+                          : 'rgba(102, 126, 234, 0.1)',
+                      },
+                    }}
+                  >
+                    {t('common.explore', 'Khám phá')} →
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
     </Box>
   );
 };

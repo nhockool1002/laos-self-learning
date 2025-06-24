@@ -993,8 +993,30 @@ const WritingBoard: React.FC = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowSaveDialog(false)}>Hủy</Button>
-          <Button onClick={handleSaveConfirm} disabled={!drawingName.trim()}>
+          <Button 
+            onClick={() => setShowSaveDialog(false)}
+            sx={{
+              color: '#667eea',
+              '&:hover': {
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+              }
+            }}
+          >
+            Hủy
+          </Button>
+          <Button 
+            onClick={handleSaveConfirm} 
+            disabled={!drawingName.trim()}
+            sx={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              },
+              '&:disabled': {
+                background: 'rgba(102, 126, 234, 0.3)',
+              }
+            }}
+          >
             Lưu
           </Button>
         </DialogActions>
@@ -1007,11 +1029,37 @@ const WritingBoard: React.FC = () => {
           <Typography>Bạn có muốn rời khỏi bảng vẽ không?</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowConfirmDialog(false)}>Hủy</Button>
-          <Button onClick={handleConfirmNavigation} color="primary">
+          <Button 
+            onClick={() => setShowConfirmDialog(false)}
+            sx={{
+              color: '#667eea',
+              '&:hover': {
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+              }
+            }}
+          >
+            Hủy
+          </Button>
+          <Button 
+            onClick={handleConfirmNavigation}
+            sx={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
+          >
             Rời đi không cần lưu
           </Button>
-          <Button onClick={handleSaveAndNavigate} color="secondary">
+          <Button 
+            onClick={handleSaveAndNavigate}
+            sx={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
+          >
             Lưu và rời đi
           </Button>
         </DialogActions>
@@ -1057,7 +1105,17 @@ const WritingBoard: React.FC = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setShowSavedDrawingsDialog(false)}>Đóng</Button>
+          <Button 
+            onClick={() => setShowSavedDrawingsDialog(false)}
+            sx={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
+          >
+            Đóng
+          </Button>
         </DialogActions>
       </Dialog>
 

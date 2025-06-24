@@ -214,8 +214,13 @@ const PaperPractice: React.FC = () => {
             <Button
               type="submit"
               variant="contained"
-              color="primary"
-              sx={{ minWidth: 120 }}
+              sx={{ 
+                minWidth: 120,
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                }
+              }}
             >
               Tạo bài tập
             </Button>

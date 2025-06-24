@@ -21,7 +21,27 @@ const Game: React.FC = () => {
   return (
     <Box sx={{ width: '100%' }}>
       <Paper elevation={2} sx={{ mb: 2 }}>
-        <Tabs value={tab} onChange={(_, v) => setTab(v)} centered>
+        <Tabs 
+          value={tab} 
+          onChange={(_, v) => setTab(v)} 
+          centered
+          sx={{
+            '& .MuiTab-root': {
+              color: 'text.secondary',
+              fontWeight: 500,
+              fontSize: { xs: '0.875rem', sm: '1rem' },
+              '&.Mui-selected': {
+                color: '#667eea',
+                fontWeight: 600,
+              },
+            },
+            '& .MuiTabs-indicator': {
+              backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              height: 3,
+            },
+          }}
+        >
           <Tab label="Trò chơi Phụ âm đầu" />
           <Tab label="Trò chơi Phụ âm giữa" />
           <Tab label="Trò chơi Phụ âm cuối" />

@@ -1,38 +1,38 @@
 # Ứng dụng Học Tiếng Lào
 
-Ứng dụng web học tiếng Lào với giao diện thân thiện và các tính năng tương tác.
+Ứng dụng web học tiếng Lào hiện đại, đa nền tảng, giao diện đẹp, hỗ trợ đa ngôn ngữ, luyện tập tương tác và bảng xếp hạng.
 
-## Tính năng chính
+## Tính năng nổi bật
 
 - **Học bảng chữ cái tiếng Lào**
-  - Học phụ âm với hình ảnh minh họa
-  - Học nguyên âm với hình ảnh minh họa
-  - Học thanh với hình ảnh minh họa
-  - Phát âm chuẩn cho từng chữ cái
+  - Học phụ âm, nguyên âm, thanh điệu với hình ảnh minh họa, phát âm chuẩn
+  - Flashcard, quiz, chuyển đổi giữa phiên âm và chữ cái
 
-- **Luyện tập phụ âm**
-  - Bài tập trắc nghiệm tương tác
-  - Chuyển đổi giữa phiên âm và chữ cái
-  - Tính điểm và thời gian hoàn thành
-  - Bảng xếp hạng người dùng
+- **Luyện tập đa dạng**
+  - Luyện tập trắc nghiệm (quiz) với tính điểm, thời gian, bảng xếp hạng
+  - Luyện tập với trò chơi tương tác (Wordwall, mini game)
+  - Luyện tập với bảng viết (vẽ, luyện viết chữ Lào trực tiếp)
+  - Theo dõi số lần luyện tập, thống kê tiến độ
+
+- **Bảng xếp hạng & Huy hiệu**
+  - Bảng xếp hạng realtime, giao diện đẹp, hiệu ứng top 3 nổi bật
   - Hệ thống huy hiệu (badges) cho thành tích
 
 - **Hệ thống người dùng**
-  - Đăng ký và đăng nhập
-  - Lưu trữ tiến độ học tập
-  - Theo dõi thành tích
-  - Hiển thị huy hiệu đạt được
+  - Đăng ký, đăng nhập, lưu trữ tiến độ học tập
+  - Theo dõi thành tích, hiển thị huy hiệu đạt được
 
-- **Giao diện**
-  - Thiết kế tối (Dark theme) thân thiện với mắt
-  - Responsive trên mọi thiết bị
-  - Hiệu ứng và animation mượt mà
-  - Hỗ trợ đa ngôn ngữ (Tiếng Việt và Tiếng Anh)
+- **Giao diện & Trải nghiệm**
+  - Giao diện hiện đại, chủ đạo màu tím xanh (#667eea, #764ba2)
+  - Theme sáng/tối tự động, tối ưu UX/UI, hiệu ứng mượt mà
+  - Responsive trên mọi thiết bị (PC, tablet, mobile)
+  - Menu trái thu gọn/mở rộng, lưu trạng thái, dropdown thông minh
+  - Đa ngôn ngữ (Tiếng Việt, Tiếng Anh), dễ mở rộng
 
 ## Yêu cầu hệ thống
 
-- Node.js 14.0.0 trở lên
-- npm 6.0.0 trở lên
+- Node.js >= 14
+- npm >= 6
 
 ## Cài đặt
 
@@ -41,12 +41,10 @@
 git clone https://github.com/yourusername/laos-learning.git
 cd laos-learning
 ```
-
 2. Cài đặt dependencies:
 ```bash
 npm install
 ```
-
 3. Chạy ứng dụng ở môi trường development:
 ```bash
 npm start
@@ -58,17 +56,19 @@ npm start
 laos-learning/
 ├── public/
 │   ├── index.html
-│   ├── badges/         # Thư mục chứa hình ảnh huy hiệu
-│   └── assets/         # Thư mục chứa hình ảnh và tài nguyên
+│   ├── badges/         # Hình ảnh huy hiệu
+│   └── assets/         # Hình ảnh, icon, flag, ...
 ├── src/
-│   ├── components/     # Các component tái sử dụng
+│   ├── components/     # Component tái sử dụng, layout, menu, modal
 │   ├── contexts/       # React contexts
-│   ├── pages/          # Các trang chính của ứng dụng
-│   ├── services/       # Các service xử lý logic
-│   ├── config/         # Cấu hình ứng dụng
-│   ├── data/          # Dữ liệu tĩnh
+│   ├── pages/          # Các trang chính (Home, Practice, Game, Tests...)
+│   ├── services/       # Service xử lý logic, i18n, API
+│   ├── config/         # Cấu hình ứng dụng, supabase, theme
+│   ├── data/           # Dữ liệu tĩnh, bảng chữ cái, bài học
+│   ├── locales/        # File đa ngôn ngữ (vi, en...)
 │   ├── App.tsx
 │   └── index.tsx
+├── document/           # Release notes, tài liệu kỹ thuật
 ├── package.json
 └── README.md
 ```
@@ -76,21 +76,16 @@ laos-learning/
 ## Công nghệ sử dụng
 
 - **Frontend**
-  - ReactJS với TypeScript
-  - Material UI cho giao diện
+  - ReactJS + TypeScript
+  - Material UI (MUI) cho giao diện
   - i18next cho đa ngôn ngữ
-  - React Router cho điều hướng
+  - React Router v6
+  - Animation: CSS keyframes, MUI transitions
 
 - **Backend & Storage**
-  - Google Sheets API cho lưu trữ dữ liệu
+  - Supabase (PostgreSQL) cho bảng xếp hạng, user, badge
   - Firebase Authentication cho xác thực người dùng
-
-## Tính năng đang phát triển
-
-- Luyện tập từ vựng
-- Bài học theo chủ đề
-- Kiểm tra kiến thức
-- Đóng gói thành ứng dụng desktop
+  - Google Sheets API (tùy chọn)
 
 ## Đóng góp
 

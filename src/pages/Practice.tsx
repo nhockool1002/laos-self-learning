@@ -429,7 +429,7 @@ const Practice: React.FC = () => {
               {currentQuestion.type === 'pronunciation-to-letter' && (
                 <IconButton 
                   onClick={() => playSound(currentQuestion.question)}
-                  sx={{ ml: 2, color: '#2196f3' }}
+                  sx={{ ml: 2, color: '#667eea' }}
                 >
                   <VolumeUpIcon />
                 </IconButton>
@@ -506,7 +506,18 @@ const Practice: React.FC = () => {
             variant="contained" 
             onClick={handleNext}
             disabled={!userAnswer || isSaving}
-            sx={{ backgroundColor: '#2196f3', minWidth: { xs: 90, sm: 120 }, fontSize: { xs: '0.95rem', sm: '1rem' }, py: { xs: 1, sm: 1.5 } }}
+            sx={{ 
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              },
+              '&:disabled': {
+                background: 'rgba(102, 126, 234, 0.3)',
+              },
+              minWidth: { xs: 90, sm: 120 }, 
+              fontSize: { xs: '0.95rem', sm: '1rem' }, 
+              py: { xs: 1, sm: 1.5 } 
+            }}
           >
             {isSaving && currentQuestionIndex === questions.length - 1 ? (
               <CircularProgress size={24} sx={{ color: '#fff' }} />
@@ -550,7 +561,7 @@ const Practice: React.FC = () => {
                 <Typography sx={{ color: '#aaa' }}>Câu đúng</Typography>
               </Box>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" sx={{ color: '#2196f3', mb: 1 }}>
+                <Typography variant="h4" sx={{ color: '#667eea', mb: 1 }}>
                   {formatTime(totalTimer)}
                 </Typography>
                 <Typography sx={{ color: '#aaa' }}>Thời gian</Typography>
@@ -595,7 +606,12 @@ const Practice: React.FC = () => {
           <Button 
             variant="contained" 
             onClick={handleRestart}
-            sx={{ backgroundColor: '#2196f3' }}
+            sx={{ 
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+              }
+            }}
           >
             Làm lại
           </Button>
@@ -616,7 +632,27 @@ const Practice: React.FC = () => {
     <Box sx={{ width: '100%' }}>
       <style>{swing}</style>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={(e, v) => setValue(v)} aria-label="practice tabs">
+        <Tabs 
+          value={value} 
+          onChange={(e, v) => setValue(v)} 
+          aria-label="practice tabs"
+          sx={{
+            '& .MuiTab-root': {
+              color: 'text.secondary',
+              fontWeight: 500,
+              fontSize: { xs: '0.875rem', sm: '1rem' },
+              '&.Mui-selected': {
+                color: '#667eea',
+                fontWeight: 600,
+              },
+            },
+            '& .MuiTabs-indicator': {
+              backgroundColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              height: 3,
+            },
+          }}
+        >
           <Tab label="Luyện tập phụ âm" />
           <Tab label="Luyện tập từ vựng" />
         </Tabs>
@@ -641,47 +677,104 @@ const Practice: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
+          zIndex: 1300,
+        }}
+        closeAfterTransition
+        BackdropProps={{
+          sx: { background: 'rgba(30, 34, 60, 0.7)' }
         }}
       >
-        <Box sx={{
-          width: 500,
-          bgcolor: '#1a1a1a',
-          borderRadius: 2,
-          p: 3,
-          maxHeight: '80vh',
-          overflow: 'auto'
-        }}>
-          <Typography variant="h6" sx={{ mb: 2, color: '#fff', textAlign: 'center' }}>
-            Bảng xếp hạng
-          </Typography>
-          <TableContainer component={Paper} sx={{ bgcolor: '#1a1a1a' }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ color: '#fff' }}>Hạng</TableCell>
-                  <TableCell sx={{ color: '#fff' }}>Tên người dùng</TableCell>
-                  <TableCell sx={{ color: '#fff' }}>Điểm</TableCell>
-                  <TableCell sx={{ color: '#fff' }}>Thời gian</TableCell>
-                  <TableCell sx={{ color: '#fff' }}>Ngày</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {leaderboard.map((record, index) => (
-                  <TableRow key={index}>
-                    <TableCell sx={{ color: '#fff' }}>{index + 1}</TableCell>
-                    <TableCell sx={{ color: '#fff' }}>
-                      <UserRankInline username={record.username} rank={index + 1} />
-                    </TableCell>
-                    <TableCell sx={{ color: '#fff' }}>{record.score}/25</TableCell>
-                    <TableCell sx={{ color: '#fff' }}>{formatTime(record.time)}</TableCell>
-                    <TableCell sx={{ color: '#fff' }}>{record.date}</TableCell>
+        <Box>
+          <Box
+            sx={{
+              width: { xs: '95vw', sm: 500 },
+              bgcolor: 'transparent',
+              borderRadius: { xs: 3, sm: 5 },
+              boxShadow: 24,
+              p: 0,
+              maxHeight: '80vh',
+              overflow: 'auto',
+              animation: 'fadeInScale 0.4s cubic-bezier(.4,2,.6,1)',
+            }}
+          >
+            <Box
+              sx={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                borderTopLeftRadius: { xs: 24, sm: 40 },
+                borderTopRightRadius: { xs: 24, sm: 40 },
+                px: { xs: 3, sm: 5 },
+                py: { xs: 2, sm: 3 },
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                justifyContent: 'center',
+                boxShadow: '0 4px 24px 0 rgba(102,126,234,0.15)',
+              }}
+            >
+              <EmojiEventsIcon sx={{ color: '#ffd700', fontSize: 32, mr: 1 }} />
+              <Typography variant="h5" sx={{ color: '#fff', fontWeight: 700, letterSpacing: 1 }}>
+                Bảng xếp hạng
+              </Typography>
+            </Box>
+            <TableContainer component={Paper} sx={{
+              bgcolor: 'rgba(30,34,60,0.98)',
+              borderBottomLeftRadius: { xs: 24, sm: 40 },
+              borderBottomRightRadius: { xs: 24, sm: 40 },
+              boxShadow: 'none',
+              px: { xs: 1, sm: 3 },
+              pt: 2,
+              pb: 1,
+            }}>
+              <Table size="small">
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ color: '#fff', fontWeight: 600, border: 0 }}>Hạng</TableCell>
+                    <TableCell sx={{ color: '#fff', fontWeight: 600, border: 0 }}>Tên người dùng</TableCell>
+                    <TableCell sx={{ color: '#fff', fontWeight: 600, border: 0 }}>Điểm</TableCell>
+                    <TableCell sx={{ color: '#fff', fontWeight: 600, border: 0 }}>Thời gian</TableCell>
+                    <TableCell sx={{ color: '#fff', fontWeight: 600, border: 0 }}>Ngày</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                </TableHead>
+                <TableBody>
+                  {leaderboard.map((record, index) => (
+                    <TableRow
+                      key={index}
+                      sx={{
+                        background:
+                          index === 0 ? 'linear-gradient(90deg,#ffd700 60%,#fffbe6 100%)'
+                          : index === 1 ? 'linear-gradient(90deg,#b0c4de 60%,#e6f0ff 100%)'
+                          : index === 2 ? 'linear-gradient(90deg,#ffb347 60%,#fff2e6 100%)'
+                          : 'transparent',
+                        color: index < 3 ? '#222' : '#fff',
+                        fontWeight: index < 3 ? 700 : 500,
+                        transition: 'background 0.2s',
+                        '&:hover': {
+                          background: index < 3 ? undefined : 'rgba(102,126,234,0.12)',
+                          boxShadow: index < 3 ? undefined : '0 2px 8px 0 rgba(102,126,234,0.10)',
+                        },
+                      }}
+                    >
+                      <TableCell sx={{ color: index < 3 ? '#222' : '#fff', fontWeight: 700, border: 0 }}>{index + 1}</TableCell>
+                      <TableCell sx={{ color: index < 3 ? '#222' : '#fff', border: 0 }}>
+                        <UserRankInline username={record.username} rank={index + 1} />
+                      </TableCell>
+                      <TableCell sx={{ color: index < 3 ? '#222' : '#fff', border: 0 }}>{record.score}/25</TableCell>
+                      <TableCell sx={{ color: index < 3 ? '#222' : '#fff', border: 0 }}>{formatTime(record.time)}</TableCell>
+                      <TableCell sx={{ color: index < 3 ? '#222' : '#fff', border: 0 }}>{record.date}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Box>
         </Box>
       </Modal>
+      <style>{`
+      @keyframes fadeInScale {
+        0% { opacity: 0; transform: scale(0.85); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+      `}</style>
     </Box>
   );
 };
