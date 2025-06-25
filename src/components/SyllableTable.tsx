@@ -15,16 +15,25 @@ import {
 import { practiceData } from '../data/practiceData';
 import { vowelsFull, vowelsGroup } from '../data/VowelsData';
 import { syllableData } from '../data/SyllableData';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import { saveAs } from 'file-saver';
+import { useTheme } from '@mui/material/styles';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import ImageIcon from '@mui/icons-material/Image';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import CodeIcon from '@mui/icons-material/Code';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 interface SyllableTableProps {}
 
 const SyllableTable: React.FC<SyllableTableProps> = () => {
-  const [showShortVowels, setShowShortVowels] = useState(true);
-  const [showLongVowels, setShowLongVowels] = useState(true);
-  const [showSpecialVowels, setShowSpecialVowels] = useState(true);
-  const [showHighConsonants, setShowHighConsonants] = useState(true);
-  const [showMidConsonants, setShowMidConsonants] = useState(true);
-  const [showLowConsonants, setShowLowConsonants] = useState(true);
+  const [selectedVowelType, setSelectedVowelType] = useState<'short' | 'long' | 'special' | 'all'>('all');
+  const [selectedConsonantType, setSelectedConsonantType] = useState<'high' | 'mid' | 'low' | 'all'>('all');
+  const [showPronunciation, setShowPronunciation] = useState(true);
+
+  const theme = useTheme();
 
   // Hàm xác định loại phụ âm theo bảng chuẩn (bao gồm cả phụ âm ghép)
   const getConsonantLevel = (letter: string): 'high' | 'mid' | 'low' | undefined => {
@@ -43,40 +52,29 @@ const SyllableTable: React.FC<SyllableTableProps> = () => {
     return undefined;
   };
 
-  // Tạo danh sách phụ âm bao gồm cả phụ âm ghép
-  const allConsonants = useMemo(() => {
-    const singleConsonants = practiceData.consonants;
-    const compoundConsonants = [
-      { letter: 'ຫງ', pronunciationVi: 'ng' },
-      { letter: 'ຫຍ', pronunciationVi: 'nh' },
-      { letter: 'ຫມ', pronunciationVi: 'm' },
-      { letter: 'ຫນ', pronunciationVi: 'n' },
-      { letter: 'ຫລ', pronunciationVi: 'l' },
-      { letter: 'ຫວ', pronunciationVi: 'w' },
-    ];
-    return [...singleConsonants, ...compoundConsonants];
-  }, []);
-
-  // Lọc phụ âm theo loại
-  const filteredConsonants = useMemo(() => {
-    return allConsonants.filter(consonant => {
-      const level = getConsonantLevel(consonant.letter);
-      if (level === 'high' && !showHighConsonants) return false;
-      if (level === 'mid' && !showMidConsonants) return false;
-      if (level === 'low' && !showLowConsonants) return false;
-      return true;
-    });
-  }, [allConsonants, showHighConsonants, showMidConsonants, showLowConsonants]);
-
-  // Lọc nguyên âm theo loại
+  // Lọc nguyên âm theo loại được chọn
   const filteredVowels = useMemo(() => {
-    return vowelsFull.filter(vowel => {
-      if (vowelsGroup.ngan.includes(vowel) && !showShortVowels) return false;
-      if (vowelsGroup.dai.includes(vowel) && !showLongVowels) return false;
-      if (vowelsGroup.dacbiet.includes(vowel) && !showSpecialVowels) return false;
-      return true;
-    });
-  }, [showShortVowels, showLongVowels, showSpecialVowels]);
+    if (selectedVowelType === 'all') {
+      return vowelsFull;
+    }
+    
+    switch (selectedVowelType) {
+      case 'short':
+        return vowelsFull.filter(vowel => 
+          vowelsGroup.ngan.some(v => v.letter === vowel.letter)
+        );
+      case 'long':
+        return vowelsFull.filter(vowel => 
+          vowelsGroup.dai.some(v => v.letter === vowel.letter)
+        );
+      case 'special':
+        return vowelsFull.filter(vowel => 
+          vowelsGroup.dacbiet.some(v => v.letter === vowel.letter)
+        );
+      default:
+        return vowelsFull;
+    }
+  }, [selectedVowelType]);
 
   // Tạo map để tìm chữ ghép vần
   const syllableMap = useMemo(() => {
@@ -104,9 +102,9 @@ const SyllableTable: React.FC<SyllableTableProps> = () => {
 
   // Hàm lấy màu cho nguyên âm
   const getVowelColor = (vowel: typeof vowelsFull[0]) => {
-    if (vowelsGroup.ngan.includes(vowel)) return '#f39c12';
-    if (vowelsGroup.dai.includes(vowel)) return '#9b59b6';
-    if (vowelsGroup.dacbiet.includes(vowel)) return '#e67e22';
+    if (vowelsGroup.ngan.some(v => v.letter === vowel.letter)) return '#f39c12';
+    if (vowelsGroup.dai.some(v => v.letter === vowel.letter)) return '#9b59b6';
+    if (vowelsGroup.dacbiet.some(v => v.letter === vowel.letter)) return '#2ecc71';
     return '#95a5a6';
   };
 
@@ -119,240 +117,358 @@ const SyllableTable: React.FC<SyllableTableProps> = () => {
     return `linear-gradient(135deg, ${consonantColor}15 0%, ${vowelColor}15 100%)`;
   };
 
+  // Thêm biến này để render header chỉ với phụ âm đơn
+  const filteredHeaderConsonants = useMemo(() => {
+    if (selectedConsonantType === 'all') return practiceData.consonants;
+    return practiceData.consonants.filter(consonant => getConsonantLevel(consonant.letter) === selectedConsonantType);
+  }, [selectedConsonantType]);
+
   const handleReset = () => {
-    setShowShortVowels(true);
-    setShowLongVowels(true);
-    setShowSpecialVowels(true);
-    setShowHighConsonants(true);
-    setShowMidConsonants(true);
-    setShowLowConsonants(true);
+    setSelectedVowelType('all');
+    setSelectedConsonantType('all');
+  };
+
+  const tableRef = React.useRef<HTMLDivElement>(null);
+
+  const handleExportPDF = async () => {
+    if (!tableRef.current) return;
+    const canvas = await html2canvas(tableRef.current);
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({ orientation: 'landscape' });
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save('bang-ghep-van.pdf');
+  };
+
+  const handleExportImage = async () => {
+    if (!tableRef.current) return;
+    const canvas = await html2canvas(tableRef.current);
+    canvas.toBlob(blob => {
+      if (blob) saveAs(blob, 'bang-ghep-van.png');
+    });
+  };
+
+  const handleExportCSV = () => {
+    let csv = 'Nguyên âm/Phụ âm';
+    filteredHeaderConsonants.forEach(c => {
+      csv += ',' + c.letter;
+    });
+    csv += '\n';
+    filteredVowels.forEach(vowel => {
+      let row = vowel.letter;
+      filteredHeaderConsonants.forEach(consonant => {
+        const key = `${consonant.letter}-${vowel.letter}`;
+        const syllableInfo = syllableMap.get(key);
+        row += ',' + (syllableInfo ? syllableInfo.syllable : '');
+      });
+      csv += row + '\n';
+    });
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    saveAs(blob, 'bang-ghep-van.csv');
+  };
+
+  const handleExportJSON = () => {
+    const data = filteredVowels.map(vowel => {
+      const row: { [key: string]: string } = { vowel: vowel.letter };
+      filteredHeaderConsonants.forEach(consonant => {
+        const key = `${consonant.letter}-${vowel.letter}`;
+        const syllableInfo = syllableMap.get(key);
+        row[consonant.letter] = syllableInfo ? syllableInfo.syllable : '';
+      });
+      return row;
+    });
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    saveAs(blob, 'bang-ghep-van.json');
   };
 
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant="h4" gutterBottom sx={{ textAlign: 'center', mb: 3, color: '#2c3e50' }}>
-        BẢNG GHÉP VẦN
-      </Typography>
+    <Box sx={{ p: 3, fontFamily: 'Noto Serif Lao, serif' }}>
 
       {/* Các button chức năng */}
-      <Box sx={{ mb: 3, display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}>
-        <ButtonGroup variant="outlined" size="small">
-          <Button
-            onClick={() => setShowShortVowels(!showShortVowels)}
-            variant={showShortVowels ? 'contained' : 'outlined'}
-            sx={{ 
-              backgroundColor: showShortVowels ? '#f39c12' : 'transparent',
-              color: showShortVowels ? 'white' : '#f39c12',
-              '&:hover': {
-                backgroundColor: showShortVowels ? '#e67e22' : '#f39c1210',
-              }
-            }}
-          >
-            Nguyên âm ngắn
-          </Button>
-          <Button
-            onClick={() => setShowLongVowels(!showLongVowels)}
-            variant={showLongVowels ? 'contained' : 'outlined'}
-            sx={{ 
-              backgroundColor: showLongVowels ? '#9b59b6' : 'transparent',
-              color: showLongVowels ? 'white' : '#9b59b6',
-              '&:hover': {
-                backgroundColor: showLongVowels ? '#8e44ad' : '#9b59b610',
-              }
-            }}
-          >
-            Nguyên âm dài
-          </Button>
-          <Button
-            onClick={() => setShowSpecialVowels(!showSpecialVowels)}
-            variant={showSpecialVowels ? 'contained' : 'outlined'}
-            sx={{ 
-              backgroundColor: showSpecialVowels ? '#e67e22' : 'transparent',
-              color: showSpecialVowels ? 'white' : '#e67e22',
-              '&:hover': {
-                backgroundColor: showSpecialVowels ? '#d35400' : '#e67e2210',
-              }
-            }}
-          >
-            Nguyên âm đặc biệt
-          </Button>
-        </ButtonGroup>
-
-        <ButtonGroup variant="outlined" size="small">
-          <Button
-            onClick={() => setShowHighConsonants(!showHighConsonants)}
-            variant={showHighConsonants ? 'contained' : 'outlined'}
-            sx={{ 
-              backgroundColor: showHighConsonants ? '#e74c3c' : 'transparent',
-              color: showHighConsonants ? 'white' : '#e74c3c',
-              '&:hover': {
-                backgroundColor: showHighConsonants ? '#c0392b' : '#e74c3c10',
-              }
-            }}
-          >
-            Phụ âm cao
-          </Button>
-          <Button
-            onClick={() => setShowMidConsonants(!showMidConsonants)}
-            variant={showMidConsonants ? 'contained' : 'outlined'}
-            sx={{ 
-              backgroundColor: showMidConsonants ? '#3498db' : 'transparent',
-              color: showMidConsonants ? 'white' : '#3498db',
-              '&:hover': {
-                backgroundColor: showMidConsonants ? '#2980b9' : '#3498db10',
-              }
-            }}
-          >
-            Phụ âm trung
-          </Button>
-          <Button
-            onClick={() => setShowLowConsonants(!showLowConsonants)}
-            variant={showLowConsonants ? 'contained' : 'outlined'}
-            sx={{ 
-              backgroundColor: showLowConsonants ? '#27ae60' : 'transparent',
-              color: showLowConsonants ? 'white' : '#27ae60',
-              '&:hover': {
-                backgroundColor: showLowConsonants ? '#229954' : '#27ae6010',
-              }
-            }}
-          >
-            Phụ âm thấp
-          </Button>
-        </ButtonGroup>
-
+      <Box sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'nowrap', overflowX: 'auto', justifyContent: 'flex-start' }}>
         <Button
-          onClick={handleReset}
-          variant="outlined"
+          variant="contained"
+          color="primary"
           size="small"
-          sx={{ 
-            borderColor: '#95a5a6',
-            color: '#95a5a6',
-            '&:hover': {
-              borderColor: '#7f8c8d',
-              backgroundColor: '#95a5a610',
-            }
-          }}
+          startIcon={showPronunciation ? <VisibilityOffIcon /> : <VisibilityIcon />}
+          onClick={() => setShowPronunciation(v => !v)}
+          sx={{ borderRadius: 2, minWidth: 120, fontWeight: 600 }}
         >
-          Huỷ
+          {showPronunciation ? 'Ẩn phiên âm' : 'Hiện phiên âm'}
         </Button>
+        <ButtonGroup variant="contained" size="small" sx={{ borderRadius: 2, boxShadow: theme.palette.mode === 'dark' ? 2 : 1 }}>
+          <Button color="error" startIcon={<PictureAsPdfIcon />} onClick={handleExportPDF} sx={{ fontWeight: 600 }}>PDF</Button>
+          <Button color="info" startIcon={<ImageIcon />} onClick={handleExportImage} sx={{ fontWeight: 600 }}>Ảnh</Button>
+          <Button color="success" startIcon={<TableChartIcon />} onClick={handleExportCSV} sx={{ fontWeight: 600 }}>CSV</Button>
+          <Button color="secondary" startIcon={<CodeIcon />} onClick={handleExportJSON} sx={{ fontWeight: 600 }}>JSON</Button>
+        </ButtonGroup>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, marginLeft: 'auto' }}>
+          <ButtonGroup variant="outlined" size="small" sx={{ borderRadius: 2, overflow: 'hidden', boxShadow: theme.palette.mode === 'dark' ? 2 : 1 }}>
+            <Button
+              onClick={() => setSelectedVowelType('all')}
+              variant={selectedVowelType === 'all' ? 'contained' : 'outlined'}
+              sx={{
+                backgroundColor: selectedVowelType === 'all' ? theme.palette.mode === 'dark' ? '#34495e' : '#e0e0e0' : 'transparent',
+                color: selectedVowelType === 'all' ? 'white' : theme.palette.text.primary,
+                fontWeight: 700,
+                borderRadius: 0,
+                minWidth: 80
+              }}
+            >
+              TẤT CẢ
+            </Button>
+            <Button
+              onClick={() => setSelectedVowelType('short')}
+              variant={selectedVowelType === 'short' ? 'contained' : 'outlined'}
+              sx={{
+                backgroundColor: selectedVowelType === 'short' ? '#f39c12' : 'transparent',
+                color: selectedVowelType === 'short' ? 'white' : '#f39c12',
+                fontWeight: 700,
+                borderRadius: 0,
+                minWidth: 120,
+                '&:hover': { backgroundColor: '#f39c12', color: 'white' }
+              }}
+            >
+              NGUYÊN ÂM NGẮN
+            </Button>
+            <Button
+              onClick={() => setSelectedVowelType('long')}
+              variant={selectedVowelType === 'long' ? 'contained' : 'outlined'}
+              sx={{
+                backgroundColor: selectedVowelType === 'long' ? '#9b59b6' : 'transparent',
+                color: selectedVowelType === 'long' ? 'white' : '#9b59b6',
+                fontWeight: 700,
+                borderRadius: 0,
+                minWidth: 120,
+                '&:hover': { backgroundColor: '#9b59b6', color: 'white' }
+              }}
+            >
+              NGUYÊN ÂM DÀI
+            </Button>
+            <Button
+              onClick={() => setSelectedVowelType('special')}
+              variant={selectedVowelType === 'special' ? 'contained' : 'outlined'}
+              sx={{
+                backgroundColor: selectedVowelType === 'special' ? '#2ecc71' : 'transparent',
+                color: selectedVowelType === 'special' ? 'white' : '#2ecc71',
+                fontWeight: 700,
+                borderRadius: 0,
+                minWidth: 150,
+                '&:hover': { backgroundColor: '#2ecc71', color: 'white' }
+              }}
+            >
+              NGUYÊN ÂM ĐẶC BIỆT
+            </Button>
+          </ButtonGroup>
+          <ButtonGroup variant="outlined" size="small" sx={{ borderRadius: 2, overflow: 'hidden', boxShadow: theme.palette.mode === 'dark' ? 2 : 1 }}>
+            <Button
+              onClick={() => setSelectedConsonantType('all')}
+              variant={selectedConsonantType === 'all' ? 'contained' : 'outlined'}
+              sx={{
+                backgroundColor: selectedConsonantType === 'all' ? theme.palette.mode === 'dark' ? '#34495e' : '#e0e0e0' : 'transparent',
+                color: selectedConsonantType === 'all' ? 'white' : theme.palette.text.primary,
+                fontWeight: 700,
+                borderRadius: 0,
+                minWidth: 80
+              }}
+            >
+              TẤT CẢ
+            </Button>
+            <Button
+              onClick={() => setSelectedConsonantType('high')}
+              variant={selectedConsonantType === 'high' ? 'contained' : 'outlined'}
+              sx={{
+                backgroundColor: selectedConsonantType === 'high' ? '#e74c3c' : 'transparent',
+                color: selectedConsonantType === 'high' ? 'white' : '#e74c3c',
+                fontWeight: 700,
+                borderRadius: 0,
+                minWidth: 120,
+                '&:hover': { backgroundColor: '#e74c3c', color: 'white' }
+              }}
+            >
+              PHỤ ÂM CAO
+            </Button>
+            <Button
+              onClick={() => setSelectedConsonantType('mid')}
+              variant={selectedConsonantType === 'mid' ? 'contained' : 'outlined'}
+              sx={{
+                backgroundColor: selectedConsonantType === 'mid' ? '#3498db' : 'transparent',
+                color: selectedConsonantType === 'mid' ? 'white' : '#3498db',
+                fontWeight: 700,
+                borderRadius: 0,
+                minWidth: 120,
+                '&:hover': { backgroundColor: '#3498db', color: 'white' }
+              }}
+            >
+              PHỤ ÂM TRUNG
+            </Button>
+            <Button
+              onClick={() => setSelectedConsonantType('low')}
+              variant={selectedConsonantType === 'low' ? 'contained' : 'outlined'}
+              sx={{
+                backgroundColor: selectedConsonantType === 'low' ? '#27ae60' : 'transparent',
+                color: selectedConsonantType === 'low' ? 'white' : '#27ae60',
+                fontWeight: 700,
+                borderRadius: 0,
+                minWidth: 120,
+                '&:hover': { backgroundColor: '#27ae60', color: 'white' }
+              }}
+            >
+              PHỤ ÂM THẤP
+            </Button>
+          </ButtonGroup>
+          <Button
+            onClick={handleReset}
+            variant="outlined"
+            size="small"
+            sx={{
+              borderColor: theme.palette.mode === 'dark' ? '#95a5a6' : '#888',
+              color: theme.palette.mode === 'dark' ? '#95a5a6' : '#888',
+              fontWeight: 700,
+              borderRadius: 2,
+              minWidth: 80,
+              ml: 2
+            }}
+          >
+            HUỶ
+          </Button>
+        </Box>
       </Box>
 
       {/* Bảng ghép vần - NGUYÊN ÂM theo hàng dọc, PHỤ ÂM theo hàng ngang */}
-      <TableContainer component={Paper} sx={{ maxHeight: '70vh', overflow: 'auto' }}>
-        <Table stickyHeader size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell 
-                sx={{ 
-                  backgroundColor: '#34495e', 
-                  color: 'white', 
-                  fontWeight: 'bold',
-                  minWidth: 80,
-                  textAlign: 'center'
-                }}
-              >
-                Nguyên âm
-              </TableCell>
-              {filteredConsonants.map((consonant) => {
-                const consonantLevel = getConsonantLevel(consonant.letter);
-                return (
-                  <TableCell
-                    key={consonant.letter}
-                    sx={{
-                      backgroundColor: getConsonantColor(consonantLevel),
-                      color: 'white',
-                      fontWeight: 'bold',
-                      textAlign: 'center',
-                      minWidth: 60,
-                      fontSize: '0.875rem'
-                    }}
-                  >
-                    <Box>
-                      <Typography variant="h6" sx={{ fontSize: '1.2rem' }}>
-                        {consonant.letter}
-                      </Typography>
-                      <Typography variant="caption" sx={{ fontSize: '0.7rem' }}>
-                        {consonant.pronunciationVi}
-                      </Typography>
-                    </Box>
-                  </TableCell>
-                );
-              })}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredVowels.map((vowel) => (
-              <TableRow key={vowel.letter}>
-                <TableCell
-                  sx={{
-                    backgroundColor: getVowelColor(vowel),
-                    color: 'white',
+      <div ref={tableRef}>
+        <TableContainer component={Paper} sx={{ maxHeight: '70vh', overflow: 'auto', fontFamily: 'Noto Serif Lao, serif' }}>
+          <Table stickyHeader size="medium">
+            <TableHead>
+              <TableRow>
+                <TableCell 
+                  sx={{ 
+                    backgroundColor: '#34495e', 
+                    color: 'white', 
                     fontWeight: 'bold',
+                    minWidth: 100,
                     textAlign: 'center',
-                    position: 'sticky',
-                    left: 0,
-                    zIndex: 1
+                    padding: '16px 8px'
                   }}
                 >
-                  <Box>
-                    <Typography variant="h6" sx={{ fontSize: '1.2rem' }}>
-                      {vowel.letter}
-                    </Typography>
-                    <Typography variant="caption" sx={{ fontSize: '0.7rem' }}>
-                      {vowel.pronunciationVi}
-                    </Typography>
-                  </Box>
+                  {' '}
                 </TableCell>
-                {filteredConsonants.map((consonant) => {
+                {filteredHeaderConsonants.map((consonant) => {
                   const consonantLevel = getConsonantLevel(consonant.letter);
-                  const key = `${consonant.letter}-${vowel.letter}`;
-                  const syllableInfo = syllableMap.get(key);
                   return (
                     <TableCell
                       key={consonant.letter}
                       sx={{
-                        background: getSyllableBgColor(consonantLevel, vowel),
+                        backgroundColor: getConsonantColor(consonantLevel),
+                        color: 'white',
+                        fontWeight: 'bold',
                         textAlign: 'center',
-                        minWidth: 60,
-                        border: '1px solid #e0e0e0'
+                        minWidth: 80,
+                        fontSize: '1rem',
+                        padding: '16px 8px'
                       }}
                     >
-                      {syllableInfo ? (
-                        <Box>
-                          <Typography 
-                            variant="h6" 
-                            sx={{ 
-                              fontSize: '1.1rem',
-                              color: getConsonantColor(consonantLevel),
-                              fontWeight: 'bold'
-                            }}
-                          >
-                            {syllableInfo.syllable}
-                          </Typography>
-                          <Typography 
-                            variant="caption" 
-                            sx={{ 
-                              fontSize: '0.65rem',
-                              color: getVowelColor(vowel),
-                              fontWeight: 'bold'
-                            }}
-                          >
-                            {syllableInfo.pronunciation}
-                          </Typography>
-                        </Box>
-                      ) : (
-                        <Typography variant="caption" sx={{ color: '#bdc3c7' }}>
-                          -
+                      <Box>
+                        <Typography variant="h5" sx={{ fontSize: '1.5rem', fontWeight: 'bold', fontFamily: 'Noto Serif Lao, serif' }}>
+                          {consonant.letter}
                         </Typography>
-                      )}
+                        {showPronunciation && (
+                          <Typography 
+                            variant="body2" 
+                            sx={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#fff', textShadow: '0 1px 4px #0008', fontFamily: 'Noto Serif Lao, serif', minHeight: '1.2em', opacity: showPronunciation ? 1 : 0, transition: 'opacity 0.2s' }}
+                          >
+                            {consonant.pronunciationVi}
+                          </Typography>
+                        )}
+                      </Box>
                     </TableCell>
                   );
                 })}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {filteredVowels.map((vowel) => (
+                <TableRow key={vowel.letter}>
+                  <TableCell
+                    sx={{
+                      backgroundColor: getVowelColor(vowel),
+                      color: 'white',
+                      fontWeight: 'bold',
+                      textAlign: 'center',
+                      position: 'sticky',
+                      left: 0,
+                      zIndex: 1,
+                      minWidth: 100,
+                      padding: '16px 8px'
+                    }}
+                  >
+                    <Box>
+                      <Typography variant="h5" sx={{ fontSize: '1.5rem', fontWeight: 'bold', fontFamily: 'Noto Serif Lao, serif' }}>
+                        {vowel.letter}
+                      </Typography>
+                      {showPronunciation && (
+                        <Typography 
+                          variant="body2" 
+                          sx={{ fontSize: '0.9rem', fontWeight: 'bold', color: '#fff', textShadow: '0 1px 4px #0008', fontFamily: 'Noto Serif Lao, serif', minHeight: '1.2em', opacity: showPronunciation ? 1 : 0, transition: 'opacity 0.2s' }}
+                        >
+                          {vowel.pronunciationVi}
+                        </Typography>
+                      )}
+                    </Box>
+                  </TableCell>
+                  {filteredHeaderConsonants.map((consonant) => {
+                    const consonantLevel = getConsonantLevel(consonant.letter);
+                    const key = `${consonant.letter}-${vowel.letter}`;
+                    const syllableInfo = syllableMap.get(key);
+                    return (
+                      <TableCell
+                        key={consonant.letter}
+                        sx={{
+                          background: getSyllableBgColor(consonantLevel, vowel),
+                          textAlign: 'center',
+                          minWidth: 80,
+                          border: '1px solid #e0e0e0',
+                          padding: '16px 8px'
+                        }}
+                      >
+                        {syllableInfo ? (
+                          <Box>
+                            <Typography 
+                              variant="h5" 
+                              sx={{ 
+                                fontSize: '1.4rem',
+                                color: getConsonantColor(consonantLevel),
+                                fontWeight: 'bold',
+                                fontFamily: 'Noto Serif Lao, serif'
+                              }}
+                            >
+                              {syllableInfo.syllable}
+                            </Typography>
+                            {showPronunciation && (
+                              <Typography 
+                                variant="body2" 
+                                sx={{ fontSize: '0.85rem', color: '#fff', fontWeight: 'bold', textShadow: '0 1px 4px #0008', fontFamily: 'Noto Serif Lao, serif', minHeight: '1.2em', opacity: showPronunciation ? 1 : 0, transition: 'opacity 0.2s' }}
+                              >
+                                {syllableInfo.pronunciation}
+                              </Typography>
+                            )}
+                          </Box>
+                        ) : (
+                          <Typography variant="body2" sx={{ color: '#bdc3c7', fontFamily: 'Noto Serif Lao, serif' }}>
+                            -
+                          </Typography>
+                        )}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
     </Box>
   );
 };

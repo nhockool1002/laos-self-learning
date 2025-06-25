@@ -65,7 +65,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ກ', vowel: 'ໍາ', syllable: 'ກໍາ', pronunciation: 'kăm' },
 
 
-  
+
   { consonant: 'ຂ', vowel: 'ະ', syllable: 'ຂະ', pronunciation: 'khá' },
 
   { consonant: 'ຂ', vowel: 'ິ', syllable: 'ຂິ', pronunciation: 'khí' },
@@ -123,7 +123,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຂ', vowel: 'ໍາ', syllable: 'ຂໍາ', pronunciation: 'khẳm' },
 
 
-  
+
   { consonant: 'ຄ', vowel: 'ະ', syllable: 'ຄະ', pronunciation: 'khạ' },
 
   { consonant: 'ຄ', vowel: 'ິ', syllable: 'ຄິ', pronunciation: 'khị' },
@@ -181,7 +181,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຄ', vowel: 'ໍາ', syllable: 'ຄໍາ', pronunciation: 'khăm' },
 
 
-  
+
   { consonant: 'ງ', vowel: 'ະ', syllable: 'ງະ', pronunciation: 'ngạ' },
 
   { consonant: 'ງ', vowel: 'ິ', syllable: 'ງິ', pronunciation: 'ngị' },
@@ -239,7 +239,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ງ', vowel: 'ໍາ', syllable: 'ງໍາ', pronunciation: 'ngăm' },
 
 
-  
+
   { consonant: 'ຈ', vowel: 'ະ', syllable: 'ຈະ', pronunciation: 'chá' },
 
   { consonant: 'ຈ', vowel: 'ິ', syllable: 'ຈິ', pronunciation: 'chí' },
@@ -297,7 +297,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຈ', vowel: 'ໍາ', syllable: 'ຈໍາ', pronunciation: 'chăm' },
 
 
-  
+
   { consonant: 'ສ', vowel: 'ະ', syllable: 'ສະ', pronunciation: 'sá' },
 
   { consonant: 'ສ', vowel: 'ິ', syllable: 'ສິ', pronunciation: 'sí' },
@@ -355,7 +355,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ສ', vowel: 'ໍາ', syllable: 'ສໍາ', pronunciation: 'sẳm' },
 
 
-  
+
   { consonant: 'ຊ', vowel: 'ະ', syllable: 'ຊະ', pronunciation: 'xạ' },
 
   { consonant: 'ຊ', vowel: 'ິ', syllable: 'ຊິ', pronunciation: 'xị' },
@@ -413,7 +413,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຊ', vowel: 'ໍາ', syllable: 'ຊໍາ', pronunciation: 'xăm' },
 
 
-  
+
   { consonant: 'ຍ', vowel: 'ະ', syllable: 'ຍະ', pronunciation: 'nhạ' },
 
   { consonant: 'ຍ', vowel: 'ິ', syllable: 'ຍິ', pronunciation: 'nhị' },
@@ -471,7 +471,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຍ', vowel: 'ໍາ', syllable: 'ຍໍາ', pronunciation: 'nhăm' },
 
 
-  
+
   { consonant: 'ດ', vowel: 'ະ', syllable: 'ດະ', pronunciation: 'đá' },
 
   { consonant: 'ດ', vowel: 'ິ', syllable: 'ດິ', pronunciation: 'đí' },
@@ -529,7 +529,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ດ', vowel: 'ໍາ', syllable: 'ດໍາ', pronunciation: 'đăm' },
 
 
-  
+
   { consonant: 'ຕ', vowel: 'ະ', syllable: 'ຕະ', pronunciation: 'tá' },
 
   { consonant: 'ຕ', vowel: 'ິ', syllable: 'ຕິ', pronunciation: 'tí' },
@@ -587,7 +587,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຕ', vowel: 'ໍາ', syllable: 'ຕໍາ', pronunciation: 'tăm' },
 
 
-  
+
   { consonant: 'ຖ', vowel: 'ະ', syllable: 'ຖະ', pronunciation: 'thá' },
 
   { consonant: 'ຖ', vowel: 'ິ', syllable: 'ຖິ', pronunciation: 'thí' },
@@ -645,7 +645,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຖ', vowel: 'ໍາ', syllable: 'ຖໍາ', pronunciation: 'thẳm' },
 
 
-  
+
   { consonant: 'ທ', vowel: 'ະ', syllable: 'ທະ', pronunciation: 'thạ' },
 
   { consonant: 'ທ', vowel: 'ິ', syllable: 'ທິ', pronunciation: 'thị' },
@@ -703,7 +703,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ທ', vowel: 'ໍາ', syllable: 'ທໍາ', pronunciation: 'thăm' },
 
 
-  
+
   { consonant: 'ນ', vowel: 'ະ', syllable: 'ນະ', pronunciation: 'nạ' },
 
   { consonant: 'ນ', vowel: 'ິ', syllable: 'ນິ', pronunciation: 'nị' },
@@ -761,7 +761,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ນ', vowel: 'ໍາ', syllable: 'ນໍາ', pronunciation: 'năm' },
 
 
-  
+
   { consonant: 'ບ', vowel: 'ະ', syllable: 'ບະ', pronunciation: 'bá' },
 
   { consonant: 'ບ', vowel: 'ິ', syllable: 'ບິ', pronunciation: 'bí' },
@@ -819,7 +819,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ບ', vowel: 'ໍາ', syllable: 'ບໍາ', pronunciation: 'băm' },
 
 
-  
+
   { consonant: 'ປ', vowel: 'ະ', syllable: 'ປະ', pronunciation: 'pá' },
 
   { consonant: 'ປ', vowel: 'ິ', syllable: 'ປິ', pronunciation: 'pí' },
@@ -877,7 +877,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ປ', vowel: 'ໍາ', syllable: 'ປໍາ', pronunciation: 'păm' },
 
 
-  
+
   { consonant: 'ຜ', vowel: 'ະ', syllable: 'ຜະ', pronunciation: 'phá' },
 
   { consonant: 'ຜ', vowel: 'ິ', syllable: 'ຜິ', pronunciation: 'phí' },
@@ -935,7 +935,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຜ', vowel: 'ໍາ', syllable: 'ຜໍາ', pronunciation: 'phẳm' },
 
 
-  
+
   { consonant: 'ຝ', vowel: 'ະ', syllable: 'ຝະ', pronunciation: 'fá' },
 
   { consonant: 'ຝ', vowel: 'ິ', syllable: 'ຝິ', pronunciation: 'fí' },
@@ -993,7 +993,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຝ', vowel: 'ໍາ', syllable: 'ຝໍາ', pronunciation: 'fẳm' },
 
 
-  
+
   { consonant: 'ພ', vowel: 'ະ', syllable: 'ພະ', pronunciation: 'phạ' },
 
   { consonant: 'ພ', vowel: 'ິ', syllable: 'ພິ', pronunciation: 'phị' },
@@ -1051,7 +1051,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ພ', vowel: 'ໍາ', syllable: 'ພໍາ', pronunciation: 'phăm' },
 
 
-  
+
   { consonant: 'ຟ', vowel: 'ະ', syllable: 'ຟະ', pronunciation: 'fạ' },
 
   { consonant: 'ຟ', vowel: 'ິ', syllable: 'ຟິ', pronunciation: 'fị' },
@@ -1114,7 +1114,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຟ', vowel: 'ໍາ', syllable: 'ຟໍາ', pronunciation: 'făm' },
 
 
-  
+
   { consonant: 'ມ', vowel: 'ະ', syllable: 'ມະ', pronunciation: 'mạ' },
 
   { consonant: 'ມ', vowel: 'ິ', syllable: 'ມິ', pronunciation: 'mị' },
@@ -1172,7 +1172,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ມ', vowel: 'ໍາ', syllable: 'ມໍາ', pronunciation: 'măm' },
 
 
-  
+
   { consonant: 'ຢ', vowel: 'ະ', syllable: 'ຢະ', pronunciation: 'yá' },
 
   { consonant: 'ຢ', vowel: 'ິ', syllable: 'ຢິ', pronunciation: 'yí' },
@@ -1235,7 +1235,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຢ', vowel: 'ໍາ', syllable: 'ຢໍາ', pronunciation: 'yăm' },
 
 
-  
+
   { consonant: 'ຣ', vowel: 'ະ', syllable: 'ຣະ', pronunciation: 'rạ' },
 
   { consonant: 'ຣ', vowel: 'ິ', syllable: 'ຣິ', pronunciation: 'rị' },
@@ -1293,7 +1293,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຣ', vowel: 'ໍາ', syllable: 'ຣໍາ', pronunciation: 'răm' },
 
 
-  
+
   { consonant: 'ລ', vowel: 'ະ', syllable: 'ລະ', pronunciation: 'lạ' },
 
   { consonant: 'ລ', vowel: 'ິ', syllable: 'ລິ', pronunciation: 'lị' },
@@ -1351,7 +1351,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ລ', vowel: 'ໍາ', syllable: 'ລໍາ', pronunciation: 'lăm' },
 
 
-  
+
   { consonant: 'ວ', vowel: 'ະ', syllable: 'ວະ', pronunciation: 'wạ' },
 
   { consonant: 'ວ', vowel: 'ິ', syllable: 'ວິ', pronunciation: 'wị' },
@@ -1409,7 +1409,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ວ', vowel: 'ໍາ', syllable: 'ວໍາ', pronunciation: 'wăm' },
 
 
-  
+
   { consonant: 'ຫ', vowel: 'ະ', syllable: 'ຫະ', pronunciation: 'há' },
 
   { consonant: 'ຫ', vowel: 'ິ', syllable: 'ຫິ', pronunciation: 'hí' },
@@ -1467,7 +1467,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຫ', vowel: 'ໍາ', syllable: 'ຫໍາ', pronunciation: 'hẳm' },
 
 
-  
+
   { consonant: 'ອ', vowel: 'ະ', syllable: 'ອະ', pronunciation: 'á' },
 
   { consonant: 'ອ', vowel: 'ິ', syllable: 'ອິ', pronunciation: 'í' },
@@ -1525,7 +1525,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ອ', vowel: 'ໍາ', syllable: 'ອໍາ', pronunciation: 'ăm' },
 
 
-  
+
   { consonant: 'ຮ', vowel: 'ະ', syllable: 'ຮະ', pronunciation: 'hạ' },
 
   { consonant: 'ຮ', vowel: 'ິ', syllable: 'ຮິ', pronunciation: 'hị' },
@@ -1588,7 +1588,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຮ', vowel: 'ໍາ', syllable: 'ຮໍາ', pronunciation: 'hăm' },
 
 
-  
+
   { consonant: 'ຫງ', vowel: 'ະ', syllable: 'ຫງະ', pronunciation: 'ngá' },
 
   { consonant: 'ຫງ', vowel: 'ິ', syllable: 'ຫງິ', pronunciation: 'ngí' },
@@ -1646,7 +1646,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຫງ', vowel: 'ໍາ', syllable: 'ຫງໍາ', pronunciation: 'ngẳm' },
 
 
-  
+
   { consonant: 'ຫຍ', vowel: 'ະ', syllable: 'ຫຍະ', pronunciation: 'nhá' },
 
   { consonant: 'ຫຍ', vowel: 'ິ', syllable: 'ຫຍິ', pronunciation: 'nhí' },
@@ -1704,7 +1704,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຫຍ', vowel: 'ໍາ', syllable: 'ຫຍໍາ', pronunciation: 'nhẳm' },
 
 
-  
+
   { consonant: 'ຫມ', vowel: 'ະ', syllable: 'ຫມະ', pronunciation: 'má' },
 
   { consonant: 'ຫມ', vowel: 'ິ', syllable: 'ຫມິ', pronunciation: 'mí' },
@@ -1762,7 +1762,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຫມ', vowel: 'ໍາ', syllable: 'ຫມໍາ', pronunciation: 'mẳm' },
 
 
-  
+
   { consonant: 'ຫນ', vowel: 'ະ', syllable: 'ຫນະ', pronunciation: 'ná' },
 
   { consonant: 'ຫນ', vowel: 'ິ', syllable: 'ຫນິ', pronunciation: 'ní' },
@@ -1820,7 +1820,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຫນ', vowel: 'ໍາ', syllable: 'ຫນໍາ', pronunciation: 'nẳm' },
 
 
-  
+
   { consonant: 'ຫລ', vowel: 'ະ', syllable: 'ຫລະ', pronunciation: 'lá' },
 
   { consonant: 'ຫລ', vowel: 'ິ', syllable: 'ຫລິ', pronunciation: 'lí' },
@@ -1878,7 +1878,7 @@ export const syllableData: SyllableData[] = [
   { consonant: 'ຫລ', vowel: 'ໍາ', syllable: 'ຫລໍາ', pronunciation: 'lẳm' },
 
 
-  
+
   { consonant: 'ຫວ', vowel: 'ະ', syllable: 'ຫວະ', pronunciation: 'wá' },
 
   { consonant: 'ຫວ', vowel: 'ິ', syllable: 'ຫວິ', pronunciation: 'wí' },
