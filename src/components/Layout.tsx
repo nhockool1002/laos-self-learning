@@ -25,6 +25,8 @@ import {
   Menu,
   MenuItem,
   Avatar,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -54,6 +56,8 @@ interface LayoutProps {
   children: React.ReactNode;
   onToggleColorMode: () => void;
   mode: 'light' | 'dark';
+  showLeaderboard: boolean;
+  setShowLeaderboard: (v: boolean) => void;
 }
 
 interface ScoreRecord {
@@ -61,12 +65,13 @@ interface ScoreRecord {
   score: number;
   time: number;
   date: string;
+  type: number;
 }
 
 const drawerWidth = 240;
 const collapsedDrawerWidth = 64;
 
-const Layout: React.FC<LayoutProps> = ({ children, onToggleColorMode, mode }) => {
+const Layout: React.FC<LayoutProps> = ({ children, onToggleColorMode, mode, showLeaderboard, setShowLeaderboard }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     const saved = localStorage.getItem('sidebarCollapsed');
@@ -77,30 +82,32 @@ const Layout: React.FC<LayoutProps> = ({ children, onToggleColorMode, mode }) =>
   const location = useLocation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [tabType, setTabType] = useState(1);
   const [leaderboard, setLeaderboard] = useState<ScoreRecord[]>([]);
   const [openPracticeMenu, setOpenPracticeMenu] = useState(false);
 
   // Sử dụng i18n service
   const { t, currentLanguage, setLanguage, availableLanguages } = useI18n();
 
+  const fetchLeaderboard = async (type: number) => {
+    try {
+      const query = supabase
+        .from(TABLES.LEADERBOARD)
+        .select('*')
+        .eq('type', type)
+        .order('score', { ascending: false })
+        .order('time', { ascending: true });
+      const { data, error } = await query;
+      if (error) throw error;
+      setLeaderboard(data || []);
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+    }
+  };
+
   useEffect(() => {
-    const fetchLeaderboard = async () => {
-      try {
-        const query = supabase
-          .from(TABLES.LEADERBOARD)
-          .select('*')
-          .order('score', { ascending: false })
-          .order('time', { ascending: true });
-        const { data, error } = await query;
-        if (error) throw error;
-        setLeaderboard(data || []);
-      } catch (error) {
-        console.error('Error fetching leaderboard:', error);
-      }
-    };
-    fetchLeaderboard();
-  }, []);
+    fetchLeaderboard(tabType);
+  }, [tabType]);
 
   useEffect(() => {
     localStorage.setItem('sidebarCollapsed', JSON.stringify(sidebarCollapsed));
@@ -897,6 +904,69 @@ const Layout: React.FC<LayoutProps> = ({ children, onToggleColorMode, mode }) =>
                 <CloseIcon />
               </IconButton>
             </Box>
+            <Tabs
+              value={tabType}
+              onChange={(_, v) => setTabType(v)}
+              centered
+              sx={{
+                bgcolor: 'rgba(40,44,72,0.85)',
+                minHeight: 48,
+                px: 2,
+                py: 1,
+                borderTopLeftRadius: 0,
+                borderTopRightRadius: 0,
+                borderBottomLeftRadius: 16,
+                borderBottomRightRadius: 16,
+                boxShadow: 'none',
+                '& .MuiTabs-indicator': {
+                  height: 0,
+                },
+                borderBottom: '1.5px solid #444',
+              }}
+            >
+              <Tab
+                label='Xếp hạng Phụ Âm'
+                value={1}
+                sx={{
+                  fontWeight: tabType === 1 ? 400 : 200,
+                  fontSize: 16,
+                  color: tabType === 1 ? '#fff !important' : '#b0b0b0',
+                  background: tabType === 1
+                    ? 'rgba(118,75,162,0.95)'
+                    : 'transparent',
+                  borderRadius: 2,
+                  minHeight: 44,
+                  mx: 1,
+                  boxShadow: tabType === 1 ? '0 2px 12px 0 rgba(102,126,234,0.18)' : 'none',
+                  transition: 'all 0.25s cubic-bezier(.4,2,.6,1)',
+                  textTransform: 'none',
+                  letterSpacing: 0.5,
+                  textShadow: tabType === 1 ? '0 2px 8px #222, 0 0 2px #fff' : 'none',
+                  border: tabType === 1 ? '2px solid #fff' : 'none',
+                }}
+              />
+              <Tab
+                label='Xếp hạng Nguyên Âm'
+                value={2}
+                sx={{
+                  fontWeight: tabType === 2 ? 400 : 200,
+                  fontSize: 16,
+                  color: tabType === 2 ? '#fff !important' : '#b0b0b0',
+                  background: tabType === 2
+                    ? 'rgba(118,75,162,0.95)'
+                    : 'transparent',
+                  borderRadius: 2,
+                  minHeight: 44,
+                  mx: 1,
+                  boxShadow: tabType === 2 ? '0 2px 12px 0 rgba(102,126,234,0.18)' : 'none',
+                  transition: 'all 0.25s cubic-bezier(.4,2,.6,1)',
+                  textTransform: 'none',
+                  letterSpacing: 0.5,
+                  textShadow: tabType === 2 ? '0 2px 8px #222, 0 0 2px #fff' : 'none',
+                  border: tabType === 2 ? '2px solid #fff' : 'none',
+                }}
+              />
+            </Tabs>
             <TableContainer component={Paper} sx={{
               bgcolor: 'rgba(30,34,60,0.98)',
               borderBottomLeftRadius: { xs: 24, sm: 40 },
