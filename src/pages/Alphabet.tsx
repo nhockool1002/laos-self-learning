@@ -12,6 +12,7 @@ import {
   ToggleButtonGroup,
 } from '@mui/material';
 import FlashCard from '../components/FlashCard';
+import SyllableTable from '../components/SyllableTable';
 import { practiceData } from '../data/practiceData';
 import { vowelsFull, vowelsGroup } from '../data/VowelsData';
 
@@ -311,6 +312,7 @@ const Alphabet: React.FC = () => {
         >
           <Tab label="Phụ âm" />
           <Tab label="Nguyên âm" />
+          <Tab label="BẢNG GHÉP VẦN" />
         </Tabs>
       </Box>
 
@@ -531,6 +533,10 @@ const Alphabet: React.FC = () => {
             type="vowel"
           />
         )}
+      </TabPanel>
+
+      <TabPanel value={value} index={2}>
+        <SyllableTable />
       </TabPanel>
     </Box>
   );

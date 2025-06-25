@@ -31,6 +31,12 @@ export const practiceData = {
     { letter: 'ວ', pronunciationVi: 'vo' },
     { letter: 'ຫ', pronunciationVi: 'hỏ' },
     { letter: 'ອ', pronunciationVi: 'o' },
-    { letter: 'ຮ', pronunciationVi: 'ho' }
+    { letter: 'ຮ', pronunciationVi: 'ho' },
+    { letter: 'ຫງ', pronunciationVi: 'ngỏ' },
+    { letter: 'ຫຍ', pronunciationVi: 'nhỏ' },
+    { letter: 'ຫມ', pronunciationVi: 'mỏ' },
+    { letter: 'ຫນ', pronunciationVi: 'nỏ' },
+    { letter: 'ຫລ', pronunciationVi: 'lỏ' },
+    { letter: 'ຫວ', pronunciationVi: 'vỏ' },
   ]
 }; 
