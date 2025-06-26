@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import Lessons from './pages/Lessons';
 import Alphabet from './pages/Alphabet';
 import Practice from './pages/Practice';
+import PracticeVocab from './pages/PracticeVocab';
 import Tests from './pages/Tests';
 import Game from './pages/Game';
 import WritingBoard from './pages/WritingBoard';
@@ -50,6 +51,7 @@ function App() {
               <Route path="/lessons" element={<Lessons />} />
               <Route path="/alphabet" element={<Alphabet />} />
               <Route path="/practice" element={<Practice />} />
+              <Route path="/practice/vocab" element={<PracticeVocab />} />
               <Route path="/tests" element={<Tests />} />
               <Route path="/game" element={<Game />} />
               <Route path="/writing-board" element={<WritingBoard />} />

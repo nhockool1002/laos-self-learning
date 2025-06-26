@@ -128,6 +128,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onToggleColorMode, mode, show
       icon: <PsychologyAltIcon />,
       children: [
         { text: t('menu.practice', 'Luyện tập trắc nghiệm'), icon: <QuizIcon />, path: '/practice' },
+        { text: t('menu.vocab_practice', 'Luyện từ vựng'), icon: <MenuBookIcon />, path: '/practice/vocab' },
         { text: t('menu.game', 'Luyện tập với trò chơi'), icon: <SportsEsportsIcon />, path: '/game' },
         { text: t('menu.writing_board', 'Luyện tập với bảng viết'), icon: <DrawIcon />, path: '/writing-board' },
       ]
