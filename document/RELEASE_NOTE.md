@@ -1,6 +1,26 @@
- # Release Note - Laos Learning App
+# Release Note - Laos Learning App
 
-## 2024-06-24
+## 2025-05-29
+
+### Tính năng mới
+- Thêm tính năng học tập qua video
+- Học tập qua video sẽ được quản lý tiến độ
+
+### Cải tiến giao diện
+- Cập nhật animation mượt mà hơn cho các chuyển đổi giữa các màn hình
+- Thêm chế độ xem toàn màn hình cho bài học video
+
+### Sửa lỗi
+- Khắc phục lỗi crash app khi chuyển đổi ngôn ngữ
+- Sửa lỗi hiển thị sai thời gian trong bảng xếp hạng
+- Cải thiện độ ổn định khi sử dụng trên thiết bị có RAM thấp
+
+### Cập nhật dữ liệu
+- Bổ sung 50 từ vựng mới cho cấp độ trung cấp
+- Cập nhật 20 bài tập ngữ pháp mới
+- Thêm 5 bài hội thoại thực tế mới
+
+## 2025-06-24
 
 ### Giao diện & Trải nghiệm
 - Làm mới toàn bộ giao diện với màu chủ đạo tím xanh (#667eea, #764ba2), gradient, shadow, bo góc lớn.

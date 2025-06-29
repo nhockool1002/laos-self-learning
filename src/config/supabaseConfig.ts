@@ -9,5 +9,7 @@ export const TABLES = {
   USERS: 'users',
   BADGES_SYSTEM: 'badges_system',
   USER_BADGES: 'user_badges',
-  LEADERBOARD: 'leaderboard'
+  LEADERBOARD: 'leaderboard',
+  VIDEO_COURSES: 'video_courses',
+  USER_PROGRESS: 'user_progress'
 } as const; 

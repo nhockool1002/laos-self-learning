@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { Box, Tabs, Tab, Typography, Paper } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Tabs,
+  Tab,
+} from '@mui/material';
 import PracticeCore from '../components/PracticeCore';
 import { practiceData } from '../data/practiceData';
 import { vowelsFull } from '../data/VowelsData';
