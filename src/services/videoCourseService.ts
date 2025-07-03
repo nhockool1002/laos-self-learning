@@ -16,7 +16,7 @@ export interface VideoLesson {
   course_id: string;
   title: string;
   description: string;
-  video_path: string;
+  youtube_url: string;
   duration?: number;
   order_index: number;
   created_at: string;
@@ -63,7 +63,7 @@ const fallbackLessons: VideoLesson[] = [
     course_id: 'ghep-van',
     title: 'Bài 1: Giới thiệu về ghép vần',
     description: 'Tìm hiểu cơ bản về cách ghép vần trong tiếng Lào',
-    video_path: '/video/GhepVan/L_1_GhepVan.mp4',
+    youtube_url: 'https://youtu.be/aCmCIABVrD4',
     order_index: 1,
     created_at: new Date().toISOString()
   },
@@ -72,7 +72,7 @@ const fallbackLessons: VideoLesson[] = [
     course_id: 'ghep-van',
     title: 'Bài 2: Thực hành ghép vần',
     description: 'Thực hành ghép vần với các ví dụ cụ thể',
-    video_path: '/video/GhepVan/L_2_GhepVan.mp4',
+    youtube_url: 'https://www.youtube.com/watch?v=4fea6Qw1v7A',
     order_index: 2,
     created_at: new Date().toISOString()
   },
@@ -81,7 +81,7 @@ const fallbackLessons: VideoLesson[] = [
     course_id: 'giao-tiep',
     title: 'Bài 1: Chào hỏi cơ bản',
     description: 'Học cách chào hỏi và giới thiệu bản thân',
-    video_path: '/video/GiaoTiep/lesson1.mp4',
+    youtube_url: 'https://www.youtube.com/watch?v=4fea6Qw1v7A',
     order_index: 1,
     created_at: new Date().toISOString()
   },
@@ -90,7 +90,7 @@ const fallbackLessons: VideoLesson[] = [
     course_id: 'giao-tiep',
     title: 'Bài 2: Giao tiếp hàng ngày',
     description: 'Các câu giao tiếp thường dùng trong cuộc sống',
-    video_path: '/video/GiaoTiep/lesson2.mp4',
+    youtube_url: 'https://www.youtube.com/watch?v=4fea6Qw1v7A',
     order_index: 2,
     created_at: new Date().toISOString()
   }
@@ -335,14 +335,14 @@ class VideoCourseService {
           course_id: ghepVanCourse.id,
           title: 'Bài 1: Giới thiệu về ghép vần',
           description: 'Tìm hiểu cơ bản về cách ghép vần trong tiếng Lào',
-          video_path: '/video/GhepVan/L_1_GhepVan.mp4',
+          youtube_url: 'https://youtu.be/aCmCIABVrD4',
           order_index: 1
         },
         {
           course_id: ghepVanCourse.id,
           title: 'Bài 2: Thực hành ghép vần',
           description: 'Thực hành ghép vần với các ví dụ cụ thể',
-          video_path: '/video/GhepVan/L_2_GhepVan.mp4',
+          youtube_url: 'https://www.youtube.com/watch?v=4fea6Qw1v7A',
           order_index: 2
         }
       ];

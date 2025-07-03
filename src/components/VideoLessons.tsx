@@ -40,6 +40,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useProgressSaver } from '../hooks/useProgressSaver';
 import { ProgressStatus } from './ProgressStatus';
 import { LoginModal } from './LoginModal';
+import YouTube, { YouTubeProps } from 'react-youtube';
 
 const VideoLessons: React.FC = () => {
   const [courses, setCourses] = useState<VideoCourse[]>([]);
@@ -822,7 +823,7 @@ const VideoLessons: React.FC = () => {
           {selectedLesson && (
             <Box sx={{ width: '100%' }}>
               <VideoPlayer
-                videoPath={selectedLesson.video_path}
+                youtubeUrl={selectedLesson.youtube_url}
                 onProgress={handleVideoProgress}
                 lessonId={selectedLesson.id}
                 userProgress={userProgress[selectedLesson.id]}
@@ -846,9 +847,9 @@ const VideoLessons: React.FC = () => {
   );
 };
 
-// Component VideoPlayer để theo dõi tiến độ (HTML5 thuần)
+// Thay thế toàn bộ VideoPlayer:
 interface VideoPlayerProps {
-  videoPath: string;
+  youtubeUrl: string;
   onProgress: (progressPercentage: number, watchTime: number) => void;
   lessonId: string;
   userProgress?: UserProgress;
@@ -857,8 +858,14 @@ interface VideoPlayerProps {
   onLessonCompleted?: () => void;
 }
 
+const getYoutubeId = (url: string) => {
+  const regExp = /^.*(?:youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[1].length === 11) ? match[1] : '';
+};
+
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ 
-  videoPath, 
+  youtubeUrl, 
   onProgress, 
   lessonId, 
   userProgress, 
@@ -866,12 +873,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   username, 
   onLessonCompleted 
 }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [duration, setDuration] = useState(0);
-  const [hasResumed, setHasResumed] = useState(false);
   const [progressInfo, setProgressInfo] = useState<string>('');
   const [currentProgress, setCurrentProgress] = useState(0);
   const [watchTime, setWatchTime] = useState(0);
+  const playerRef = useRef<any>(null);
+  const [pendingSeekTime, setPendingSeekTime] = useState<number | null>(null);
 
   // Sử dụng hook progress saver
   const { saveOnPause, saveOnModalClose, saveOnVideoEnd, isSaving, lastSaveTime, pendingProgress } = useProgressSaver({
@@ -879,7 +886,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     lessonId,
     courseId,
     onProgressUpdate: (progress) => {
-      // Cập nhật UI progress
       setCurrentProgress(progress.progress_percentage);
       setWatchTime(progress.watch_time);
       if (onProgress) {
@@ -888,105 +894,104 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   });
 
-  // Resume từ vị trí đã xem trước đó (chỉ 1 lần)
+  const videoId = getYoutubeId(youtubeUrl);
+
+  // Khi userProgress thay đổi, luôn set pendingSeekTime
   useEffect(() => {
-    setHasResumed(false);
-  }, [videoPath, lessonId]);
+    if (userProgress && userProgress.watch_time > 0) {
+      setPendingSeekTime(userProgress.watch_time);
+    }
+  }, [userProgress, lessonId]);
 
-  const handleLoadedMetadata = () => {
-    if (videoRef.current) {
-      setDuration(videoRef.current.duration);
-      if (
-        userProgress &&
-        userProgress.watch_time > 0 &&
-        !hasResumed &&
-        Math.abs(videoRef.current.currentTime - userProgress.watch_time) > 2
-      ) {
-        videoRef.current.currentTime = userProgress.watch_time;
-        setWatchTime(userProgress.watch_time);
-        setHasResumed(true);
-        setProgressInfo('🔄 Đã khôi phục vị trí xem trước đó');
+  const onPlayerReady: YouTubeProps['onReady'] = (event) => {
+    playerRef.current = event.target;
+    setDuration(event.target.getDuration());
+  };
+
+  // SeekTo đúng vị trí đã lưu chỉ khi người dùng nhấn Play lần đầu
+  const onStateChange: YouTubeProps['onStateChange'] = (event) => {
+    if (!playerRef.current) return;
+    const ytState = event.data;
+    if (ytState === 1) { // playing
+      if (pendingSeekTime !== null) {
+        playerRef.current.seekTo(pendingSeekTime, true);
+        setWatchTime(pendingSeekTime);
+        setProgressInfo('Đã khôi phục vị trí xem trước đó');
         setTimeout(() => setProgressInfo(''), 3000);
+        setPendingSeekTime(null);
       }
+      setProgressInfo('');
+    } else if (ytState === 2) { // paused
+      const time = playerRef.current.getCurrentTime();
+      const dur = playerRef.current.getDuration();
+      const progressPercentage = dur > 0 ? (time / dur) * 100 : 0;
+      setCurrentProgress(progressPercentage);
+      setWatchTime(Math.floor(time));
+      saveOnPause({
+        progress_percentage: progressPercentage,
+        watch_time: Math.floor(time),
+        is_completed: progressPercentage >= 90
+      });
+      setProgressInfo('💾 Đã lưu tiến độ');
+      setTimeout(() => setProgressInfo(''), 2000);
+    } else if (ytState === 0) { // ended
+      const dur = playerRef.current.getDuration();
+      saveOnVideoEnd({
+        progress_percentage: 100,
+        watch_time: Math.floor(dur),
+        is_completed: true
+      });
+      setProgressInfo('🎉 Hoàn thành bài học!');
+      if (onLessonCompleted) onLessonCompleted();
     }
   };
 
-  // Tính toán tiến độ
-  const calculateProgress = useCallback((isEnded = false) => {
-    if (!videoRef.current) return { progress_percentage: 0, watch_time: 0, is_completed: false };
-    
-    const time = videoRef.current.currentTime;
-    const dur = videoRef.current.duration || duration;
-    const progressPercentage = dur > 0 ? (time / dur) * 100 : 0;
-    const watchTime = Math.floor(time);
-    const isCompleted = isEnded || progressPercentage >= 90; // Hoàn thành khi xem 90% trở lên
-    
-    return {
-      progress_percentage: isEnded ? 100 : progressPercentage,
-      watch_time: isEnded ? Math.floor(dur) : watchTime,
-      is_completed: isCompleted
-    };
-  }, [duration]);
-
-  // Event handlers
-  const handleTimeUpdate = () => {
-    if (!videoRef.current) return;
-    
-    // Chỉ cập nhật UI, không lưu database
-    const progress = calculateProgress();
-    setCurrentProgress(progress.progress_percentage);
-    setWatchTime(progress.watch_time);
-    if (onProgress) {
-      onProgress(progress.progress_percentage, progress.watch_time);
+  // Theo dõi tiến độ mỗi 5s
+  useEffect(() => {
+    let interval: any;
+    if (playerRef.current) {
+      interval = setInterval(() => {
+        const time = playerRef.current.getCurrentTime();
+        const dur = playerRef.current.getDuration();
+        const progressPercentage = dur > 0 ? (time / dur) * 100 : 0;
+        setCurrentProgress(progressPercentage);
+        setWatchTime(Math.floor(time));
+        if (onProgress) {
+          onProgress(progressPercentage, Math.floor(time));
+        }
+      }, 5000);
     }
-  };
-
-  const handlePause = async () => {
-    const progress = calculateProgress();
-    await saveOnPause(progress);
-    setProgressInfo('💾 Đã lưu tiến độ');
-    setTimeout(() => setProgressInfo(''), 2000);
-  };
-
-  const handlePlay = () => {
-    setProgressInfo('');
-  };
-
-  const handleEnded = async () => {
-    const progress = calculateProgress(true);
-    await saveOnVideoEnd(progress);
-    setProgressInfo('🎉 Hoàn thành bài học!');
-    if (onLessonCompleted) onLessonCompleted();
-  };
+    return () => interval && clearInterval(interval);
+  }, [onProgress]);
 
   // Lưu khi component unmount
   useEffect(() => {
-    const videoEl = videoRef.current;
     return () => {
-      if (videoEl) {
-        saveOnModalClose();
-      }
+      saveOnModalClose();
     };
   }, [saveOnModalClose]);
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Box sx={{ position: 'relative', width: '100%', borderRadius: 2, overflow: 'hidden', bgcolor: 'black' }}>
-        <video
-          ref={videoRef}
-          src={videoPath}
-          width="100%"
-          style={{ width: '100%', aspectRatio: '16/9', borderRadius: 8 }}
-          controls
-          onTimeUpdate={handleTimeUpdate}
-          onPause={handlePause}
-          onPlay={handlePlay}
-          onEnded={handleEnded}
-          onLoadedMetadata={handleLoadedMetadata}
+      <Box sx={{ position: 'relative', width: '100%', borderRadius: 2, overflow: 'hidden', bgcolor: 'black', mb: 2 }}>
+        <YouTube
+          videoId={videoId}
+          opts={{
+            width: '100%',
+            height: '400',
+            playerVars: {
+              autoplay: 0,
+              controls: 1,
+              rel: 0,
+              modestbranding: 1,
+              origin: typeof window !== 'undefined' ? window.location.origin : undefined
+            }
+          }}
+          onReady={onPlayerReady}
+          onStateChange={onStateChange}
+          style={{ borderRadius: 12, overflow: 'hidden', maxWidth: '100%' }}
         />
       </Box>
-      
-      {/* Progress status */}
       {progressInfo && (
         <Box sx={{ 
           mt: 1, 
@@ -1001,8 +1006,6 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
           </Typography>
         </Box>
       )}
-
-      {/* Progress Status Component */}
       <ProgressStatus
         isSaving={isSaving}
         lastSaveTime={lastSaveTime}
@@ -1011,16 +1014,14 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
         watchTime={watchTime}
         duration={duration}
       />
-
-      {/* Video controls info */}
       <Box sx={{ mt: 2, p: 2, bgcolor: 'rgba(102, 126, 234, 0.05)', borderRadius: 2, border: '1px solid rgba(102, 126, 234, 0.1)' }}>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 1, fontWeight: 500 }}>
           💡 Mẹo học tập:
         </Typography>
         <Typography variant="caption" color="text.secondary">
-          • Tiến độ học tập sẽ được tự động lưu khi bạn tạm dừng video
-          • Bạn có thể tiếp tục từ vị trí đã dừng khi quay lại
-          • Video sẽ được đánh dấu hoàn thành khi xem 90% trở lên
+          • Tiến độ học tập sẽ được tự động lưu khi bạn tạm dừng video<br/>
+          • Bạn có thể tiếp tục từ vị trí đã dừng khi quay lại<br/>
+          • Video sẽ được đánh dấu hoàn thành khi xem 90% trở lên<br/>
           • Tiến độ được lưu tối đa 1 lần mỗi phút để tối ưu hiệu suất
         </Typography>
       </Box>
