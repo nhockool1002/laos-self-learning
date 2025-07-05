@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { supabase, TABLES } from '../config/supabaseConfig';
-import bcrypt from 'bcryptjs';
+import md5 from 'md5';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -45,7 +45,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const { data, error } = await query;
       if (error) throw error;
       if (data) {
-        const isMatch = await bcrypt.compare(password, data.password);
+        const hashedPassword = md5(password);
+        const isMatch = hashedPassword === data.password;
         if (isMatch) {
           setCurrentUser({ username: data.username });
           setIsAuthenticated(true);
@@ -87,7 +88,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return false;
       }
       // Hash password trước khi lưu
-      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      const hashedPassword = md5(userData.password);
       await supabase
         .from(TABLES.USERS)
         .insert([
